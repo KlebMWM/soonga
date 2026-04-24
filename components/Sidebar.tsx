@@ -54,7 +54,15 @@ export function Sidebar() {
         title={t("nav.dashboard.label")}
       >
         <div className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+          {/* Brand logo kept in warm orange for product identity, distinct from
+              mint accents used by functional UI (active nav, badges, etc.). */}
+          <div
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-white"
+            style={{
+              background: "linear-gradient(135deg, #d97757, #b85d3f)",
+              boxShadow: "0 0 12px rgba(217, 119, 87, 0.35)",
+            }}
+          >
             <Sparkles className="h-5 w-5" />
           </div>
           <div className="min-w-0 flex-1">
@@ -82,8 +90,8 @@ export function Sidebar() {
           const baseClasses = cn(
             "relative group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors w-full text-left",
             active
-              ? "bg-sidebar-primary/8 text-sidebar-primary"
-              : "text-sidebar-foreground/75 hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground",
+              ? "bg-sidebar-accent text-sidebar-accent-foreground"
+              : "text-sidebar-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground",
           );
 
           const inner = (
@@ -91,23 +99,24 @@ export function Sidebar() {
               {active && (
                 <span
                   aria-hidden
-                  className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full bg-sidebar-primary"
+                  className="absolute left-0 top-2 bottom-2 w-[2px] rounded-r-full bg-sidebar-primary"
+                  style={{ boxShadow: "0 0 8px var(--sidebar-primary)" }}
                 />
               )}
               <Icon
                 className={cn(
                   "h-4 w-4 shrink-0",
                   active
-                    ? "text-sidebar-primary"
-                    : "text-sidebar-foreground/60 group-hover:text-sidebar-primary",
+                    ? "text-sidebar-accent-foreground"
+                    : "text-sidebar-foreground/60 group-hover:text-sidebar-accent-foreground",
                 )}
               />
               <div className="flex-1 min-w-0">
-                <div className={cn("font-medium", active && "text-sidebar-primary")}>{t(item.labelKey)}</div>
+                <div className="font-medium">{t(item.labelKey)}</div>
                 <div
                   className={cn(
                     "text-[12px] truncate",
-                    active ? "text-sidebar-primary/70" : "text-sidebar-foreground/50",
+                    active ? "text-sidebar-accent-foreground/70" : "text-sidebar-foreground/50",
                   )}
                 >
                   {t(item.subKey)}

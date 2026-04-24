@@ -114,15 +114,17 @@
   --dusk: #7a8ba0;
   --plum: #a06a8f;
 
-  /* Sidebar — slightly darker cream for quiet separation from main canvas.
-     Sidebar palette handled in Prompt 2; kept neutral here. */
-  --sidebar: #ebe7d5;
-  --sidebar-foreground: #1a2620;
-  --sidebar-primary: #0d7d6b;
+  /* Sidebar — deep-mint "control deck" paired with the hero card. The dark
+     surface anchors the nav and lets the mint-deep border indicator + badges
+     do the accent work. All interactive states use white-alpha overlays so
+     nothing introduces a third color into the sidebar frame. */
+  --sidebar: #0a4a40; /* one step darker than --mint-deep */
+  --sidebar-foreground: rgba(255, 255, 255, 0.9);
+  --sidebar-primary: #0d7d6b; /* mint-deep — used for left-border indicator, badges */
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #faf7ec;
-  --sidebar-accent-foreground: #1a2620;
-  --sidebar-border: rgba(26, 38, 32, 0.1);
+  --sidebar-accent: rgba(255, 255, 255, 0.1); /* hover + active bg */
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
   --sidebar-ring: #0d7d6b;
 }
 
