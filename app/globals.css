@@ -695,13 +695,15 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 10px 12px;
+    padding: 11px 12px;
     border: 1px solid transparent;
     color: var(--text);
     cursor: pointer;
-    font-family: var(--font-noto-sans-tc), sans-serif;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
+    /* font-family inherits from html.font-sans → Inter for Latin, Noto Sans
+       TC fallback for CJK. Don't hardcode — lets per-locale content land on
+       its own script's default face automatically. */
     transition:
       background 0.15s,
       color 0.15s,
@@ -729,12 +731,12 @@
   .sidebar-nav-badge {
     display: inline-flex;
     align-items: center;
-    padding: 2px 7px;
+    padding: 2px 8px;
     background: var(--yellow);
     color: var(--ikea-blue-darker);
     border: 1px solid var(--ikea-blue-darker);
     font-family: var(--font-jetbrains-mono), monospace;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
   }
 
@@ -753,13 +755,13 @@
     justify-content: center;
     gap: 8px;
     width: 100%;
-    padding: 10px 12px;
+    padding: 11px 12px;
     background: var(--yellow);
     color: var(--ikea-blue-darker);
     border: 1.5px solid var(--ikea-blue-darker);
     font-weight: 700;
-    font-size: 13px;
-    font-family: var(--font-noto-sans-tc), sans-serif;
+    font-size: 14px;
+    /* font-family inherits via the sans chain — no per-locale override */
     transform: translateY(-1.5px);
     box-shadow: 0 3px 0 var(--ikea-blue-darker);
     transition:

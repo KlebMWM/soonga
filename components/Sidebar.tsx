@@ -81,7 +81,7 @@ export function Sidebar() {
           />
         </div>
         <span
-          className="text-[13px] font-bold leading-none whitespace-nowrap"
+          className="text-[14px] font-bold leading-none whitespace-nowrap"
           style={{
             color: "var(--ikea-blue-darker)",
             fontFamily: "var(--font-jetbrains-mono), monospace",
@@ -90,7 +90,7 @@ export function Sidebar() {
           soon-ga.agent
         </span>
         <span
-          className="ml-auto px-1.5 py-0.5 text-[9px] font-bold uppercase leading-none"
+          className="ml-auto px-1.5 py-0.5 text-[10px] font-bold uppercase leading-none"
           style={{
             color: "var(--ikea-blue-darker)",
             background: "var(--bg-accent)",
@@ -104,10 +104,11 @@ export function Sidebar() {
         </span>
       </Link>
 
-      {/* Section label */}
+      {/* Section label — sans (per-locale), no forced mono so Chinese and
+          English both render in their script's native sans face. */}
       <div
         className="flex items-center gap-2"
-        style={{ padding: "8px 20px 10px" }}
+        style={{ padding: "8px 20px 12px" }}
       >
         <span
           aria-hidden
@@ -115,11 +116,10 @@ export function Sidebar() {
           style={{ background: "var(--ikea-blue)" }}
         />
         <span
-          className="text-[10px] uppercase"
+          className="text-[12px] font-semibold uppercase"
           style={{
-            color: "var(--text-mid)",
-            fontFamily: "var(--font-jetbrains-mono), monospace",
-            letterSpacing: "0.2em",
+            color: "var(--text)",
+            letterSpacing: "0.16em",
           }}
         >
           {t("nav.section.navigate")}
@@ -143,7 +143,7 @@ export function Sidebar() {
               href={item.href}
               className={cn("sidebar-nav-item", active && "is-active")}
             >
-              <Icon className="h-[18px] w-[18px] shrink-0" strokeWidth={1.75} />
+              <Icon className="h-[20px] w-[20px] shrink-0" strokeWidth={1.75} />
               <span className="flex-1 truncate">{t(item.labelKey)}</span>
               {typeof item.badge === "number" && item.badge > 0 && (
                 <span className="sidebar-nav-badge">{item.badge}</span>
@@ -153,7 +153,15 @@ export function Sidebar() {
         })}
       </nav>
 
-      {/* Bottom — 3 layers: notify status / wallet CTA / user pill */}
+      {/* Wallet CTA — pulled up from the bottom stack to sit right below the
+          nav items. The yellow raised button is the product's most deliberate
+          action on this page; keeping it adjacent to nav surfaces it at eye
+          level instead of buried under ambient status. */}
+      <div style={{ padding: "14px 10px 0" }}>
+        <WalletPill variant="sidebar" />
+      </div>
+
+      {/* Bottom — ambient status + identity */}
       <div
         className="mt-auto flex flex-col"
         style={{
@@ -163,7 +171,6 @@ export function Sidebar() {
         }}
       >
         <NotificationPermissionPill />
-        <WalletPill variant="sidebar" />
         <UserPill />
       </div>
     </aside>
@@ -194,25 +201,24 @@ function UserPill() {
       </div>
       <div className="min-w-0 flex-1 leading-tight">
         <div
-          className="text-[12px] font-semibold truncate"
+          className="text-[14px] font-semibold truncate"
           style={{ color: "var(--headline)" }}
         >
           {t("workspace.shortName")}
         </div>
         <div
-          className="text-[10px] truncate"
+          className="text-[12px] truncate mt-0.5"
           style={{
-            color: "var(--text-mid)",
-            fontFamily: "var(--font-jetbrains-mono), monospace",
-            letterSpacing: "0.05em",
+            color: "var(--paragraph)",
+            letterSpacing: "0.04em",
           }}
         >
           {t("workspace.plan")}
         </div>
       </div>
       <ChevronRight
-        className="h-3.5 w-3.5 shrink-0"
-        style={{ color: "var(--text-dim)" }}
+        className="h-4 w-4 shrink-0"
+        style={{ color: "var(--text-mid)" }}
       />
     </button>
   );

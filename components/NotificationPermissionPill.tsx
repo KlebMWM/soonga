@@ -71,14 +71,11 @@ export function NotificationPermissionPill() {
   const body = (
     <>
       <span
-        className="inline-flex items-center gap-2 text-[12px]"
-        style={{
-          color: "var(--text)",
-          fontFamily: "var(--font-noto-sans-tc), sans-serif",
-        }}
+        className="inline-flex items-center gap-2 text-[14px]"
+        style={{ color: "var(--text)" }}
       >
         <span
-          className="relative flex h-1.5 w-1.5 shrink-0"
+          className="relative flex h-2 w-2 shrink-0"
           aria-hidden
         >
           {statusConfig.withPulse && (
@@ -88,7 +85,7 @@ export function NotificationPermissionPill() {
             />
           )}
           <span
-            className="relative inline-flex h-1.5 w-1.5 rounded-full"
+            className="relative inline-flex h-2 w-2 rounded-full"
             style={{
               background: statusConfig.color,
               boxShadow: statusConfig.withPulse
@@ -100,11 +97,8 @@ export function NotificationPermissionPill() {
         {t("notify.label")}
       </span>
       <span
-        className="ml-auto text-[11px] font-bold"
-        style={{
-          color: statusConfig.color,
-          fontFamily: "var(--font-jetbrains-mono), monospace",
-        }}
+        className="ml-auto text-[13px] font-bold"
+        style={{ color: statusConfig.color }}
       >
         {statusConfig.label}
       </span>
@@ -114,7 +108,7 @@ export function NotificationPermissionPill() {
   const sharedStyle = {
     background: "var(--card)",
     border: "1px solid var(--border)",
-    padding: "8px 12px",
+    padding: "10px 12px",
   };
 
   return clickable ? (
