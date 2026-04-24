@@ -26,6 +26,8 @@ const badgeVariants = cva(
         "hud-trust": "badge-hud badge-hud-trust",
         // Inverse — for badges rendered INSIDE the dark mint hero card
         "hud-inverse": "badge-hud badge-hud-inverse",
+        // Yellow — "ACTION REQUIRED" on Pending hero; only readable on blue bg
+        "hud-yellow": "badge-hud badge-hud-yellow",
       },
     },
     defaultVariants: {

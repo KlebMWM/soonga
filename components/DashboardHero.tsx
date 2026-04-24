@@ -4,15 +4,15 @@ import Link from "next/link";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { AgentIcon } from "@/components/AgentIcon";
 import { HudCard } from "@/components/ui/hud-card";
-import { pendingApprovals } from "@/lib/mockData";
-import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
+import { agents, pendingApprovals } from "@/lib/mockData";
+import { useT } from "@/lib/i18n/LocaleProvider";
 import { cn } from "@/lib/utils";
 
 export function DashboardHero() {
   const t = useT();
-  const { locale } = useLocale();
   const pending = pendingApprovals;
   const count = pending.length;
 
@@ -38,57 +38,88 @@ export function DashboardHero() {
   }
 
   // --------------- Pending state ---------------
+  // Unique agents *in pending* drives the "跨 agent 數" stat. The avatar stack
+  // below renders the full roster (all 4 agents) per the design spec, so the
+  // count and the avatar count don't have to match.
   const uniqueAgents = Array.from(
     pending.reduce<Map<string, string>>((acc, p) => {
       if (!acc.has(p.agent)) acc.set(p.agent, p.agent);
       return acc;
     }, new Map()).values(),
   );
-  const agentLabel = uniqueAgents.join(locale === "zh" ? "、" : ", ");
   const totalAmount = pending.reduce((sum, p) => sum + p.amount, 0);
 
   return (
-    <HudCard variant="hero" className="h-full flex flex-col gap-6 p-6 md:p-8">
-      {/* Top row: eyebrow + pending total */}
+    <HudCard variant="hero" className="h-full flex flex-col gap-5 p-6 md:p-7">
+      {/* Top row: "需要你核准" yellow pill + total amount mono readout */}
       <div className="flex items-start justify-between gap-3">
-        <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/90">
+        <Badge
+          variant="hud-yellow"
+          className="h-6 gap-2 px-2.5 text-[11px] font-semibold"
+        >
+          <span className="hud-dot" style={{ width: 6, height: 6 }} />
           {t("dashboard.hero.eyebrow")}
-        </div>
+        </Badge>
         <div className="text-[11px] tabular-nums text-white/55 font-mono">
           {t("dashboard.hero.pending.total", { amount: totalAmount.toFixed(2) })}
         </div>
       </div>
 
-      {/* Hero: "3 筆待辦" — Instrument Serif italic display number + phrase */}
+      {/* Headline: oversized Instrument Serif italic numeral in yellow +
+          Noto Serif TC phrase */}
       <div className="flex-1 flex flex-col justify-center gap-1.5">
         <div className="flex items-baseline gap-4 leading-none">
           <span
-            className="italic tabular-nums font-normal leading-[0.85] text-[90px] md:text-[130px]"
+            className="italic tabular-nums font-normal leading-[0.85] text-[88px] md:text-[120px]"
             style={{
-              color: "#ffffff",
+              color: "var(--yellow)",
               fontFamily: "var(--font-instrument-serif), Georgia, serif",
-              filter: "drop-shadow(0 0 30px rgba(255, 255, 255, 0.3))",
+              filter: "drop-shadow(0 0 30px rgba(255, 216, 3, 0.4))",
             }}
           >
             {count}
           </span>
-          <span className="text-[28px] md:text-[34px] font-medium text-white leading-none">
+          <span
+            className="text-[22px] md:text-[26px] font-medium text-white leading-none"
+            style={{ fontFamily: "var(--font-noto-serif-tc), serif" }}
+          >
             {t("dashboard.hero.pending.line1")}
           </span>
         </div>
-        <div className="text-[14px] md:text-[15px] text-white/65">
+        <div className="text-[14px] text-white/65">
           {t("dashboard.hero.pending.line2")}
         </div>
       </div>
 
-      {/* Agent avatars — SVG icons, gradient bg + glow, stacked with subtle overlap.
-         Border uses mint-deep so the overlap reads as layered discs on the mint bg. */}
-      <div className="flex items-center gap-3 flex-wrap">
+      {/* Stats strip — translucent bar with oldest-pending + unique-agent count */}
+      <div className="grid grid-cols-2 gap-4 border border-white/10 bg-white/[0.08] p-3">
+        <div className="flex flex-col gap-0.5">
+          <span className="text-[10px] uppercase tracking-[0.12em] text-white/55 font-mono">
+            {t("dashboard.hero.stats.oldest")}
+          </span>
+          <span className="text-[13px] font-semibold text-white font-mono tabular-nums">
+            {t("dashboard.hero.stats.oldestValue")}
+          </span>
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <span className="text-[10px] uppercase tracking-[0.12em] text-white/55 font-mono">
+            {t("dashboard.hero.stats.agents")}
+          </span>
+          <span className="text-[13px] font-semibold text-white font-mono tabular-nums">
+            {uniqueAgents.length}
+          </span>
+        </div>
+      </div>
+
+      {/* Bottom row: full-roster avatar stack on the left, raised yellow CTA
+          on the right. Border uses --primary so each disc blends into the
+          hero-card bg (same color family) and the overlap reads as layered. */}
+      <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center">
-          {uniqueAgents.map((agent, i) => (
+          {agents.map((agent, i) => (
             <AgentIcon
-              key={agent}
-              agent={agent}
+              key={agent.id}
+              agent={agent.name}
               size="md"
               className={cn(
                 "rounded-full border-[2.5px] border-primary",
@@ -97,19 +128,16 @@ export function DashboardHero() {
             />
           ))}
         </div>
-        <span className="text-[12px] text-white/60 truncate">{agentLabel}</span>
+        <Button
+          nativeButton={false}
+          render={<Link href="/approvals" />}
+          variant="raised"
+          className="h-11 px-5 text-[13px] gap-2"
+        >
+          {t("dashboard.hero.pending.cta")}
+          <ArrowRight className="h-4 w-4" />
+        </Button>
       </div>
-
-      {/* CTA — white pill with mint text, per v9 inverse spec */}
-      <Button
-        nativeButton={false}
-        render={<Link href="/approvals" />}
-        variant="inverse"
-        className="gap-1.5 self-start h-11 px-5 text-[14px]"
-      >
-        {t("dashboard.hero.pending.cta")}
-        <ArrowRight className="h-4 w-4" />
-      </Button>
     </HudCard>
   );
 }

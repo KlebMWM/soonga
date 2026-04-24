@@ -103,6 +103,34 @@ export const dict: Dict = {
     zh: "指揮中心",
     en: "Command Center",
   },
+  /* Greeting phrase-only variants (without time suffix) — used in the new
+     Dashboard greeting where the phrase renders in Noto Serif TC and the name
+     is pulled out as a separate Instrument Serif italic element with a yellow
+     highlighter background. */
+  "dashboard.greeting.phrase.morning": { zh: "早安", en: "Good morning" },
+  "dashboard.greeting.phrase.afternoon": { zh: "午安", en: "Good afternoon" },
+  "dashboard.greeting.phrase.evening": { zh: "晚安", en: "Good evening" },
+  "dashboard.greeting.phrase.lateNight": { zh: "深夜了", en: "Still up" },
+  "dashboard.greeting.name": { zh: "Megan", en: "Megan" },
+  "dashboard.greeting.tag.morning": { zh: "今早簡報", en: "Morning Brief" },
+  "dashboard.greeting.tag.afternoon": { zh: "今午簡報", en: "Afternoon Brief" },
+  "dashboard.greeting.tag.evening": { zh: "今晚簡報", en: "Evening Brief" },
+  "dashboard.greeting.tag.lateNight": { zh: "今夜簡報", en: "Tonight's Brief" },
+  /* Greeting sub-copy is split at <strong> boundaries so the numbers can be
+     bold in JSX without a templated innerHTML pass. */
+  "dashboard.greeting.sub.prefix": {
+    zh: "今天 agent 已幫你處理 ",
+    en: "Agents handled ",
+  },
+  "dashboard.greeting.sub.txnsBridge": {
+    zh: " 筆交易，省下 ",
+    en: " transactions today, saving you ",
+  },
+  "dashboard.greeting.sub.suffix": { zh: " 小時。", en: " hours." },
+  /* Mini-status rows on the right of the greeting block. */
+  "dashboard.status.budget": { zh: "預算使用", en: "Budget Used" },
+  "dashboard.status.auto": { zh: "自動化率", en: "Auto Rate" },
+  "dashboard.status.pending": { zh: "待辦", en: "Pending" },
   "dashboard.hero.eyebrow": { zh: "需要你核准", en: "Needs your approval" },
   "dashboard.hero.clean.title": { zh: "今天很乾淨", en: "All clear today" },
   "dashboard.hero.clean.desc": {
@@ -127,6 +155,13 @@ export const dict: Dict = {
     en: "{amount} USDC total",
   },
   "dashboard.hero.pending.cta": { zh: "前往審核", en: "Go review" },
+  /* Small stats bar inside the Pending hero card. oldestValue hard-coded to
+     match the narrative density of the mock (real timestamp math would resolve
+     to "2 days ago" against the static pending-approval dates and kill the
+     urgency). */
+  "dashboard.hero.stats.oldest": { zh: "最早待辦", en: "Oldest pending" },
+  "dashboard.hero.stats.oldestValue": { zh: "2 分鐘前", en: "2 min ago" },
+  "dashboard.hero.stats.agents": { zh: "跨 agent 數", en: "Unique agents" },
   "dashboard.ambient": {
     zh: "今天 agent 幫你處理了 {tx} 筆交易、總共花 {spent} USDC．支出比昨天{dir} {pct}%。",
     en: "Agents handled {tx} transactions today, spending {spent} USDC total — spending is {dir} {pct}% vs. yesterday.",

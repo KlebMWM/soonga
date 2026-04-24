@@ -268,20 +268,17 @@
     box-shadow: 0 4px 16px oklch(0.2 0.01 155 / 0.06);
   }
 
-  /* Hero variant — pending-action card, dark block that stands out on the
-     main canvas. Gradient dark-stop follows the palette: was #0a5e51 (deep
-     mint) under v9, now --headline (#0a2544) under the IKEA blue system. */
+  /* Hero variant — pending-action card. Solid IKEA blue surface with a warm
+     yellow corner bloom to hint at the yellow CTA inside. 1px deep-blue border
+     + inset white highlight + outer soft blue glow reads as "elevated tablet
+     sitting on the canvas". */
   .hud-card--hero {
-    background: linear-gradient(
-      145deg,
-      var(--mint-deep) 0%,
-      var(--headline) 100%
-    );
-    border-color: var(--mint-deep);
+    background: var(--ikea-blue);
+    border-color: var(--ikea-blue-deep);
     color: white;
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.1),
-      0 8px 32px var(--mint-glow);
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      0 8px 32px rgba(80, 132, 208, 0.25);
   }
 
   .hud-card--hero::before {
@@ -293,7 +290,7 @@
     height: 350px;
     background: radial-gradient(
       circle,
-      color-mix(in oklab, var(--mint-soft) 30%, transparent),
+      rgba(255, 216, 3, 0.18),
       transparent 60%
     );
     pointer-events: none;
@@ -386,6 +383,35 @@
       inset 0 1px 0 rgba(255, 255, 255, 0.6);
   }
 
+  /* .btn-raised — yellow CTA with a 4px hard shadow below.
+     Button floats 2px above baseline at rest; on hover the lift collapses +
+     the hard-shadow disappears, giving a tactile "press down" feel. Pairs
+     with the 1.5px deep-blue border applied via utility classes on the
+     Button variant string (border layer beats .btn-raised in Tailwind's
+     component < utilities order). */
+  .btn-raised {
+    background: var(--yellow);
+    color: var(--ikea-blue-darker);
+    font-weight: 700;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 0 var(--ikea-blue-darker);
+    transition:
+      transform 0.15s,
+      box-shadow 0.15s,
+      background 0.15s;
+  }
+
+  .btn-raised:hover {
+    transform: translateY(0);
+    box-shadow: 0 0 0 0 transparent;
+    background: var(--yellow-deep);
+  }
+
+  .btn-raised:active {
+    transform: translateY(0);
+    box-shadow: 0 0 0 0 transparent;
+  }
+
   /* .btn-hud — neutral HUD chrome button (filter pills, secondary actions).
      CJK-safe — add .hud-en for English monospace contexts. */
   .btn-hud {
@@ -456,6 +482,16 @@
     color: rgba(255, 255, 255, 0.9);
     background: rgba(255, 255, 255, 0.15);
     border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  /* Yellow — for "ACTION REQUIRED" pills inside the Pending hero card.
+     Yellow text on a 12%-yellow wash, meant to sit on the solid IKEA blue
+     hero bg (contrast holds). Don't use on a light canvas — yellow on white
+     fails contrast. */
+  .badge-hud-yellow {
+    color: var(--yellow);
+    background: rgba(255, 216, 3, 0.12);
+    border-color: rgba(255, 216, 3, 0.5);
   }
 
   /* .hud-en — opt-in English mono styling.

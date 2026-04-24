@@ -22,6 +22,9 @@ const buttonVariants = cva(
         glow: "btn-glow",
         // HUD — inverse CTA for use INSIDE the dark-mint hero card (white bg, mint text)
         inverse: "btn-inverse",
+        // HUD — raised yellow CTA: 2px lift + 4px hard blue shadow; collapses on hover
+        raised:
+          "btn-raised border-[1.5px] border-[color:var(--ikea-blue-darker)]",
         // HUD — neutral chrome (filter pills, tertiary actions); add .is-active to highlight
         hud: "btn-hud",
       },

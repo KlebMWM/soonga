@@ -810,6 +810,9 @@ export const stats = {
   todaySpent: 8.73,
   todayTransactions: 47,
   yesterdayDeltaPct: -28,
+  /** Hours of user time reclaimed today by agent automation. Used in the
+      dashboard greeting sub-copy. */
+  hoursSaved: 2.4,
   monthSpent: agents.reduce((sum, a) => sum + a.monthlySpent, 0),
   monthBudget: agents.reduce((sum, a) => sum + a.monthlyBudget, 0),
   pendingCount: pendingApprovals.length,

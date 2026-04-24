@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
-import { PageHeader } from "@/components/PageHeader";
 import { DashboardHero } from "@/components/DashboardHero";
 import { AgentFeed } from "@/components/AgentFeed";
 import { BurnRateChart } from "@/components/BurnRateChart";
@@ -12,11 +11,18 @@ import { Badge } from "@/components/ui/badge";
 import { agents, burnRate7d, stats } from "@/lib/mockData";
 import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
 
-function greetingKey(hour: number): string {
-  if (hour >= 5 && hour < 12) return "dashboard.greeting.morning";
-  if (hour >= 12 && hour < 18) return "dashboard.greeting.afternoon";
-  if (hour >= 18 && hour < 23) return "dashboard.greeting.evening";
-  return "dashboard.greeting.lateNight";
+function phraseKey(hour: number): string {
+  if (hour >= 5 && hour < 12) return "dashboard.greeting.phrase.morning";
+  if (hour >= 12 && hour < 18) return "dashboard.greeting.phrase.afternoon";
+  if (hour >= 18 && hour < 23) return "dashboard.greeting.phrase.evening";
+  return "dashboard.greeting.phrase.lateNight";
+}
+
+function tagKey(hour: number): string {
+  if (hour >= 5 && hour < 12) return "dashboard.greeting.tag.morning";
+  if (hour >= 12 && hour < 18) return "dashboard.greeting.tag.afternoon";
+  if (hour >= 18 && hour < 23) return "dashboard.greeting.tag.evening";
+  return "dashboard.greeting.tag.lateNight";
 }
 
 export default function DashboardPage() {
@@ -37,21 +43,148 @@ export default function DashboardPage() {
   const deltaDir: "up" | "down" = stats.yesterdayDeltaPct < 0 ? "down" : "up";
   const deltaAbs = Math.abs(stats.yesterdayDeltaPct);
 
-  const title = now
-    ? t(greetingKey(now.getHours()), {
-        time: `${now.getHours().toString().padStart(2, "0")}:${now
-          .getMinutes()
-          .toString()
-          .padStart(2, "0")}`,
-      })
-    : t("dashboard.greeting.placeholder");
+  // SSR + first hydration render with hour=23 so server and client agree; the
+  // effect then refreshes to the real hour once mounted.
+  const hour = now?.getHours() ?? 23;
 
   // 7-day transaction counts for the mini bar chart
   const miniBars = burnRate7d.map((d) => d.transactions);
 
   return (
     <div className="px-5 md:px-8 py-6 md:py-8 max-w-[1280px] mx-auto">
-      <PageHeader eyebrow={t("dashboard.eyebrow")} title={title} description={t("dashboard.tagline")} />
+      {/* Greeting — tag + h1 (Noto Serif TC + Instrument Serif italic "Megan"
+          with yellow highlighter) + sub copy on the left; mini-status 3 rows
+          on the right (budget / auto / pending, colour-coded by semantics). */}
+      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 md:gap-10 pb-6 md:pb-8 border-b border-border">
+        <div className="flex-1 min-w-0 space-y-3">
+          {/* Tag */}
+          <div
+            className="inline-flex items-center gap-2 border px-3 py-1.5 text-[11px] font-semibold"
+            style={{
+              color: "var(--ikea-blue-darker)",
+              background: "var(--bg-accent)",
+              borderColor: "var(--border-blue)",
+            }}
+          >
+            <span
+              className="h-1.5 w-1.5 rounded-full"
+              style={{
+                background: "var(--yellow)",
+                boxShadow: "0 0 8px var(--yellow)",
+              }}
+            />
+            {t(tagKey(hour))}
+          </div>
+
+          {/* Headline */}
+          <h1
+            className="text-[36px] md:text-[44px] tracking-tight leading-[1.05]"
+            style={{ color: "var(--headline)" }}
+          >
+            <span style={{ fontFamily: "var(--font-noto-serif-tc), serif" }}>
+              {t(phraseKey(hour))}
+              {locale === "zh" ? "，" : ", "}
+            </span>
+            <span
+              className="italic"
+              style={{
+                fontFamily: "var(--font-instrument-serif), Georgia, serif",
+                background:
+                  "linear-gradient(transparent 65%, var(--yellow) 65%, var(--yellow) 95%, transparent 95%)",
+                padding: "0 4px",
+              }}
+            >
+              {t("dashboard.greeting.name")}
+            </span>
+          </h1>
+
+          {/* Sub copy with bold numbers */}
+          <p
+            className="text-[14px] leading-relaxed max-w-xl"
+            style={{ color: "var(--paragraph)" }}
+          >
+            {t("dashboard.greeting.sub.prefix")}
+            <strong
+              className="font-semibold"
+              style={{ color: "var(--headline)" }}
+            >
+              {stats.todayTransactions}
+            </strong>
+            {t("dashboard.greeting.sub.txnsBridge")}
+            <strong
+              className="font-semibold"
+              style={{ color: "var(--headline)" }}
+            >
+              {stats.hoursSaved}
+            </strong>
+            {t("dashboard.greeting.sub.suffix")}
+          </p>
+        </div>
+
+        {/* Mini-status — 3 tight mono rows */}
+        <div className="flex flex-col gap-1.5 md:min-w-[220px] shrink-0">
+          <div
+            className="flex items-center justify-between gap-3 px-3 py-1.5 border font-mono text-[11px]"
+            style={{
+              background: "var(--bg-soft)",
+              borderColor: "var(--border)",
+            }}
+          >
+            <span
+              className="uppercase tracking-[0.08em]"
+              style={{ color: "var(--text-dim)" }}
+            >
+              {t("dashboard.status.budget")}
+            </span>
+            <span
+              className="font-bold tabular-nums"
+              style={{ color: "var(--headline)" }}
+            >
+              {burnPercent}%
+            </span>
+          </div>
+          <div
+            className="flex items-center justify-between gap-3 px-3 py-1.5 border font-mono text-[11px]"
+            style={{
+              background: "rgba(255, 216, 3, 0.18)",
+              borderColor: "rgba(255, 216, 3, 0.5)",
+            }}
+          >
+            <span
+              className="uppercase tracking-[0.08em]"
+              style={{ color: "var(--ikea-blue-darker)" }}
+            >
+              {t("dashboard.status.auto")}
+            </span>
+            <span
+              className="font-bold tabular-nums"
+              style={{ color: "var(--ikea-blue-darker)" }}
+            >
+              {automationPct}%
+            </span>
+          </div>
+          <div
+            className="flex items-center justify-between gap-3 px-3 py-1.5 border font-mono text-[11px]"
+            style={{
+              background: "rgba(224, 120, 86, 0.08)",
+              borderColor: "rgba(224, 120, 86, 0.3)",
+            }}
+          >
+            <span
+              className="uppercase tracking-[0.08em]"
+              style={{ color: "var(--text-dim)" }}
+            >
+              {t("dashboard.status.pending")}
+            </span>
+            <span
+              className="font-bold tabular-nums"
+              style={{ color: "var(--coral)" }}
+            >
+              {stats.pendingCount}
+            </span>
+          </div>
+        </div>
+      </div>
 
       {/* Bento grid: pending hero (2x2) + 4 metrics (2x2) */}
       <div className="mt-6 grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-4 auto-rows-fr">
