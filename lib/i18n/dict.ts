@@ -712,6 +712,14 @@ export const dict: Dict = {
     zh: "改用表單填寫",
     en: "Switch to manual form",
   },
+  "rules.ai.result.filled": {
+    zh: "已填入下方欄位（{confidence}）",
+    en: "Filled below ({confidence})",
+  },
+  "rules.ai.switchToAllow": {
+    zh: "切換到放行商戶",
+    en: "Switch to allowlist",
+  },
   "rules.unified.chooser.category.title": { zh: "類別預算", en: "Category budget" },
   "rules.unified.chooser.category.desc": {
     zh: "給某類支出設月度上限與單筆限額",
