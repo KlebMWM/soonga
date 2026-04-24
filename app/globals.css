@@ -157,20 +157,20 @@
   --cyan: #5eead4;
 
   /* =======================================================================
-     Sidebar — deepest-navy "control deck"
+     Sidebar — light blue-gray "companion surface"
      =======================================================================
-     Keeps the v9-era dark-sidebar structure (white-alpha chrome, accent-color
-     left-border active indicator) but retoned for the IKEA palette. --sidebar
-     pins to --headline (#0a2544) — one step deeper than --ikea-blue-darker,
-     so the sidebar still reads as a permanent dark anchor against the blue-
-     tinted main canvas. */
-  --sidebar: var(--headline);
-  --sidebar-foreground: rgba(255, 255, 255, 0.9);
+     Flipped from the dark-navy "control deck" of the earlier IKEA pass to a
+     pale blue-gray (one shade deeper than --bg) so the sidebar reads as a
+     quiet companion panel rather than a dominant anchor. Active nav items
+     carry the solid --ikea-blue themselves instead of relying on a dark
+     backdrop to pop. */
+  --sidebar: #eef3fa;
+  --sidebar-foreground: var(--text);
   --sidebar-primary: var(--ikea-blue);
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: rgba(255, 255, 255, 0.1);
-  --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-accent: rgba(80, 132, 208, 0.08);
+  --sidebar-accent-foreground: var(--ikea-blue-darker);
+  --sidebar-border: rgba(80, 132, 208, 0.12);
   --sidebar-ring: var(--ikea-blue);
 }
 
@@ -687,6 +687,97 @@
     border-radius: 50%;
     background: var(--ikea-blue-darker);
     animation: hud-pulse 1.5s ease-in-out infinite;
+  }
+
+  /* ---------------- Sidebar nav items ---------------- */
+
+  .sidebar-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 1px solid transparent;
+    color: var(--text);
+    cursor: pointer;
+    font-family: var(--font-noto-sans-tc), sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    transition:
+      background 0.15s,
+      color 0.15s,
+      border-color 0.15s,
+      box-shadow 0.15s,
+      transform 0.15s;
+  }
+
+  .sidebar-nav-item:hover:not(.is-active) {
+    background: rgba(80, 132, 208, 0.08);
+    color: var(--ikea-blue-darker);
+  }
+
+  /* Active state — solid IKEA blue with layered shadows to feel pressed-in */
+  .sidebar-nav-item.is-active {
+    background: var(--ikea-blue);
+    color: #ffffff;
+    border-color: var(--ikea-blue-deep);
+    box-shadow:
+      0 2px 0 var(--ikea-blue-deep),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+
+  /* Yellow count badge inside a nav item (e.g. Approvals "3") */
+  .sidebar-nav-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 7px;
+    background: var(--yellow);
+    color: var(--ikea-blue-darker);
+    border: 1px solid var(--ikea-blue-darker);
+    font-family: var(--font-jetbrains-mono), monospace;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  /* When the badge sits inside an active nav item, swap the border to white
+     so it reads against the solid IKEA-blue background. */
+  .sidebar-nav-item.is-active .sidebar-nav-badge {
+    border-color: #ffffff;
+  }
+
+  /* Wallet CTA — raised yellow button with a deeper (3px) drop.
+     Variant of .btn-raised sized for the sidebar; translateY is only 1.5px
+     so the button stays visually anchored in a constrained column. */
+  .btn-wallet-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--yellow);
+    color: var(--ikea-blue-darker);
+    border: 1.5px solid var(--ikea-blue-darker);
+    font-weight: 700;
+    font-size: 13px;
+    font-family: var(--font-noto-sans-tc), sans-serif;
+    transform: translateY(-1.5px);
+    box-shadow: 0 3px 0 var(--ikea-blue-darker);
+    transition:
+      transform 0.15s,
+      box-shadow 0.15s,
+      background 0.15s;
+    cursor: pointer;
+  }
+
+  .btn-wallet-cta:hover {
+    transform: translateY(0);
+    box-shadow: 0 0 0 0 transparent;
+    background: var(--yellow-deep);
+  }
+
+  .btn-wallet-cta:active {
+    transform: translateY(0);
+    box-shadow: 0 0 0 0 transparent;
   }
 
   /* Full-width view-all button at the bottom of the activity list. Sits

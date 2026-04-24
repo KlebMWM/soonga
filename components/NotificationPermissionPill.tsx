@@ -1,35 +1,27 @@
 "use client";
 
-import { Bell, BellOff } from "lucide-react";
 import { useDesktopNotifications } from "@/lib/useDesktopNotifications";
 import { useT } from "@/lib/i18n/LocaleProvider";
 import { toast } from "sonner";
 
+/**
+ * Compact status strip for the redesigned sidebar bottom.
+ *
+ *   ┌─────────────────────────────────┐
+ *   │ • 桌面通知              已開啟 │
+ *   └─────────────────────────────────┘
+ *
+ * Three states — all share the same chrome (white bg + light border);
+ * only the accent (dot color, right-side label) changes:
+ *   granted → sage dot + sage bold "已開啟"
+ *   default → yellow dot + deep-blue mono "待開啟" (click to enable)
+ *   denied  → dim dot + muted "已封鎖"
+ */
 export function NotificationPermissionPill() {
   const t = useT();
   const { permission, request } = useDesktopNotifications();
 
   if (permission === "unsupported") return null;
-
-  if (permission === "granted") {
-    // Enabled state blends into sidebar chrome; mint bell signals "live".
-    // Avoids introducing sage/success as a third color on the dark mint sidebar.
-    return (
-      <div className="flex items-center gap-2 rounded-lg border border-sidebar-border bg-sidebar-accent px-3 py-2 text-[13px] text-sidebar-accent-foreground">
-        <Bell className="h-3.5 w-3.5 text-sidebar-primary" />
-        {t("notify.enabled")}
-      </div>
-    );
-  }
-
-  if (permission === "denied") {
-    return (
-      <div className="flex items-center gap-2 rounded-lg border border-sidebar-border/60 bg-sidebar-accent/30 px-3 py-2 text-[12px] text-sidebar-foreground/60">
-        <BellOff className="h-3.5 w-3.5 shrink-0" />
-        <span className="leading-tight">{t("notify.blocked")}</span>
-      </div>
-    );
-  }
 
   const handleEnable = async () => {
     const result = await request();
@@ -37,7 +29,6 @@ export function NotificationPermissionPill() {
       toast.success(t("notify.enabledToast.title"), {
         description: t("notify.enabledToast.desc"),
       });
-      // Send a sample notification so the user sees it once
       try {
         new Notification(t("notify.sample.title"), {
           body: t("notify.sample.body"),
@@ -54,18 +45,90 @@ export function NotificationPermissionPill() {
     }
   };
 
-  // Default "click to enable" — mint-deep tones (sidebar-primary) to signal CTA
-  // without leaving the sidebar's dark-mint + white-alpha palette.
-  return (
+  const isGranted = permission === "granted";
+  const isDenied = permission === "denied";
+  const clickable = !isGranted && !isDenied;
+
+  // Right-side status pill config — colour + label vary by permission state.
+  const statusConfig = isGranted
+    ? {
+        color: "var(--sage)",
+        label: t("notify.granted.short"),
+        withPulse: true,
+      }
+    : isDenied
+      ? {
+          color: "var(--text-dim)",
+          label: t("notify.denied.short"),
+          withPulse: false,
+        }
+      : {
+          color: "var(--ikea-blue-darker)",
+          label: t("notify.default.short"),
+          withPulse: false,
+        };
+
+  const body = (
+    <>
+      <span
+        className="inline-flex items-center gap-2 text-[12px]"
+        style={{
+          color: "var(--text)",
+          fontFamily: "var(--font-noto-sans-tc), sans-serif",
+        }}
+      >
+        <span
+          className="relative flex h-1.5 w-1.5 shrink-0"
+          aria-hidden
+        >
+          {statusConfig.withPulse && (
+            <span
+              className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60"
+              style={{ background: statusConfig.color }}
+            />
+          )}
+          <span
+            className="relative inline-flex h-1.5 w-1.5 rounded-full"
+            style={{
+              background: statusConfig.color,
+              boxShadow: statusConfig.withPulse
+                ? `0 0 6px ${statusConfig.color}`
+                : undefined,
+            }}
+          />
+        </span>
+        {t("notify.label")}
+      </span>
+      <span
+        className="ml-auto text-[11px] font-bold"
+        style={{
+          color: statusConfig.color,
+          fontFamily: "var(--font-jetbrains-mono), monospace",
+        }}
+      >
+        {statusConfig.label}
+      </span>
+    </>
+  );
+
+  const sharedStyle = {
+    background: "var(--card)",
+    border: "1px solid var(--border)",
+    padding: "8px 12px",
+  };
+
+  return clickable ? (
     <button
+      type="button"
       onClick={handleEnable}
-      className="w-full flex items-center gap-2 rounded-lg border border-sidebar-primary/40 bg-sidebar-primary/15 px-3 py-2 text-left hover:bg-sidebar-primary/25 transition-colors"
+      className="flex items-center w-full text-left transition-colors hover:bg-[rgba(80,132,208,0.06)]"
+      style={sharedStyle}
     >
-      <Bell className="h-3.5 w-3.5 shrink-0 text-sidebar-accent-foreground" />
-      <div className="min-w-0 flex-1">
-        <div className="text-[13px] font-medium text-sidebar-accent-foreground">{t("notify.enable")}</div>
-        <div className="text-[12px] text-sidebar-foreground/60 mt-0.5 leading-tight">{t("notify.sub")}</div>
-      </div>
+      {body}
     </button>
+  ) : (
+    <div className="flex items-center w-full" style={sharedStyle}>
+      {body}
+    </div>
   );
 }

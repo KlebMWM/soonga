@@ -53,8 +53,10 @@ export default function DashboardPage() {
   // effect then refreshes to the real hour once mounted.
   const hour = now?.getHours() ?? 23;
 
+  // Outer max-width + padding is handled by the layout's main wrapper now;
+  // this page just contains its own sections.
   return (
-    <div className="px-5 md:px-8 py-6 md:py-8 max-w-[1280px] mx-auto">
+    <>
       {/* Greeting — tag + h1 (Noto Serif TC + Instrument Serif italic "Megan"
           with yellow highlighter) + sub copy on the left; mini-status 3 rows
           on the right (budget / auto / pending, colour-coded by semantics). */}
@@ -325,6 +327,6 @@ export default function DashboardPage() {
           </div>
         </div>
       </details>
-    </div>
+    </>
   );
 }

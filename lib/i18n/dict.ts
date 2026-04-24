@@ -31,6 +31,16 @@ export const dict: Dict = {
   // ==================== Workspace footer ====================
   "workspace.name": { zh: "Megan's Workspace", en: "Megan's Workspace" },
   "workspace.handle": { zh: "MeganFeng · Pro plan", en: "MeganFeng · Pro plan" },
+  /* Compact forms for the redesigned sidebar bottom (user pill) + top-bar. */
+  "workspace.shortName": { zh: "Megan", en: "Megan" },
+  "workspace.plan": { zh: "PRO · NT", en: "PRO · NT" },
+  "nav.section.navigate": { zh: "導覽", en: "Navigate" },
+  "brand.prototypeShort": { zh: "PT", en: "PT" },
+  "notify.label": { zh: "桌面通知", en: "Desktop alerts" },
+  "notify.granted.short": { zh: "已開啟", en: "ON" },
+  "notify.denied.short": { zh: "已封鎖", en: "OFF" },
+  "notify.default.short": { zh: "待開啟", en: "OFF" },
+  "topbar.section.commandCenter": { zh: "COMMAND CENTER", en: "COMMAND CENTER" },
 
   // ==================== Wallet ====================
   "wallet.connect": { zh: "連接錢包", en: "Connect wallet" },

@@ -202,18 +202,12 @@ export function WalletPill({ variant = "sidebar" }: { variant?: "sidebar" | "mob
     const trigger =
       variant === "sidebar" ? (
         <button
+          type="button"
           onClick={() => setPickerOpen(true)}
-          className="w-full flex items-center gap-3 rounded-lg border border-sidebar-border/60 bg-sidebar-accent/40 px-4 py-3 text-left hover:bg-sidebar-accent transition-colors"
+          className="btn-wallet-cta"
         >
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sidebar-primary/15 text-sidebar-primary">
-            <Wallet className="h-4 w-4" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="text-sm font-medium">{t("wallet.connect")}</div>
-            <div className="text-[12px] text-sidebar-foreground/60 truncate">
-              {t("wallet.connectSub")}
-            </div>
-          </div>
+          <Wallet className="h-4 w-4 shrink-0" strokeWidth={2.25} />
+          {t("wallet.connect")}
         </button>
       ) : (
         <button

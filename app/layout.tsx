@@ -9,6 +9,7 @@ import {
 import "./globals.css";
 import { Sidebar } from "@/components/Sidebar";
 import { MobileNav } from "@/components/MobileNav";
+import { TopBar } from "@/components/TopBar";
 import { WelcomeModal } from "@/components/WelcomeModal";
 import { Toaster } from "@/components/ui/sonner";
 import { LocaleProvider } from "@/lib/i18n/LocaleProvider";
@@ -65,7 +66,18 @@ export default function RootLayout({
             <Sidebar />
             <div className="flex-1 min-w-0 flex flex-col">
               <MobileNav />
-              <main className="flex-1 min-w-0">{children}</main>
+              <TopBar />
+              <main className="flex-1 min-w-0">
+                <div
+                  className="mx-auto"
+                  style={{
+                    maxWidth: 1240,
+                    padding: "24px 32px",
+                  }}
+                >
+                  {children}
+                </div>
+              </main>
             </div>
           </div>
           <WelcomeModal />
