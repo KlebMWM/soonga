@@ -221,7 +221,15 @@ export const dict: Dict = {
   "feed.filter.all": { zh: "全部", en: "All" },
   "feed.filter.pending": { zh: "需審核", en: "Pending" },
   "feed.filter.auto": { zh: "自動", en: "Auto" },
-  "feed.live": { zh: "即時", en: "live" },
+  "feed.filter.recent": { zh: "過去 1 小時", en: "Past 1h" },
+  "feed.live": { zh: "即時", en: "Live" },
+  "feed.viewAllTransactions": {
+    zh: "查看全部 {n} 筆交易 ▾",
+    en: "View all {n} transactions ▾",
+  },
+  /* Fallback relative time for simulator-generated items that don't carry
+     their own `relative` field. */
+  "feed.relative.justNow": { zh: "剛剛", en: "just now" },
 
   "fab.simulate": { zh: "模擬 agent 行為", en: "Simulate agent" },
 

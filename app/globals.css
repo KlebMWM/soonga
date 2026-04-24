@@ -527,6 +527,193 @@
       opacity: 0.4;
     }
   }
+
+  /* ---------------- Activity feed (AgentFeed) ----------------
+     The feed has a distinct enough visual language (4-col grid rows, coloured
+     agent tile, ok/warn rule pills, auto/pending status, highlighted pending
+     row, full-width footer) that it lives here as its own component layer
+     rather than being scattered across Tailwind arbitrary values. */
+
+  /* Agent icon outer ring — 1px same-colour ring offset 2px outside the
+     icon tile, 25% opacity. The colour is passed via --agent-ring so each
+     instance carries its own hue without a per-agent selector. */
+  .agent-icon-ring::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border: 1px solid var(--agent-ring, currentColor);
+    opacity: 0.25;
+    pointer-events: none;
+  }
+
+  /* Filter pill chrome for the activity feed */
+  .feed-filter-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    font-size: 11px;
+    font-weight: 500;
+    background: var(--card);
+    color: var(--text-mid);
+    border: 1px solid var(--border);
+    font-family: var(--font-noto-sans-tc), sans-serif;
+    transition:
+      background 0.15s,
+      color 0.15s,
+      border-color 0.15s;
+    cursor: pointer;
+  }
+
+  .feed-filter-pill:hover:not(.is-active) {
+    background: var(--bg-accent);
+    color: var(--ikea-blue-darker);
+    border-color: var(--ikea-blue);
+  }
+
+  .feed-filter-pill.is-active {
+    background: var(--ikea-blue);
+    color: #ffffff;
+    border-color: var(--ikea-blue);
+  }
+
+  /* Activity row — 5-column grid. Last row carries its own border-bottom so
+     the view-all button below merges into a single outer box. */
+  .activity-row {
+    display: grid;
+    grid-template-columns: 40px 1.3fr 1.2fr auto auto;
+    gap: 20px;
+    align-items: center;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .activity-row:hover {
+    background: rgba(80, 132, 208, 0.03);
+  }
+
+  /* needs-review row — left 3px IKEA-blue stripe + tinted bg. padding-left
+     compensates for the stripe so text stays in column. */
+  .activity-row.is-pending {
+    background: rgba(80, 132, 208, 0.06);
+    border-left: 3px solid var(--ikea-blue);
+    padding-left: 17px;
+  }
+
+  .activity-row.is-pending:hover {
+    background: rgba(80, 132, 208, 0.12);
+  }
+
+  /* Rule pill — ok (light blue) / warn (yellow) */
+  .rule-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    width: fit-content;
+    white-space: nowrap;
+  }
+
+  .rule-pill-dot {
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .rule-pill-ok {
+    color: var(--ikea-blue-darker);
+    background: var(--bg-accent);
+    border: 1px solid var(--border-blue);
+  }
+
+  .rule-pill-ok .rule-pill-dot {
+    background: var(--ikea-blue);
+  }
+
+  .rule-pill-warn {
+    color: var(--ikea-blue-darker);
+    background: var(--yellow);
+    border: 1px solid var(--yellow-deep);
+  }
+
+  .rule-pill-warn .rule-pill-dot {
+    background: var(--ikea-blue-darker);
+  }
+
+  /* Status labels — auto (text + green dot) / pending (yellow pill) */
+  .status-auto {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--text-mid);
+    white-space: nowrap;
+  }
+
+  .status-auto-dot {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--sage);
+  }
+
+  .status-pending {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--ikea-blue-darker);
+    background: var(--yellow);
+    border: 1.5px solid var(--ikea-blue-darker);
+    white-space: nowrap;
+  }
+
+  .status-pending-dot {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--ikea-blue-darker);
+    animation: hud-pulse 1.5s ease-in-out infinite;
+  }
+
+  /* Full-width view-all button at the bottom of the activity list. Sits
+     inside the same outer border as the list; border-top-0 merges with the
+     last row's border-bottom so there's a single 1-line separator. */
+  .feed-view-all {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 14px;
+    background: var(--card);
+    font-size: 11px;
+    font-family: var(--font-noto-sans-tc), sans-serif;
+    color: var(--text-mid);
+    border: none;
+    cursor: pointer;
+    transition:
+      background 0.15s,
+      color 0.15s;
+  }
+
+  .feed-view-all:hover {
+    background: var(--bg-accent);
+    color: var(--ikea-blue-darker);
+  }
 }
 
 @layer utilities {

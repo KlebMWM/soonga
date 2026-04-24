@@ -2,75 +2,27 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowRight, CheckCircle2, Clock, ShieldOff } from "lucide-react";
 import { AgentIcon } from "@/components/AgentIcon";
-import { liveFeed, type FeedItem } from "@/lib/mockData";
+import { liveFeed, stats, type FeedItem } from "@/lib/mockData";
 import { simulateAgentAction } from "@/lib/simulateAgent";
 import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
 import { useDesktopNotifications } from "@/lib/useDesktopNotifications";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-type FilterKind = "all" | "pending" | "auto";
+type FilterKind = "all" | "pending" | "auto" | "recent";
 
-function ruleTone(reason: string): "pass" | "warn" | "neutral" {
-  // Warning keywords (ZH + EN)
+const FILTERS: readonly FilterKind[] = ["all", "pending", "auto", "recent"];
+
+/** Maps reason text to a visual tone for the rule pill. Binary: warn when the
+ *  rule was triggered as a red flag ("exceeds", "stored-value", etc.) — every
+ *  other reason reads as a pass (under cap, allowlisted, etc.). */
+function ruleTone(reason: string): "ok" | "warn" {
   if (/超過|可儲值|警示|重複扣款|exceeds|stored-value|alert|recurring/i.test(reason)) {
     return "warn";
   }
-  // Pass keywords (ZH + EN)
-  if (/白名單|allowlisted/i.test(reason)) {
-    return "pass";
-  }
-  return "neutral";
+  return "ok";
 }
-
-const RULE_TONE_CLASS: Record<"pass" | "warn" | "neutral", string> = {
-  pass: "bg-success/15 text-success",
-  warn: "bg-accent/15 text-accent",
-  neutral: "bg-muted text-muted-foreground",
-};
-
-type StatusMeta = {
-  labelKey: string;
-  icon: typeof CheckCircle2;
-  tone: string;
-  dotColor: string;
-  /** var(--*) reference so the dot glow matches its fill across theme changes. */
-  dotGlowVar: string;
-};
-
-const STATUS_META: Record<FeedItem["status"], StatusMeta> = {
-  "auto-approved": {
-    labelKey: "feed.status.autoApproved",
-    icon: CheckCircle2,
-    tone: "text-muted-foreground",
-    dotColor: "bg-success",
-    dotGlowVar: "var(--success)",
-  },
-  pending: {
-    labelKey: "feed.status.pending",
-    icon: Clock,
-    // Coral for "waiting on you" — accent is now mint (primary), not a warning hue
-    tone: "text-warning font-medium",
-    dotColor: "bg-warning",
-    dotGlowVar: "var(--warning)",
-  },
-  approved: {
-    labelKey: "feed.status.approved",
-    icon: CheckCircle2,
-    tone: "text-success",
-    dotColor: "bg-success",
-    dotGlowVar: "var(--success)",
-  },
-  rejected: {
-    labelKey: "feed.status.rejected",
-    icon: ShieldOff,
-    tone: "text-destructive",
-    dotColor: "bg-destructive",
-    dotGlowVar: "var(--destructive)",
-  },
-};
 
 export function AgentFeed({
   limit = 5,
@@ -110,20 +62,51 @@ export function AgentFeed({
   const filtered = useMemo(() => {
     if (filter === "all") return items;
     if (filter === "pending") return items.filter((i) => i.status === "pending");
-    return items.filter((i) => i.status === "auto-approved");
+    if (filter === "auto") return items.filter((i) => i.status === "auto-approved");
+    // "recent" — pass-through for the mock; all items are timestamped within
+    // the past hour by construction. Becomes a real filter once timestamps
+    // carry absolute dates.
+    return items;
   }, [items, filter]);
 
   return (
     <div>
-      <div className="flex items-center justify-between gap-3 pb-3 flex-wrap">
+      {/* Header: title with blue tick mark + "即時" live pill + view-all link */}
+      <div className="flex items-center justify-between gap-3 pb-4 flex-wrap">
         <div className="flex items-center gap-3">
-          <h2 className="text-sm font-semibold">{t("feed.title")}</h2>
-          <span className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground">
+          <h2
+            className="flex items-center gap-2.5 text-[13px] font-semibold"
+            style={{
+              color: "var(--headline)",
+              fontFamily: "var(--font-noto-sans-tc), sans-serif",
+            }}
+          >
+            <span
+              aria-hidden
+              className="h-px w-[14px]"
+              style={{ background: "var(--ikea-blue)" }}
+            />
+            {t("feed.title")}
+          </h2>
+          <span
+            className="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[11px] font-medium"
+            style={{
+              color: "var(--ikea-blue-darker)",
+              background: "var(--bg-accent)",
+              border: "1px solid var(--ikea-blue)",
+            }}
+          >
             <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-60" />
               <span
-                className="relative inline-flex h-1.5 w-1.5 rounded-full bg-success"
-                style={{ boxShadow: "0 0 8px var(--success)" }}
+                className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60"
+                style={{ background: "var(--ikea-blue)" }}
+              />
+              <span
+                className="relative inline-flex h-1.5 w-1.5 rounded-full"
+                style={{
+                  background: "var(--ikea-blue)",
+                  boxShadow: "0 0 8px var(--ikea-blue)",
+                }}
               />
             </span>
             {t("feed.live")}
@@ -132,86 +115,155 @@ export function AgentFeed({
         {viewAllHref && (
           <Link
             href={viewAllHref}
-            className="group inline-flex items-center gap-1 text-[12px] text-muted-foreground hover:text-foreground transition-colors"
+            className="group inline-flex items-center gap-1 text-[12px] transition-colors"
+            style={{ color: "var(--text-mid)" }}
           >
             {t("feed.viewAll")}
-            <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+            <span className="transition-transform group-hover:translate-x-0.5">→</span>
           </Link>
         )}
       </div>
 
       {/* Filter pills */}
-      <div className="flex items-center gap-1.5 mb-2">
-        {(["all", "pending", "auto"] as const).map((f) => (
+      <div className="flex items-center gap-1.5 mb-3 flex-wrap">
+        {FILTERS.map((f) => (
           <button
             key={f}
+            type="button"
             onClick={() => setFilter(f)}
-            className={cn(
-              "rounded-full px-3 py-1 text-[11px] font-medium transition-colors",
-              filter === f
-                ? "bg-foreground text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:text-foreground",
-            )}
+            aria-pressed={filter === f}
+            className={cn("feed-filter-pill", filter === f && "is-active")}
           >
             {t(`feed.filter.${f}`)}
           </button>
         ))}
       </div>
 
-      <div className="rounded-lg border border-border bg-card overflow-hidden">
-        <ul className="divide-y divide-border">
+      {/* List + footer — single bordered box with the list above and the
+          view-all button below. No rounded corners; the design language is
+          edge-aligned per --radius: 0. */}
+      <div
+        style={{
+          background: "var(--card)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <ul>
           {filtered.length === 0 && (
-            <li className="p-6 text-center text-[13px] text-muted-foreground">—</li>
+            <li
+              className="p-6 text-center text-[12px]"
+              style={{ color: "var(--text-mid)" }}
+            >
+              —
+            </li>
           )}
-          {filtered.map((item) => {
-            const meta = STATUS_META[item.status];
+          {filtered.map((item, i) => {
+            const isPending = item.status === "pending";
+            const tone = ruleTone(item.reason[locale]);
+            const relative = item.relative?.[locale] ?? t("feed.relative.justNow");
+            const isLast = i === filtered.length - 1;
+
             const row = (
               <li
-                className={cn(
-                  "grid grid-cols-[auto_1fr_auto_auto] md:grid-cols-[auto_1fr_minmax(140px,auto)_auto_auto] gap-3 items-center px-4 py-3 text-sm transition-colors",
-                  item.status === "pending" ? "hover:bg-accent/5 cursor-pointer" : "hover:bg-muted/40",
-                )}
+                key={item.id}
+                className={cn("activity-row", isPending && "is-pending")}
+                style={isLast ? { borderBottom: "none" } : undefined}
               >
-                <AgentIcon agent={item.agent} size="sm" />
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="font-medium text-foreground">{item.agent}</span>
-                    <span className="text-muted-foreground">→</span>
-                    <span className="text-foreground truncate">{item.merchant[locale]}</span>
+                {/* Agent icon — 36x36 square tile with same-hue outer ring */}
+                <AgentIcon agent={item.agent} size="md" outlined />
+
+                {/* Main info: agent name → merchant, then time + relative */}
+                <div className="min-w-0 flex flex-col gap-0.5">
+                  <div className="flex items-center gap-1.5 flex-wrap text-[13px]">
+                    <span
+                      className="font-mono"
+                      style={{ color: "var(--text-mid)" }}
+                    >
+                      {item.agent}
+                    </span>
+                    <span
+                      aria-hidden
+                      style={{ color: "var(--ikea-blue)" }}
+                    >
+                      ▸
+                    </span>
+                    <span
+                      className="truncate"
+                      style={{ color: "var(--headline)" }}
+                    >
+                      {item.merchant[locale]}
+                    </span>
                   </div>
-                  <div className="text-[11px] text-muted-foreground mt-0.5">{item.time}</div>
+                  <div
+                    className="text-[11px] font-mono tabular-nums"
+                    style={{ color: "var(--text-dim)" }}
+                  >
+                    {item.time} · {relative}
+                  </div>
                 </div>
+
+                {/* Rule pill */}
                 <span
                   className={cn(
-                    "hidden md:inline-flex items-center rounded-full px-2 py-0.5 text-[11px] truncate max-w-[180px]",
-                    RULE_TONE_CLASS[ruleTone(item.reason[locale])],
+                    "rule-pill",
+                    tone === "warn" ? "rule-pill-warn" : "rule-pill-ok",
                   )}
                 >
-                  {item.reason[locale]}
+                  <span className="rule-pill-dot" />
+                  <span className="truncate">{item.reason[locale]}</span>
                 </span>
-                <span className="text-[13px] font-medium tabular-nums text-foreground text-right whitespace-nowrap">
+
+                {/* Amount — mono, deep-blue digits + small gray USDC */}
+                <span
+                  className="text-[13px] font-mono font-semibold tabular-nums text-right whitespace-nowrap"
+                  style={{ color: "var(--headline)" }}
+                >
                   {item.amount.toFixed(2)}
-                  <span className="ml-1 text-[11px] text-muted-foreground">USDC</span>
-                </span>
-                <span className={cn("inline-flex items-center gap-1.5 text-[11px] whitespace-nowrap", meta.tone)}>
                   <span
-                    className={cn("h-1.5 w-1.5 rounded-full", meta.dotColor, item.status === "pending" && "animate-pulse")}
-                    style={{ boxShadow: `0 0 6px ${meta.dotGlowVar}` }}
-                  />
-                  {t(meta.labelKey)}
+                    className="ml-1 text-[10px] font-normal"
+                    style={{ color: "var(--text-dim)" }}
+                  >
+                    USDC
+                  </span>
                 </span>
+
+                {/* Status — auto (gray + sage dot) or pending (yellow pill) */}
+                {isPending ? (
+                  <span className="status-pending">
+                    <span className="status-pending-dot" />
+                    {t("feed.status.pending")}
+                  </span>
+                ) : (
+                  <span className="status-auto">
+                    <span className="status-auto-dot" />
+                    {t("feed.status.autoApproved")}
+                  </span>
+                )}
               </li>
             );
 
-            return item.status === "pending" ? (
+            // Pending rows are clickable — route to /approvals.
+            return isPending ? (
               <Link key={item.id} href="/approvals" className="block">
                 {row}
               </Link>
             ) : (
-              <div key={item.id}>{row}</div>
+              row
             );
           })}
         </ul>
+
+        {/* Footer: full-width "view all" button, merges into the outer box */}
+        <button
+          type="button"
+          className="feed-view-all"
+          onClick={() => {
+            // No-op for the mock — the audit page is reachable via the link
+            // above. Left as a visual affordance per spec.
+          }}
+        >
+          {t("feed.viewAllTransactions", { n: stats.todayTransactions })}
+        </button>
       </div>
     </div>
   );

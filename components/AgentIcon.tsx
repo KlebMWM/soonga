@@ -78,22 +78,37 @@ const SIZE_CLASS: Record<Size, string> = {
 export function AgentIcon({
   agent,
   size = "md",
+  outlined = false,
   className,
 }: {
   agent: string;
   size?: Size;
+  /** When true, draws a 1px same-color ring offset 2px outside the icon at
+      25% opacity — used in the activity list to separate adjacent icons and
+      give a subtle "focused tile" feel without adding another visible edge. */
+  outlined?: boolean;
   className?: string;
 }) {
   const meta = AGENT_MAP[agent] ?? FALLBACK;
   const Icon = meta.icon;
+  const style: React.CSSProperties & Record<string, string> = {
+    background: meta.gradient,
+    boxShadow: meta.glow,
+  };
+  if (outlined) {
+    // Custom property consumed by the ::before rule on .agent-icon-ring so
+    // each instance can carry its own colour without a per-agent CSS rule.
+    style["--agent-ring"] = meta.color;
+  }
   return (
     <div
       className={cn(
         "flex shrink-0 items-center justify-center text-white",
         SIZE_CLASS[size],
+        outlined && "relative agent-icon-ring",
         className,
       )}
-      style={{ background: meta.gradient, boxShadow: meta.glow }}
+      style={style}
       aria-label={agent}
     >
       <Icon strokeWidth={2} />

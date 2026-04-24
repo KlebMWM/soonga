@@ -28,6 +28,9 @@ export type FeedItem = {
   amount: number;
   status: "auto-approved" | "pending" | "rejected" | "approved";
   reason: Bilingual;
+  /** Human-readable relative time ("剛剛", "2 分鐘前"). Optional — simulated
+      items skip it and fall back to the default "just now" label in the UI. */
+  relative?: Bilingual;
 };
 
 export type MerchantTrust = "allowlisted" | "blocklisted" | "review" | "first-time";
@@ -185,53 +188,58 @@ export const trustList: TrustList = {
 export const liveFeed: FeedItem[] = [
   {
     id: "f1",
-    time: "09:12",
+    time: "23:19",
     agent: "ResearchBot",
     agentAvatar: "🧠",
-    merchant: b("NYT", "NYT"),
-    amount: 0.05,
+    merchant: b("JSTOR", "JSTOR"),
+    amount: 0.28,
     status: "auto-approved",
-    reason: b("白名單商戶．低於單筆規則", "Allowlisted merchant · under per-tx cap"),
+    reason: b("白名單商戶", "Allowlisted merchant"),
+    relative: b("剛剛", "just now"),
   },
   {
     id: "f2",
-    time: "09:08",
-    agent: "TravelAgent",
-    agentAvatar: "✈️",
-    merchant: b("Booking.com", "Booking.com"),
-    amount: 184.0,
-    status: "pending",
-    reason: b("超過單筆 100 USDC 限額", "Exceeds $100 per-tx cap"),
-  },
-  {
-    id: "f3",
-    time: "08:45",
+    time: "23:19",
     agent: "ResearchBot",
     agentAvatar: "🧠",
     merchant: b("OpenAI API", "OpenAI API"),
-    amount: 0.12,
+    amount: 0.09,
     status: "auto-approved",
-    reason: b("白名單商戶．低於單筆規則", "Allowlisted merchant · under per-tx cap"),
+    reason: b("低於單筆規則", "Under per-tx cap"),
+    relative: b("剛剛", "just now"),
+  },
+  {
+    id: "f3",
+    time: "23:19",
+    agent: "ShoppingBot",
+    agentAvatar: "🛒",
+    merchant: b("Uniqlo JP", "Uniqlo JP"),
+    amount: 16.54,
+    status: "auto-approved",
+    reason: b("低於實體購買限額", "Under physical-purchase cap"),
+    relative: b("剛剛", "just now"),
   },
   {
     id: "f4",
-    time: "08:32",
-    agent: "NewsletterCurator",
-    agentAvatar: "📰",
-    merchant: b("Substack", "Substack"),
-    amount: 5.0,
-    status: "auto-approved",
-    reason: b("白名單商戶", "Allowlisted merchant"),
+    time: "23:18",
+    agent: "TravelAgent",
+    agentAvatar: "✈️",
+    merchant: b("Booking.com", "Booking.com"),
+    amount: 132.73,
+    status: "pending",
+    reason: b("超過單筆 100 USDC 限額", "Exceeds $100 per-tx cap"),
+    relative: b("2 分鐘前", "2 min ago"),
   },
   {
     id: "f5",
-    time: "08:17",
-    agent: "TravelAgent",
-    agentAvatar: "✈️",
-    merchant: b("JR 東日本", "JR East Japan"),
-    amount: 89.4,
+    time: "23:18",
+    agent: "NewsletterCurator",
+    agentAvatar: "📰",
+    merchant: b("Stratechery", "Stratechery"),
+    amount: 12.0,
     status: "auto-approved",
-    reason: b("低於實體購買單筆限額", "Under physical-purchase per-tx cap"),
+    reason: b("白名單商戶", "Allowlisted merchant"),
+    relative: b("2 分鐘前", "2 min ago"),
   },
   {
     id: "f6",
