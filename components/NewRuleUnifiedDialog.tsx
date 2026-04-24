@@ -1,0 +1,584 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import {
+  AlertTriangle,
+  ArrowLeft,
+  Check,
+  ChevronRight,
+  Loader2,
+  Plus,
+  ShieldAlert,
+  ShieldCheck,
+  ShieldOff,
+  SlidersHorizontal,
+} from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import type { Category } from "@/lib/mockData";
+import { b } from "@/lib/i18n/config";
+import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
+import { checkMerchantSafety, type SafetyResult } from "@/lib/safetyCheck";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+
+export type AllowEntry = { merchant: string; category: string; addedAt: string };
+export type BlockEntry = { merchant: string; reason: { zh: string; en: string }; addedAt: string };
+
+type Mode = "chooser" | "category" | "allow" | "block";
+
+type Props = {
+  categories: { id: string; label: string }[];
+  onCreateCategory: (c: Category) => void;
+  onAddAllow: (entry: AllowEntry) => void;
+  onAddBlock: (entry: BlockEntry) => void;
+};
+
+const LEVEL_META = {
+  safe: {
+    icon: ShieldCheck,
+    tone: "text-success bg-success/10 border-success/25",
+    labelKey: "safety.level.safe",
+  },
+  caution: {
+    icon: AlertTriangle,
+    tone: "text-accent bg-accent/10 border-accent/25",
+    labelKey: "safety.level.caution",
+  },
+  risky: {
+    icon: ShieldAlert,
+    tone: "text-destructive bg-destructive/10 border-destructive/25",
+    labelKey: "safety.level.risky",
+  },
+} as const;
+
+export function NewRuleUnifiedDialog({ categories, onCreateCategory, onAddAllow, onAddBlock }: Props) {
+  const t = useT();
+  const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState<Mode>("chooser");
+
+  // Category form state
+  const [catName, setCatName] = useState("");
+  const [catDesc, setCatDesc] = useState("");
+  const [catMonthly, setCatMonthly] = useState(100);
+  const [catSingle, setCatSingle] = useState(20);
+
+  // Allow / Block form shared state
+  const [merchant, setMerchant] = useState("");
+  const [category, setCategory] = useState(categories[0]?.id ?? "api");
+  const [reason, setReason] = useState("");
+  const [checking, setChecking] = useState(false);
+  const [safety, setSafety] = useState<SafetyResult | null>(null);
+
+  const reset = () => {
+    setMode("chooser");
+    setCatName("");
+    setCatDesc("");
+    setCatMonthly(100);
+    setCatSingle(20);
+    setMerchant("");
+    setCategory(categories[0]?.id ?? "api");
+    setReason("");
+    setChecking(false);
+    setSafety(null);
+  };
+
+  // Debounced safety check for allow/block forms
+  useEffect(() => {
+    if (mode !== "allow" && mode !== "block") return;
+    const input = merchant.trim();
+    if (!input) {
+      setSafety(null);
+      setChecking(false);
+      return;
+    }
+    setChecking(true);
+    const timer = setTimeout(() => {
+      setSafety(checkMerchantSafety(input));
+      setChecking(false);
+    }, 700);
+    return () => clearTimeout(timer);
+  }, [merchant, mode]);
+
+  const warningKey = useMemo(() => {
+    if (!safety) return null;
+    if (mode === "allow" && safety.level === "risky") return "trust.add.confirm.risky";
+    if (mode === "block" && safety.level === "safe") return "trust.add.confirm.safe";
+    return null;
+  }, [safety, mode]);
+
+  const closeAndReset = () => {
+    setOpen(false);
+    // Delay reset so the dialog fade-out doesn't flash the chooser
+    setTimeout(reset, 200);
+  };
+
+  const handleCreateCategory = () => {
+    const trimmed = catName.trim();
+    if (!trimmed) {
+      toast.error(t("rules.new.missingName"));
+      return;
+    }
+    const id = `custom_${Date.now()}`;
+    const defaultDesc = t("rules.new.defaultDesc");
+    onCreateCategory({
+      id,
+      name: b(trimmed, trimmed),
+      description: b(catDesc.trim() || defaultDesc, catDesc.trim() || defaultDesc),
+      monthlyLimit: catMonthly,
+      singleLimit: catSingle,
+      spent: 0,
+    });
+    toast.success(t("rules.new.createdTitle", { name: trimmed }), {
+      description: t("rules.new.createdDesc", { monthly: catMonthly, single: catSingle }),
+    });
+    closeAndReset();
+  };
+
+  const handleAddAllow = () => {
+    const trimmed = merchant.trim();
+    if (!trimmed) {
+      toast.error(t("trust.add.missing"));
+      return;
+    }
+    onAddAllow({
+      merchant: trimmed,
+      category,
+      addedAt: new Date().toISOString().slice(0, 10),
+    });
+    toast.success(t("trust.add.toast.allow.title", { merchant: trimmed }), {
+      description: t("trust.add.toast.allow.desc"),
+    });
+    closeAndReset();
+  };
+
+  const handleAddBlock = () => {
+    const trimmed = merchant.trim();
+    if (!trimmed) {
+      toast.error(t("trust.add.missing"));
+      return;
+    }
+    const r = reason.trim();
+    const reasonObj = r
+      ? { zh: r, en: r }
+      : safety?.signals.find((s) => s.severity === "negative")?.detail ?? { zh: "", en: "" };
+    onAddBlock({
+      merchant: trimmed,
+      reason: reasonObj,
+      addedAt: new Date().toISOString().slice(0, 10),
+    });
+    toast.error(t("trust.add.toast.block.title", { merchant: trimmed }), {
+      description: t("trust.add.toast.block.desc"),
+    });
+    closeAndReset();
+  };
+
+  const title = {
+    chooser: t("rules.unified.chooser.title"),
+    category: t("rules.new.title"),
+    allow: t("trust.add.title.allow"),
+    block: t("trust.add.title.block"),
+  }[mode];
+
+  const description = {
+    chooser: t("rules.unified.chooser.desc"),
+    category: t("rules.new.desc"),
+    allow: t("trust.add.desc.allow"),
+    block: t("trust.add.desc.block"),
+  }[mode];
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        setOpen(v);
+        if (!v) setTimeout(reset, 200);
+      }}
+    >
+      <DialogTrigger render={<Button size="sm" className="gap-1.5" />}>
+        <Plus className="h-4 w-4" />
+        {t("rules.unified.entryLabel")}
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-lg">
+        <DialogHeader>
+          <div className="flex items-center gap-2">
+            {mode !== "chooser" && (
+              <button
+                onClick={() => setMode("chooser")}
+                className="inline-flex items-center gap-1 text-[12px] text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <ArrowLeft className="h-3 w-3" />
+                {t("rules.unified.back")}
+              </button>
+            )}
+          </div>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
+
+        {mode === "chooser" && <Chooser onPick={setMode} />}
+
+        {mode === "category" && (
+          <CategoryForm
+            name={catName}
+            setName={setCatName}
+            desc={catDesc}
+            setDesc={setCatDesc}
+            monthly={catMonthly}
+            setMonthly={setCatMonthly}
+            single={catSingle}
+            setSingle={setCatSingle}
+            onSubmit={handleCreateCategory}
+            onCancel={() => setMode("chooser")}
+          />
+        )}
+
+        {(mode === "allow" || mode === "block") && (
+          <TrustForm
+            mode={mode}
+            merchant={merchant}
+            setMerchant={setMerchant}
+            category={category}
+            setCategory={setCategory}
+            categoryOptions={categories}
+            reason={reason}
+            setReason={setReason}
+            checking={checking}
+            safety={safety}
+            warningKey={warningKey}
+            onSubmit={mode === "allow" ? handleAddAllow : handleAddBlock}
+            onCancel={() => setMode("chooser")}
+          />
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ==================== Chooser ====================
+
+function Chooser({ onPick }: { onPick: (m: Mode) => void }) {
+  const t = useT();
+
+  const options: {
+    mode: Mode;
+    icon: typeof SlidersHorizontal;
+    titleKey: string;
+    descKey: string;
+    exampleKey: string;
+    tone: string;
+  }[] = [
+    {
+      mode: "category",
+      icon: SlidersHorizontal,
+      titleKey: "rules.unified.chooser.category.title",
+      descKey: "rules.unified.chooser.category.desc",
+      exampleKey: "rules.unified.chooser.category.example",
+      tone: "bg-primary/10 text-primary",
+    },
+    {
+      mode: "allow",
+      icon: ShieldCheck,
+      titleKey: "rules.unified.chooser.allow.title",
+      descKey: "rules.unified.chooser.allow.desc",
+      exampleKey: "rules.unified.chooser.allow.example",
+      tone: "bg-success/10 text-success",
+    },
+    {
+      mode: "block",
+      icon: ShieldOff,
+      titleKey: "rules.unified.chooser.block.title",
+      descKey: "rules.unified.chooser.block.desc",
+      exampleKey: "rules.unified.chooser.block.example",
+      tone: "bg-destructive/10 text-destructive",
+    },
+  ];
+
+  return (
+    <div className="space-y-2 mt-2">
+      {options.map((opt) => {
+        const Icon = opt.icon;
+        return (
+          <button
+            key={opt.mode}
+            onClick={() => onPick(opt.mode)}
+            className="group w-full text-left rounded-lg border border-border bg-card hover:bg-muted/40 hover:border-foreground/20 p-4 flex items-start gap-3 transition-colors"
+          >
+            <div className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-lg", opt.tone)}>
+              <Icon className="h-4 w-4" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="text-sm font-semibold">{t(opt.titleKey)}</div>
+              <div className="text-[13px] text-muted-foreground mt-0.5 leading-relaxed">{t(opt.descKey)}</div>
+              <div className="text-[12px] text-muted-foreground/70 mt-1.5 italic">{t(opt.exampleKey)}</div>
+            </div>
+            <ChevronRight className="h-4 w-4 shrink-0 mt-3 text-muted-foreground group-hover:text-foreground transition-colors" />
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// ==================== Category form ====================
+
+function CategoryForm({
+  name,
+  setName,
+  desc,
+  setDesc,
+  monthly,
+  setMonthly,
+  single,
+  setSingle,
+  onSubmit,
+  onCancel,
+}: {
+  name: string;
+  setName: (v: string) => void;
+  desc: string;
+  setDesc: (v: string) => void;
+  monthly: number;
+  setMonthly: (v: number) => void;
+  single: number;
+  setSingle: (v: number) => void;
+  onSubmit: () => void;
+  onCancel: () => void;
+}) {
+  const t = useT();
+  return (
+    <>
+      <div className="space-y-5 py-2">
+        <div className="space-y-2">
+          <Label className="text-sm">{t("rules.new.nameLabel")}</Label>
+          <Input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder={t("rules.new.namePlaceholder")}
+            maxLength={20}
+            autoFocus
+          />
+        </div>
+        <div className="space-y-2">
+          <Label className="text-sm">
+            {t("rules.new.descLabel")}{" "}
+            <span className="text-muted-foreground text-[12px]">{t("rules.new.descOptional")}</span>
+          </Label>
+          <Input
+            value={desc}
+            onChange={(e) => setDesc(e.target.value)}
+            placeholder={t("rules.new.descPlaceholder")}
+            maxLength={40}
+          />
+        </div>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <Label className="text-sm">{t("rules.dialog.monthly")}</Label>
+            <span className="text-sm font-semibold tabular-nums">${monthly}</span>
+          </div>
+          <Slider
+            value={[monthly]}
+            max={500}
+            step={10}
+            onValueChange={(v) => setMonthly(Array.isArray(v) ? v[0] : v)}
+          />
+          <div className="flex justify-between text-[12px] text-muted-foreground tabular-nums">
+            <span>$0</span>
+            <span>$500</span>
+          </div>
+        </div>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <Label className="text-sm">{t("rules.dialog.single")}</Label>
+            <span className="text-sm font-semibold tabular-nums">${single}</span>
+          </div>
+          <Slider
+            value={[single]}
+            max={150}
+            step={5}
+            onValueChange={(v) => setSingle(Array.isArray(v) ? v[0] : v)}
+          />
+          <div className="flex justify-between text-[12px] text-muted-foreground tabular-nums">
+            <span>$0</span>
+            <span>$150</span>
+          </div>
+        </div>
+      </div>
+      <DialogFooter>
+        <Button variant="outline" onClick={onCancel}>
+          {t("rules.dialog.cancel")}
+        </Button>
+        <Button onClick={onSubmit} className="gap-1.5">
+          <Check className="h-4 w-4" />
+          {t("rules.new.create")}
+        </Button>
+      </DialogFooter>
+    </>
+  );
+}
+
+// ==================== Trust form (allow or block) ====================
+
+function TrustForm({
+  mode,
+  merchant,
+  setMerchant,
+  category,
+  setCategory,
+  categoryOptions,
+  reason,
+  setReason,
+  checking,
+  safety,
+  warningKey,
+  onSubmit,
+  onCancel,
+}: {
+  mode: "allow" | "block";
+  merchant: string;
+  setMerchant: (v: string) => void;
+  category: string;
+  setCategory: (v: string) => void;
+  categoryOptions: { id: string; label: string }[];
+  reason: string;
+  setReason: (v: string) => void;
+  checking: boolean;
+  safety: SafetyResult | null;
+  warningKey: string | null;
+  onSubmit: () => void;
+  onCancel: () => void;
+}) {
+  const t = useT();
+  const { locale } = useLocale();
+  const submitKey = mode === "allow" ? "trust.add.submit.allow" : "trust.add.submit.block";
+
+  return (
+    <>
+      <div className="space-y-5 py-2">
+        <div className="space-y-2">
+          <Label className="text-sm">{t("trust.add.merchantLabel")}</Label>
+          <Input
+            value={merchant}
+            onChange={(e) => setMerchant(e.target.value)}
+            placeholder={t("trust.add.merchantPlaceholder")}
+            maxLength={60}
+            autoFocus
+          />
+        </div>
+
+        <div>
+          <div className="text-[12px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
+            {t("safety.title")}
+          </div>
+          {!merchant.trim() ? (
+            <div className="rounded-lg border border-dashed border-border bg-muted/30 p-3 text-[12px] text-muted-foreground">
+              {t("safety.emptyInput")}
+            </div>
+          ) : checking ? (
+            <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/30 p-3 text-[12px] text-muted-foreground">
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              {t("safety.checking")}
+            </div>
+          ) : safety ? (
+            <SafetyCard result={safety} locale={locale} t={t} />
+          ) : null}
+        </div>
+
+        {mode === "allow" ? (
+          <div className="space-y-2">
+            <Label className="text-sm">{t("trust.add.categoryLabel")}</Label>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="h-9 w-full rounded-md border border-border bg-card px-3 text-sm"
+            >
+              {categoryOptions.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <Label className="text-sm">{t("trust.add.reasonLabel")}</Label>
+            <Input
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              placeholder={t("trust.add.reasonPlaceholder")}
+              maxLength={80}
+            />
+          </div>
+        )}
+
+        {warningKey && (
+          <div className="rounded-lg border border-accent/30 bg-accent/5 p-3 text-[13px] text-accent leading-relaxed flex items-start gap-2">
+            <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+            <span>{t(warningKey)}</span>
+          </div>
+        )}
+      </div>
+      <DialogFooter>
+        <Button variant="outline" onClick={onCancel}>
+          {t("rules.dialog.cancel")}
+        </Button>
+        <Button onClick={onSubmit} className="gap-1.5" disabled={!merchant.trim() || checking}>
+          <Check className="h-4 w-4" />
+          {t(submitKey)}
+        </Button>
+      </DialogFooter>
+    </>
+  );
+}
+
+function SafetyCard({
+  result,
+  locale,
+  t,
+}: {
+  result: SafetyResult;
+  locale: "zh" | "en";
+  t: (key: string) => string;
+}) {
+  const meta = LEVEL_META[result.level];
+  const Icon = meta.icon;
+  return (
+    <div className={cn("rounded-lg border p-3", meta.tone)}>
+      <div className="flex items-center gap-2">
+        <Icon className="h-4 w-4" />
+        <span className="text-[13px] font-semibold">{t(meta.labelKey)}</span>
+        <span className="ml-auto text-[12px] opacity-70 tabular-nums">
+          {t("safety.score")} {result.score}/100
+        </span>
+      </div>
+      {result.signals.length > 0 && (
+        <ul className="mt-2 space-y-1 text-[12px]">
+          {result.signals.map((s, i) => (
+            <li key={i} className="flex items-start gap-1.5">
+              <span
+                className={cn(
+                  "mt-[5px] h-1.5 w-1.5 rounded-full shrink-0",
+                  s.severity === "positive" && "bg-success",
+                  s.severity === "negative" && "bg-destructive",
+                  s.severity === "neutral" && "bg-muted-foreground/50",
+                )}
+              />
+              <span className="leading-relaxed text-foreground/80">{s.detail[locale]}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
