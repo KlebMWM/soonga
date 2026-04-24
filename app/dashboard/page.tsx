@@ -5,10 +5,16 @@ import { ChevronDown } from "lucide-react";
 import { DashboardHero } from "@/components/DashboardHero";
 import { AgentFeed } from "@/components/AgentFeed";
 import { BurnRateChart } from "@/components/BurnRateChart";
-import { MetricCard, MiniBars, DeltaPill, ProgressTrack } from "@/components/MetricCard";
+import {
+  BudgetBar,
+  DeltaPill,
+  MetricCard,
+  MiniBars,
+  MiniDonut,
+} from "@/components/MetricCard";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { agents, burnRate7d, stats } from "@/lib/mockData";
+import { agents, stats } from "@/lib/mockData";
 import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
 
 function phraseKey(hour: number): string {
@@ -46,9 +52,6 @@ export default function DashboardPage() {
   // SSR + first hydration render with hour=23 so server and client agree; the
   // effect then refreshes to the real hour once mounted.
   const hour = now?.getHours() ?? 23;
-
-  // 7-day transaction counts for the mini bar chart
-  const miniBars = burnRate7d.map((d) => d.transactions);
 
   return (
     <div className="px-5 md:px-8 py-6 md:py-8 max-w-[1280px] mx-auto">
@@ -196,19 +199,33 @@ export default function DashboardPage() {
           label={t("dashboard.metric.today.label")}
           value={stats.todayTransactions}
           unit={t("dashboard.metric.today.unit")}
-          visual={<MiniBars values={miniBars} />}
-          sub={t("dashboard.metric.today.sub", { agents: stats.activeAgents })}
+          footer={
+            <div className="flex items-end gap-3">
+              <MiniBars />
+              <span
+                className="text-[11px] font-mono shrink-0"
+                style={{ color: "var(--text-mid)" }}
+              >
+                {t("dashboard.metric.today.range")}
+              </span>
+            </div>
+          }
         />
 
         <MetricCard
           label={t("dashboard.metric.spend.label")}
           value={stats.todaySpent.toFixed(2)}
           unit={t("dashboard.metric.spend.unit")}
-          sub={
-            <span className="flex items-center gap-2">
+          footer={
+            <div className="flex items-center gap-2">
               <DeltaPill direction={deltaDir} value={`${deltaAbs}%`} />
-              <span>{t("dashboard.metric.spend.sub")}</span>
-            </span>
+              <span
+                className="text-[11px]"
+                style={{ color: "var(--text-mid)" }}
+              >
+                {t("dashboard.metric.spend.sub")}
+              </span>
+            </div>
           }
         />
 
@@ -216,21 +233,39 @@ export default function DashboardPage() {
           label={t("dashboard.metric.automation.label")}
           value={automationPct}
           unit="%"
-          sub={t("dashboard.metric.automation.sub", {
-            auto: autoCount,
-            total: stats.todayTransactions,
-          })}
+          footer={
+            <div className="flex items-center gap-3">
+              <MiniDonut pct={automationPct} />
+              <span
+                className="text-[11px] font-mono tabular-nums"
+                style={{ color: "var(--text-mid)" }}
+              >
+                {autoCount} / {stats.todayTransactions}
+              </span>
+            </div>
+          }
         />
 
         <MetricCard
           label={t("dashboard.metric.month.label")}
           value={stats.monthSpent.toFixed(0)}
           unit={t("dashboard.metric.month.unit")}
-          visual={<ProgressTrack pct={burnPercent} />}
-          sub={t("dashboard.metric.month.sub", {
-            budget: stats.monthBudget.toFixed(0),
-            remaining: remainingPct,
-          })}
+          footer={
+            <div className="flex flex-col gap-1.5">
+              <BudgetBar pct={burnPercent} />
+              <div className="flex items-center justify-between text-[11px] font-mono tabular-nums">
+                <span style={{ color: "var(--text-mid)" }}>
+                  {t("dashboard.metric.month.used", { pct: burnPercent })}
+                </span>
+                <span
+                  className="font-bold"
+                  style={{ color: "var(--ikea-blue-darker)" }}
+                >
+                  {t("dashboard.metric.month.left", { pct: remainingPct })}
+                </span>
+              </div>
+            </div>
+          }
         />
       </div>
 

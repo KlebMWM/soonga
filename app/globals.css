@@ -265,7 +265,7 @@
 
   .hud-card:hover {
     border-color: var(--border-strong);
-    box-shadow: 0 4px 16px oklch(0.2 0.01 155 / 0.06);
+    box-shadow: 0 4px 16px rgba(10, 37, 68, 0.06);
   }
 
   /* Hero variant — pending-action card. Solid IKEA blue surface with a warm
@@ -302,7 +302,8 @@
     z-index: 1;
   }
 
-  /* Stat variant — subtle top sheen line, used for KPI cards on cream */
+  /* Stat variant — subtle top sheen line. Uses --border-blue so the highlight
+     reads as a faint branded accent instead of neutral ink. */
   .hud-card--stat::before {
     content: "";
     position: absolute;
@@ -312,7 +313,7 @@
     background: linear-gradient(
       90deg,
       transparent,
-      var(--border-strong),
+      var(--border-blue),
       transparent
     );
     pointer-events: none;

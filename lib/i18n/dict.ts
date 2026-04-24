@@ -179,6 +179,7 @@ export const dict: Dict = {
   "dashboard.burn.monthUsage": { zh: "本月", en: "This month" },
   "dashboard.metric.today.label": { zh: "今日交易", en: "Today" },
   "dashboard.metric.today.unit": { zh: "筆", en: "txns" },
+  "dashboard.metric.today.range": { zh: "近 7 天", en: "7D" },
   "dashboard.metric.today.sub": {
     zh: "由 {agents} 個 agent 代為執行",
     en: "Executed by {agents} agents",
@@ -196,6 +197,14 @@ export const dict: Dict = {
   "dashboard.metric.month.sub": {
     zh: "月度預算 ${budget}．剩餘 {remaining}%",
     en: "${budget} budget · {remaining}% remaining",
+  },
+  "dashboard.metric.month.used": {
+    zh: "已用 {pct}%",
+    en: "{pct}% used",
+  },
+  "dashboard.metric.month.left": {
+    zh: "剩餘 {pct}%",
+    en: "{pct}% left",
   },
   "dashboard.agents.title": { zh: "Agent 本月使用率", en: "Agent budget usage" },
   "dashboard.agent.paused": { zh: "已暫停", en: "Paused" },
