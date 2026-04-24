@@ -59,73 +59,119 @@
 }
 
 :root {
-  /* Command Center v9 — warm cream + deep mint, coral as signal only.
-     Hex values match the mockup spec exactly (OKLCH approximations drift 2-3% on
-     the mint hue, so we keep hex for semantic tokens and only use OKLCH for
-     alpha-only expressions like border tints). */
-  --background: #f5f2e8; /* cream */
-  --foreground: #1a2620; /* near-ink green-gray */
-  --card: #ffffff;
-  --card-foreground: #1a2620;
-  --popover: #faf7ec; /* bg-elev-2 */
-  --popover-foreground: #1a2620;
-  --primary: #0d7d6b; /* mint-deep */
+  /* =======================================================================
+     Design tokens — IKEA Blue + Yellow palette
+     =======================================================================
+     Replaces the v9 cream + mint system. Named tokens below are the spec;
+     shadcn-theme slots and component-compat aliases follow. */
+
+  /* 背景色系 */
+  --bg: #fffffe; /* 主背景 純白 */
+  --bg-soft: #f0f6fc; /* 次要背景 淺藍白 (top bar) */
+  --bg-accent: #d7e5f4; /* tag / pill 底 淺藍 */
+
+  /* IKEA 藍主色系 */
+  --ikea-blue: #5084d0; /* 主色 */
+  --ikea-blue-deep: #3a6cb8; /* 深一階 (border) */
+  --ikea-blue-darker: #1f54a0; /* 最深 (文字、強邊框) */
+  --ikea-blue-bright: #7aa3e0; /* 亮一階 (輔助) */
+
+  /* 文字 */
+  --headline: #0a2544; /* 標題 最深藍 */
+  --text: #1a3560; /* 主文字 深藍 */
+  --paragraph: #3a4a68; /* 內文 */
+  --text-mid: #6a7890; /* 次要文字 */
+  --text-dim: #9aa3b5; /* 輔助文字 */
+
+  /* 強調色 — CTA 主色（token 先定義，.btn-glow 對接待後續 commit） */
+  --yellow: #ffd803; /* CTA 主色 鮮黃 */
+  --yellow-deep: #e6c200; /* 黃 hover */
+
+  /* Agent 色 */
+  --coral: #e07856; /* ShoppingBot */
+  --sage: #5b9b6e; /* 綠 (自動核准) */
+  --dusk: #5c7aa0; /* TravelAgent */
+  --plum: #8e6aa0; /* NewsletterCurator */
+
+  /* 邊框 */
+  --border: rgba(10, 37, 68, 0.08);
+  --border-strong: rgba(10, 37, 68, 0.16);
+  --border-blue: rgba(80, 132, 208, 0.25);
+
+  /* =======================================================================
+     shadcn theme slots — mapped onto the tokens above
+     ======================================================================= */
+  --background: var(--bg);
+  --foreground: var(--headline);
+  --card: var(--bg);
+  --card-foreground: var(--headline);
+  --popover: var(--bg-soft);
+  --popover-foreground: var(--headline);
+  --primary: var(--ikea-blue);
   --primary-foreground: #ffffff;
-  --secondary: #ebe7d5; /* bg-elev-3 */
-  --secondary-foreground: #1a2620;
-  --muted: #faf7ec;
-  --muted-foreground: #5a6860;
-  --accent: #0d7d6b; /* mint-deep, same as primary — single-accent system */
+  --secondary: var(--bg-accent);
+  --secondary-foreground: var(--headline);
+  --muted: var(--bg-soft);
+  --muted-foreground: var(--text-mid);
+  --accent: var(--ikea-blue);
   --accent-foreground: #ffffff;
   --destructive: #b3372e;
-  --success: #8ba472; /* sage */
-  --warning: #e07856; /* coral */
-  --trust: #7a8ba0; /* dusk */
-  --border: rgba(26, 38, 32, 0.1);
-  --input: rgba(26, 38, 32, 0.15);
-  --ring: #0d7d6b;
-  --chart-1: #0d7d6b; /* mint-deep */
-  --chart-2: #e07856; /* coral */
-  --chart-3: #8ba472; /* sage */
-  --chart-4: #7a8ba0; /* dusk */
-  --chart-5: #a06a8f; /* plum */
+  --success: var(--sage);
+  --warning: var(--coral);
+  --trust: var(--dusk);
+  --input: var(--border-strong);
+  --ring: var(--ikea-blue);
+  --chart-1: var(--ikea-blue);
+  --chart-2: var(--coral);
+  --chart-3: var(--sage);
+  --chart-4: var(--dusk);
+  --chart-5: var(--plum);
   --radius: 0;
 
-  /* HUD extras — referenced directly via var() in custom CSS / style props */
-  --bg-elev-1: #ffffff;
-  --bg-elev-2: #faf7ec;
-  --bg-elev-3: #ebe7d5;
-  --text-bright: #0a1510;
-  --text-mid: #5a6860;
-  --text-dim: #8a968e;
-  --border-strong: rgba(26, 38, 32, 0.2);
-  --border-accent: rgba(13, 125, 107, 0.3);
+  /* =======================================================================
+     Component-compat aliases
+     =======================================================================
+     Existing component CSS (.hud-card--hero, .btn-glow, .btn-hud, .btn-inverse,
+     body::before) references v9 mint token names. Rather than rewrite those
+     bodies (spec: "只改 tokens"), we repoint the old names at the new
+     IKEA-blue palette so the component layer stays in sync without any
+     component-level edits.
 
-  /* Named palette — agent avatars, category coding, semantic signals */
-  --mint-deep: #0d7d6b;
-  --mint: #1a9d86;
-  --mint-soft: #6eb89c;
-  --mint-bg: #d4ebe0;
-  --mint-glow: rgba(13, 125, 107, 0.2);
-  --coral: #e07856;
+     When the CTA eventually wants to turn yellow per the spec, that's a
+     component-level change to .btn-glow (swap --mint-deep/--mint refs for
+     --yellow/--yellow-deep + flip text color to --headline) — deferred. */
+  --mint-deep: var(--ikea-blue-darker);
+  --mint: var(--ikea-blue);
+  --mint-soft: var(--ikea-blue-bright);
+  --mint-bg: var(--bg-accent);
+  --mint-glow: rgba(31, 84, 160, 0.2);
   --coral-bg: #f5dccf;
-  --sage: #8ba472;
   --sage-bg: #dce5cc;
-  --dusk: #7a8ba0;
-  --plum: #a06a8f;
 
-  /* Sidebar — deep-mint "control deck" paired with the hero card. The dark
-     surface anchors the nav and lets the mint-deep border indicator + badges
-     do the accent work. All interactive states use white-alpha overlays so
-     nothing introduces a third color into the sidebar frame. */
-  --sidebar: #0a4a40; /* one step darker than --mint-deep */
+  /* HUD extras (structural surfaces + cyan corner glow accent) */
+  --bg-elev-1: var(--bg);
+  --bg-elev-2: var(--bg-soft);
+  --bg-elev-3: var(--bg-accent);
+  --text-bright: #000000;
+  --border-accent: var(--border-blue);
+  --cyan: #5eead4;
+
+  /* =======================================================================
+     Sidebar — deepest-navy "control deck"
+     =======================================================================
+     Keeps the v9-era dark-sidebar structure (white-alpha chrome, accent-color
+     left-border active indicator) but retoned for the IKEA palette. --sidebar
+     pins to --headline (#0a2544) — one step deeper than --ikea-blue-darker,
+     so the sidebar still reads as a permanent dark anchor against the blue-
+     tinted main canvas. */
+  --sidebar: var(--headline);
   --sidebar-foreground: rgba(255, 255, 255, 0.9);
-  --sidebar-primary: #0d7d6b; /* mint-deep — used for left-border indicator, badges */
+  --sidebar-primary: var(--ikea-blue);
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: rgba(255, 255, 255, 0.1); /* hover + active bg */
+  --sidebar-accent: rgba(255, 255, 255, 0.1);
   --sidebar-accent-foreground: #ffffff;
   --sidebar-border: rgba(255, 255, 255, 0.1);
-  --sidebar-ring: #0d7d6b;
+  --sidebar-ring: var(--ikea-blue);
 }
 
 /* .dark intentionally left unset — v9 is light-only. Retained selector hook
@@ -222,10 +268,15 @@
     box-shadow: 0 4px 16px oklch(0.2 0.01 155 / 0.06);
   }
 
-  /* Hero variant — pending-action card, dark mint block that stands out on cream.
-     Gradient hex matches the v9 spec (mint-deep → #0a5e51) exactly. */
+  /* Hero variant — pending-action card, dark block that stands out on the
+     main canvas. Gradient dark-stop follows the palette: was #0a5e51 (deep
+     mint) under v9, now --headline (#0a2544) under the IKEA blue system. */
   .hud-card--hero {
-    background: linear-gradient(145deg, var(--mint-deep) 0%, #0a5e51 100%);
+    background: linear-gradient(
+      145deg,
+      var(--mint-deep) 0%,
+      var(--headline) 100%
+    );
     border-color: var(--mint-deep);
     color: white;
     box-shadow:
