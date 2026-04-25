@@ -17,7 +17,7 @@ export const dict: Dict = {
   "nav.rules.label": { zh: "花費規則", en: "Rule Engine" },
   "nav.rules.sub": { zh: "額度與信任名單", en: "Budgets & trust lists" },
   "nav.approvals.label": { zh: "待審核", en: "Approvals" },
-  "nav.approvals.sub": { zh: "等候審核", en: "Waiting on you" },
+  "nav.approvals.sub": { zh: "待審核", en: "Waiting on you" },
   "nav.audit.label": { zh: "決策紀錄", en: "Audit Trail" },
   "nav.audit.sub": { zh: "決策日誌", en: "Decision log" },
   "nav.guide.label": { zh: "使用說明", en: "Guide" },
@@ -338,12 +338,12 @@ export const dict: Dict = {
 
   // ==================== Approvals ====================
   "approvals.eyebrow": { zh: "Approvals", en: "Approvals" },
-  "approvals.title": { zh: "等候審核", en: "Waiting on you" },
+  "approvals.title": { zh: "待審核", en: "Waiting on you" },
   "approvals.desc": {
-    zh: "這裡會列出超出規則的 AI 支付請求。每張卡都會說明它為什麼想花這筆錢，讓你快速決定核准、拒絕，或請 AI 找替代方案。",
+    zh: "這裡會列出超出規則的 AI 支付請求。每張卡片都會說明需要花這筆費用，讓你快速決定核准、拒絕，或請 AI 找替代方案。",
     en: "Agent requests that fell outside your rules. Each card translates the agent's reasoning into plain language so you can decide in under 30 seconds.",
   },
-  "approvals.badge": { zh: "筆待你決定", en: "need your decision" },
+  "approvals.badge": { zh: "筆待審核", en: "need your decision" },
   "approvals.next": { zh: "下一筆待審核", en: "Next approval" },
   "approvals.empty": {
     zh: "目前沒有待審請求。AI 會照規則處理小額支付，有需要你判斷時再提醒你。",
@@ -462,7 +462,7 @@ export const dict: Dict = {
   },
   "rules.trust.title": { zh: "網站信任名單", en: "Merchant trust lists" },
   "rules.trust.desc": {
-    zh: "信任名單自動放行、封鎖名單直接拒絕、審核中的付款對象每一筆都要過你的眼。",
+    zh: "信任名單自動放行、封鎖名單直接拒絕、審核中的付款對象每一筆都要讓你看見。",
     en: "Allowlisted merchants pass automatically, blocklisted ones get denied, merchants under review need your approval each time.",
   },
   "rules.trust.tab.allow": { zh: "信任名單", en: "Allowlist" },
@@ -661,7 +661,7 @@ export const dict: Dict = {
     zh: "類別預算、單筆上限、付款對象信任名單三層決定 AI 助理的自主邊界。",
     en: "Three layers: category budgets, per-transaction caps, and merchant trust lists.",
   },
-  "welcome.module.approvals.title": { zh: "等候審核（Approvals）", en: "Approvals" },
+  "welcome.module.approvals.title": { zh: "待審核（Approvals）", en: "Approvals" },
   "welcome.module.approvals.desc": {
     zh: "AI 判斷理由翻成人話．30 秒內決定核准、拒絕，或請 AI 找替代方案。",
     en: "Agent reasoning in plain language. Decide in 30 seconds: approve, reject, or ask for a counter-offer.",
