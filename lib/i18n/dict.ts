@@ -401,6 +401,10 @@ export const dict: Dict = {
   "approval.action.approve": { zh: "單次核准", en: "Approve once" },
   "approval.action.allow": { zh: "核准並加入信任名單", en: "Approve & allowlist" },
   "approval.action.counter": { zh: "請 AI 找替代方案", en: "Ask for an alternative" },
+  "approval.counter.working": {
+    zh: "AI 正在找方案…",
+    en: "AI is thinking…",
+  },
   "approval.action.counterDisabled": {
     zh: "這筆沒有備案可提",
     en: "No alternative is available for this request",

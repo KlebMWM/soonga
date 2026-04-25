@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { WalletPill } from "@/components/WalletPill";
 import { NotificationPermissionPill } from "@/components/NotificationPermissionPill";
-import { stats } from "@/lib/mockData";
+import { usePendingApprovals } from "@/lib/stores";
 import { useT } from "@/lib/i18n/LocaleProvider";
 import { cn } from "@/lib/utils";
 
@@ -29,18 +29,15 @@ type NavItem = {
 const NAV: NavItem[] = [
   { href: "/dashboard", labelKey: "nav.dashboard.label", icon: LayoutGrid },
   { href: "/rules", labelKey: "nav.rules.label", icon: SlidersHorizontal },
-  {
-    href: "/approvals",
-    labelKey: "nav.approvals.label",
-    icon: Inbox,
-    badge: stats.pendingCount,
-  },
+  { href: "/approvals", labelKey: "nav.approvals.label", icon: Inbox },
   { href: "/audit", labelKey: "nav.audit.label", icon: FileText },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
   const t = useT();
+  // Live badge — reflects current pending queue, not the static stats blob.
+  const pendingCount = usePendingApprovals().length;
 
   return (
     <aside
@@ -145,8 +142,8 @@ export function Sidebar() {
             >
               <Icon className="h-[20px] w-[20px] shrink-0" strokeWidth={1.75} />
               <span className="flex-1 truncate">{t(item.labelKey)}</span>
-              {typeof item.badge === "number" && item.badge > 0 && (
-                <span className="sidebar-nav-badge">{item.badge}</span>
+              {item.href === "/approvals" && pendingCount > 0 && (
+                <span className="sidebar-nav-badge">{pendingCount}</span>
               )}
             </Link>
           );

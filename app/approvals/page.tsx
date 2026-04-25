@@ -1,12 +1,18 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronRight, Clock } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { ApprovalCard } from "@/components/ApprovalCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { pendingApprovals, type PendingApproval } from "@/lib/mockData";
+import { type PendingApproval } from "@/lib/mockData";
+import {
+  approvalToAuditEntry,
+  auditStore,
+  pendingStore,
+  usePendingApprovals,
+} from "@/lib/stores";
 import { b } from "@/lib/i18n/config";
 import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
 import { toast } from "sonner";
@@ -53,7 +59,7 @@ function buildCounterApproval(original: PendingApproval): PendingApproval | null
 export default function ApprovalsPage() {
   const t = useT();
   const { locale } = useLocale();
-  const [approvals, setApprovals] = useState<PendingApproval[]>(pendingApprovals);
+  const approvals = usePendingApprovals();
   const [index, setIndex] = useState(0);
   const pendingCounters = useRef<Set<string>>(new Set());
 
@@ -62,12 +68,22 @@ export default function ApprovalsPage() {
   const goNext = () =>
     setIndex((i) => (total > 0 ? (i + 1) % total : 0));
 
-  const handleHandled = (id: string) => {
-    setApprovals((prev) => prev.filter((a) => a.id !== id));
-    // Clamp index against the SHRUNK array so we don't fall off the end. The
-    // closure here captures the pre-filter length, so length-2 is the new
-    // last valid index.
-    setIndex((i) => Math.max(0, Math.min(i, approvals.length - 2)));
+  // Clamp index when the queue shrinks (approval resolved). The store has
+  // already removed the entry by the time React re-runs this effect.
+  useEffect(() => {
+    if (index >= total && total > 0) setIndex(total - 1);
+    if (total === 0 && index !== 0) setIndex(0);
+  }, [total, index]);
+
+  const handleHandled = (
+    id: string,
+    outcome: "approved" | "allowed" | "rejected",
+  ) => {
+    const approval = pendingStore.getAll().find((a) => a.id === id);
+    if (!approval) return;
+    // Close the loop: every user decision lands in the audit log.
+    auditStore.prepend(approvalToAuditEntry(approval, outcome));
+    pendingStore.remove(id);
   };
 
   const handleCounter = (original: PendingApproval) => {
@@ -77,7 +93,7 @@ export default function ApprovalsPage() {
     setTimeout(() => {
       const next = buildCounterApproval(original);
       if (!next) return;
-      setApprovals((prev) => [...prev, next]);
+      pendingStore.add(next);
       toast.info(t("approval.toast.counterArrived.title", { agent: t(`agent.${original.agent}.name`) }), {
         description: t("approval.toast.counterArrived.desc", {
           merchant: next.merchant[locale],

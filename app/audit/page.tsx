@@ -4,7 +4,7 @@ import { Download } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { AuditTable } from "@/components/AuditTable";
 import { Button } from "@/components/ui/button";
-import { auditLog } from "@/lib/mockData";
+import { useAuditLog } from "@/lib/stores";
 import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
 import { toast } from "sonner";
 
@@ -19,6 +19,7 @@ function csvEscape(v: string | number | undefined): string {
 export default function AuditPage() {
   const t = useT();
   const { locale } = useLocale();
+  const auditLog = useAuditLog();
 
   const handleExport = () => {
     const headers = [

@@ -12,10 +12,10 @@ import {
   MiniBars,
   MiniDonut,
 } from "@/components/MetricCard";
-import { DEMO_EVENTS } from "@/components/DemoControls";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { agents, pendingApprovals, stats } from "@/lib/mockData";
+import { agents, stats } from "@/lib/mockData";
+import { pendingStore, usePendingApprovals } from "@/lib/stores";
 import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
 
 function phraseKey(hour: number): string {
@@ -36,35 +36,17 @@ export default function DashboardPage() {
   const t = useT();
   const { locale } = useLocale();
   const [now, setNow] = useState<Date | null>(null);
-  // Lifted so that resolving a pending row in AgentFeed can drive the big
-  // numeral morph in DashboardHero — both components read this single
-  // source of truth for "how many things still need a decision".
-  const initialPending = pendingApprovals.length;
-  const [pendingCount, setPendingCount] = useState(initialPending);
+  // pendingCount comes from the cross-page store now — same source the
+  // Approvals page mutates and the Sidebar badge reads. Removes the prior
+  // need for event-based syncing between pages.
+  const pendingApprovals = usePendingApprovals();
+  const pendingCount = pendingApprovals.length;
 
   useEffect(() => {
     setNow(new Date());
     const interval = setInterval(() => setNow(new Date()), 60_000);
     return () => clearInterval(interval);
   }, []);
-
-  // DemoControls hooks — let the floating panel poke pendingCount imperatively.
-  useEffect(() => {
-    const onApprove = () =>
-      setPendingCount((c) => Math.max(0, c - 1));
-    const onToggleEmpty = () =>
-      setPendingCount((c) => (c === 0 ? initialPending : 0));
-    const onReset = () => setPendingCount(initialPending);
-
-    window.addEventListener(DEMO_EVENTS.approveOne, onApprove);
-    window.addEventListener(DEMO_EVENTS.toggleEmpty, onToggleEmpty);
-    window.addEventListener(DEMO_EVENTS.reset, onReset);
-    return () => {
-      window.removeEventListener(DEMO_EVENTS.approveOne, onApprove);
-      window.removeEventListener(DEMO_EVENTS.toggleEmpty, onToggleEmpty);
-      window.removeEventListener(DEMO_EVENTS.reset, onReset);
-    };
-  }, [initialPending]);
 
   const burnPercent = Math.round((stats.monthSpent / stats.monthBudget) * 100);
   const remainingPct = Math.max(0, 100 - burnPercent);
@@ -297,14 +279,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="mt-10">
-        <AgentFeed
-          limit={5}
-          viewAllHref="/audit"
-          onPendingResolve={() =>
-            setPendingCount((c) => Math.max(0, c - 1))
-          }
-          onPendingCreated={() => setPendingCount((c) => c + 1)}
-        />
+        <AgentFeed limit={5} viewAllHref="/audit" />
       </div>
 
       {/* Yesterday's briefing — fulfills the empty-state hero's

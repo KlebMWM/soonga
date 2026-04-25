@@ -10,27 +10,26 @@ import {
   X,
 } from "lucide-react";
 import { useTheme } from "@/components/ThemeToggle";
+import { auditStore, pendingStore } from "@/lib/stores";
 
 /**
- * Demo-only floating control panel. Five buttons that drive imperative state
- * changes in DashboardHero / AgentFeed via window CustomEvents — keeps the
- * panel decoupled from data flow and avoids lifting state into a global store
- * just for a dev surface.
+ * Demo-only floating control panel. Drives imperative state changes for
+ * preview / screenshot scenarios.
+ *
+ * Approve-one / toggle-empty / reset hit the shared stores directly now —
+ * Dashboard, Approvals, Sidebar badge all read from those, so a single
+ * mutation propagates everywhere. Resolve-booking still goes through a
+ * window event because the target lives in AgentFeed's local items state
+ * (the store doesn't know about feed rows).
  *
  * Visibility: dev mode OR `?demo=1` in the URL. Hidden on production builds
- * by default. The visibility check runs in a useEffect so the SSR markup is
- * empty and the panel pops in post-mount (no hydration mismatch).
- *
- * Listeners live in:
- *   - app/dashboard/page.tsx — approve-one, toggle-empty, reset
- *   - components/AgentFeed.tsx — resolve-booking, reset
- *   - useTheme hook — emits its own soon-theme-change event so the panel's
- *     icon stays in sync with the top-bar toggle.
+ * by default. Visibility check runs in a useEffect so SSR markup is empty
+ * and the panel pops in post-mount.
  */
 export const DEMO_EVENTS = {
-  approveOne: "soon-demo:approve-one",
   resolveBooking: "soon-demo:resolve-booking",
-  toggleEmpty: "soon-demo:toggle-empty",
+  /** Fires after stores are reset; AgentFeed listens to also reset its
+   *  local items state (which doesn't live in any shared store). */
   reset: "soon-demo:reset",
 } as const;
 
@@ -107,7 +106,10 @@ export function DemoControls() {
           <DemoButton
             icon={Check}
             label="核准一筆"
-            onClick={() => dispatchDemo(DEMO_EVENTS.approveOne)}
+            onClick={() => {
+              const queue = pendingStore.getAll();
+              if (queue.length > 0) pendingStore.remove(queue[0].id);
+            }}
           />
           <DemoButton
             icon={Check}
@@ -117,12 +119,22 @@ export function DemoControls() {
           <DemoButton
             icon={Inbox}
             label="切換空態 / 待辦態"
-            onClick={() => dispatchDemo(DEMO_EVENTS.toggleEmpty)}
+            onClick={() => {
+              if (pendingStore.getAll().length > 0) {
+                pendingStore.setAll([]);
+              } else {
+                pendingStore.reset();
+              }
+            }}
           />
           <DemoButton
             icon={RotateCcw}
             label="重置全部"
-            onClick={() => dispatchDemo(DEMO_EVENTS.reset)}
+            onClick={() => {
+              pendingStore.reset();
+              auditStore.reset();
+              dispatchDemo(DEMO_EVENTS.reset);
+            }}
           />
         </div>
       )}

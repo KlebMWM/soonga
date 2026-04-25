@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   AlertTriangle,
   Check,
   ChevronDown,
   Info,
+  Loader2,
   ShieldAlert,
   Sparkles,
   X,
@@ -97,10 +98,20 @@ export function ApprovalCard({
 }) {
   const t = useT();
   const { locale } = useLocale();
-  const [handled, setHandled] = useState<null | "approved" | "allowed" | "rejected" | "counter">(null);
+  const [requestedCounter, setRequestedCounter] = useState(false);
   const meta = SEVERITY_META[approval.severity];
   const Icon = meta.icon;
   const canCounter = Boolean(approval.counterOffer);
+
+  // Counter request takes ~10s on the parent's timer. Auto-clear the local
+  // "thinking" indicator a bit after that so subsequent button clicks work
+  // even if the user navigates around — the parent has already pushed the
+  // counter approval to the queue by then.
+  useEffect(() => {
+    if (!requestedCounter) return;
+    const timer = setTimeout(() => setRequestedCounter(false), 11000);
+    return () => clearTimeout(timer);
+  }, [requestedCounter]);
 
   const merchant = approval.merchant[locale];
   const why = approval.why[locale];
@@ -108,8 +119,7 @@ export function ApprovalCard({
   const triggeredRule = approval.triggeredRule[locale];
   const suggestion = recommend(approval);
 
-  const act = (outcome: NonNullable<typeof handled>) => {
-    setHandled(outcome);
+  const act = (outcome: "approved" | "allowed" | "rejected" | "counter") => {
     const toastParams = {
       agent: t(`agent.${approval.agent}.name`),
       merchant,
@@ -139,35 +149,17 @@ export function ApprovalCard({
     } as const;
     const m = messages[outcome];
     (m.isDenied ? toast.error : toast.success)(m.title, { description: m.desc });
+
     if (outcome === "counter" && canCounter && onCounter) {
+      // Counter doesn't remove from queue — original stays visible while AI
+      // works on an alternative; the local "thinking" flag disables buttons
+      // and shows a spinner so the user knows progress is in flight.
+      setRequestedCounter(true);
       onCounter(approval);
       return;
     }
-    if (outcome !== "counter") {
-      onHandled?.(approval.id, outcome);
-    }
+    onHandled?.(approval.id, outcome as "approved" | "allowed" | "rejected");
   };
-
-  if (handled) {
-    return (
-      <Card className="p-6 border-dashed bg-muted/40">
-        <div className="flex items-center gap-3 text-sm text-muted-foreground">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-card text-muted-foreground">
-            <Check className="h-4 w-4" />
-          </div>
-          <div>
-            <div className="font-medium text-foreground">
-              {t("approval.handled.title", { merchant })}
-            </div>
-            <div className="text-[12px]">{t("approval.handled.hint")}</div>
-          </div>
-          <Button size="sm" variant="outline" className="ml-auto" onClick={() => setHandled(null)}>
-            {t("approval.handled.undo")}
-          </Button>
-        </div>
-      </Card>
-    );
-  }
 
   return (
     <Card className="p-0 overflow-hidden">
@@ -288,10 +280,20 @@ export function ApprovalCard({
         {/* Buttons re-ordered: approve / reject up top (most common decisions),
             counter + allowlist below (more deliberate actions). Allowlist
             pushed to the last slot — adding long-term trust shouldn't be
-            the easy default in a payment-control product. */}
+            the easy default in a payment-control product.
+
+            While a counter request is in flight (~10s), all four buttons
+            are disabled and the counter button shows a spinner. The parent
+            pushes the counter approval to the queue when the timer fires;
+            the user can cycle to it via the "next" button. */}
         <div className="flex flex-col gap-2">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-            <Button size="lg" className="gap-1.5" onClick={() => act("approved")}>
+            <Button
+              size="lg"
+              className="gap-1.5"
+              onClick={() => act("approved")}
+              disabled={requestedCounter}
+            >
               <Check className="h-4 w-4" />
               {t("approval.action.approve")}
             </Button>
@@ -300,6 +302,7 @@ export function ApprovalCard({
               variant="ghost"
               className="gap-1.5 text-destructive hover:text-destructive hover:bg-destructive/10"
               onClick={() => act("rejected")}
+              disabled={requestedCounter}
             >
               <X className="h-4 w-4" />
               {t("approval.action.reject")}
@@ -311,17 +314,27 @@ export function ApprovalCard({
               variant="ghost"
               className="gap-1.5 text-muted-foreground hover:text-foreground disabled:opacity-40"
               onClick={() => act("counter")}
-              disabled={!canCounter}
+              disabled={!canCounter || requestedCounter}
               title={canCounter ? undefined : t("approval.action.counterDisabled")}
             >
-              <Sparkles className="h-4 w-4" />
-              {t("approval.action.counter")}
+              {requestedCounter ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {t("approval.counter.working")}
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4" />
+                  {t("approval.action.counter")}
+                </>
+              )}
             </Button>
             <Button
               size="lg"
               variant="outline"
               className="gap-1.5"
               onClick={() => act("allowed")}
+              disabled={requestedCounter}
             >
               {t("approval.action.allow")}
             </Button>

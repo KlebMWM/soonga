@@ -8,7 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { AgentIcon } from "@/components/AgentIcon";
-import { auditLog, agents, type AuditEntry } from "@/lib/mockData";
+import { agents, type AuditEntry } from "@/lib/mockData";
+import { useAuditLog } from "@/lib/stores";
 import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
 import { cn } from "@/lib/utils";
 
@@ -38,6 +39,7 @@ const DECISION_META: Record<
 export function AuditTable() {
   const t = useT();
   const { locale } = useLocale();
+  const auditLog = useAuditLog();
   const [filter, setFilter] = useState<Filter>("all");
   const [agentFilter, setAgentFilter] = useState<string>("all");
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -48,7 +50,7 @@ export function AuditTable() {
       if (agentFilter !== "all" && entry.agent !== agentFilter) return false;
       return true;
     });
-  }, [filter, agentFilter]);
+  }, [auditLog, filter, agentFilter]);
 
   const handleCopy = () => {
     const header = "timestamp,agent,merchant,amount,decision,approved_by,gas_fee,tx_hash\n";

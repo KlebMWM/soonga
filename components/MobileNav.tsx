@@ -13,7 +13,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { WalletPill } from "@/components/WalletPill";
 import { LocaleToggle } from "@/components/LocaleToggle";
-import { stats } from "@/lib/mockData";
+import { usePendingApprovals } from "@/lib/stores";
 import { useT } from "@/lib/i18n/LocaleProvider";
 import { cn } from "@/lib/utils";
 
@@ -28,7 +28,7 @@ type MobileNavItem = {
 const items: MobileNavItem[] = [
   { href: "/dashboard", labelKey: "nav.mobile.dashboard", icon: LayoutDashboard },
   { href: "/rules", labelKey: "nav.mobile.rules", icon: SlidersHorizontal },
-  { href: "/approvals", labelKey: "nav.mobile.approvals", icon: Inbox, badge: stats.pendingCount },
+  { href: "/approvals", labelKey: "nav.mobile.approvals", icon: Inbox },
   { href: "/audit", labelKey: "nav.mobile.audit", icon: ScrollText },
   {
     labelKey: "nav.mobile.guide",
@@ -40,6 +40,7 @@ const items: MobileNavItem[] = [
 export function MobileNav() {
   const pathname = usePathname();
   const t = useT();
+  const pendingCount = usePendingApprovals().length;
   return (
     <header className="md:hidden sticky top-0 z-30 bg-sidebar text-sidebar-foreground border-b border-sidebar-border">
       <div className="flex items-center gap-2 px-4 py-3">
@@ -82,9 +83,9 @@ export function MobileNav() {
             <>
               <Icon className="h-3.5 w-3.5" />
               {t(item.labelKey)}
-              {typeof item.badge === "number" && item.badge > 0 && (
+              {item.href === "/approvals" && pendingCount > 0 && (
                 <Badge className="h-4 px-1 text-[11px] font-semibold tabular-nums bg-sidebar-primary text-sidebar-primary-foreground">
-                  {item.badge}
+                  {pendingCount}
                 </Badge>
               )}
             </>
