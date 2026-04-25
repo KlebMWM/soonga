@@ -111,11 +111,13 @@ export function NotificationPermissionPill() {
     padding: "10px 12px",
   };
 
-  // Native title — surfaces the prototype scope on hover so visitors don't
-  // mistake this pill for a production push-notification system.
+  // Scope hint — surfaced both as native title (hover) AND as a small
+  // visible line beneath the pill so the disclaimer doesn't depend on
+  // hover (no-op on touch / slow on desktop). Keeps the pill itself as
+  // the only interactive surface.
   const scopeHint = t("notify.scopeHint");
 
-  return clickable ? (
+  const pill = clickable ? (
     <button
       type="button"
       onClick={handleEnable}
@@ -132,6 +134,18 @@ export function NotificationPermissionPill() {
       title={scopeHint}
     >
       {body}
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      {pill}
+      <p
+        className="text-[11px] leading-snug px-1"
+        style={{ color: "var(--text-mid)" }}
+      >
+        {scopeHint}
+      </p>
     </div>
   );
 }

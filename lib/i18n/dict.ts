@@ -28,6 +28,7 @@ export const dict: Dict = {
   "nav.mobile.approvals": { zh: "審核", en: "Approvals" },
   "nav.mobile.audit": { zh: "日誌", en: "Audit" },
   "nav.mobile.guide": { zh: "說明", en: "Guide" },
+  "nav.desktop.help": { zh: "原型說明", en: "Prototype guide" },
 
   "brand.tagline": { zh: "control hub", en: "control hub" },
   "brand.prototype": { zh: "PROTOTYPE", en: "PROTOTYPE" },

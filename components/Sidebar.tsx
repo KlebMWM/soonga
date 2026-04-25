@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   ChevronRight,
   FileText,
+  HelpCircle,
   Inbox,
   LayoutGrid,
   LucideIcon,
@@ -158,7 +159,9 @@ export function Sidebar() {
         <WalletPill variant="sidebar" />
       </div>
 
-      {/* Bottom — ambient status + identity */}
+      {/* Bottom — ambient status + identity. The Help button reuses the
+          same `soon-open-welcome` event that mobile nav dispatches, so the
+          two surfaces stay in sync without a shared store. */}
       <div
         className="mt-auto flex flex-col"
         style={{
@@ -168,6 +171,17 @@ export function Sidebar() {
         }}
       >
         <NotificationPermissionPill />
+        <button
+          type="button"
+          onClick={() =>
+            window.dispatchEvent(new CustomEvent("soon-open-welcome"))
+          }
+          className="flex items-center gap-2 text-[12px] transition-colors hover:text-foreground"
+          style={{ color: "var(--text-mid)", padding: "2px 4px" }}
+        >
+          <HelpCircle className="h-3.5 w-3.5 shrink-0" />
+          <span>{t("nav.desktop.help")}</span>
+        </button>
         <UserPill />
       </div>
     </aside>
