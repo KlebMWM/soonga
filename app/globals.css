@@ -647,13 +647,13 @@
   }
 
   .rule-pill-warn {
-    color: var(--ikea-blue-darker);
-    background: var(--yellow);
-    border: 1px solid var(--yellow-deep);
+    color: var(--amber-deep);
+    background: var(--amber-wash);
+    border: 1px solid var(--amber);
   }
 
   .rule-pill-warn .rule-pill-dot {
-    background: var(--ikea-blue-darker);
+    background: var(--amber);
   }
 
   /* Status labels — auto (text + green dot) / pending (yellow pill) */
@@ -683,9 +683,9 @@
     font-size: 11px;
     font-family: var(--font-mono);
     font-weight: 600;
-    color: var(--ikea-blue-darker);
-    background: var(--yellow);
-    border: 1.5px solid var(--ikea-blue-darker);
+    color: var(--amber-deep);
+    background: var(--amber-wash);
+    border: 1.5px solid var(--amber);
     white-space: nowrap;
   }
 
@@ -694,7 +694,7 @@
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: var(--ikea-blue-darker);
+    background: var(--amber);
     animation: hud-pulse 1.5s ease-in-out infinite;
   }
 
