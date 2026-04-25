@@ -44,7 +44,7 @@ export function simulateAgentAction(): FeedItem {
   feedCounter += 1;
 
   let status: FeedItem["status"] = "auto-approved";
-  let reason = b("白名單商戶．低於單筆規則", "Allowlisted merchant · under per-tx cap");
+  let reason = b("信任名單商戶．低於單筆規則", "Allowlisted merchant · under per-tx cap");
 
   if (!merchant.whitelist) {
     if (merchant.name === "Booking.com" || amount > 100) {

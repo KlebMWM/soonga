@@ -205,7 +205,7 @@ export const liveFeed: FeedItem[] = [
     merchant: b("JSTOR", "JSTOR"),
     amount: 0.28,
     status: "auto-approved",
-    reason: b("白名單商戶", "Allowlisted merchant"),
+    reason: b("信任名單商戶", "Allowlisted merchant"),
     relative: b("剛剛", "just now"),
   },
   {
@@ -249,7 +249,7 @@ export const liveFeed: FeedItem[] = [
     merchant: b("Stratechery", "Stratechery"),
     amount: 12.0,
     status: "auto-approved",
-    reason: b("白名單商戶", "Allowlisted merchant"),
+    reason: b("信任名單商戶", "Allowlisted merchant"),
     relative: b("2 分鐘前", "2 min ago"),
   },
   {
@@ -260,7 +260,7 @@ export const liveFeed: FeedItem[] = [
     merchant: b("Anthropic API", "Anthropic API"),
     amount: 0.34,
     status: "auto-approved",
-    reason: b("白名單商戶", "Allowlisted merchant"),
+    reason: b("信任名單商戶", "Allowlisted merchant"),
   },
   {
     id: "f7",
@@ -280,7 +280,7 @@ export const liveFeed: FeedItem[] = [
     merchant: b("Stratechery", "Stratechery"),
     amount: 12.0,
     status: "auto-approved",
-    reason: b("白名單商戶", "Allowlisted merchant"),
+    reason: b("信任名單商戶", "Allowlisted merchant"),
   },
   {
     id: "f9",
@@ -290,7 +290,7 @@ export const liveFeed: FeedItem[] = [
     merchant: b("JSTOR", "JSTOR"),
     amount: 0.25,
     status: "auto-approved",
-    reason: b("白名單商戶", "Allowlisted merchant"),
+    reason: b("信任名單商戶", "Allowlisted merchant"),
   },
   {
     id: "f10",
@@ -320,7 +320,7 @@ export const liveFeed: FeedItem[] = [
     merchant: b("OpenAI API", "OpenAI API"),
     amount: 0.08,
     status: "auto-approved",
-    reason: b("白名單商戶", "Allowlisted merchant"),
+    reason: b("信任名單商戶", "Allowlisted merchant"),
   },
   {
     id: "f13",
@@ -330,7 +330,7 @@ export const liveFeed: FeedItem[] = [
     merchant: b("Lenny's Newsletter", "Lenny's Newsletter"),
     amount: 15.0,
     status: "auto-approved",
-    reason: b("白名單商戶", "Allowlisted merchant"),
+    reason: b("信任名單商戶", "Allowlisted merchant"),
   },
   {
     id: "f14",
@@ -340,7 +340,7 @@ export const liveFeed: FeedItem[] = [
     merchant: b("Perplexity Pro", "Perplexity Pro"),
     amount: 0.2,
     status: "auto-approved",
-    reason: b("白名單商戶", "Allowlisted merchant"),
+    reason: b("信任名單商戶", "Allowlisted merchant"),
   },
   {
     id: "f15",
@@ -360,7 +360,7 @@ export const liveFeed: FeedItem[] = [
     merchant: b("Anthropic API", "Anthropic API"),
     amount: 0.45,
     status: "auto-approved",
-    reason: b("白名單商戶", "Allowlisted merchant"),
+    reason: b("信任名單商戶", "Allowlisted merchant"),
   },
   {
     id: "f17",
@@ -380,7 +380,7 @@ export const liveFeed: FeedItem[] = [
     merchant: b("The Information", "The Information"),
     amount: 10.0,
     status: "auto-approved",
-    reason: b("白名單商戶", "Allowlisted merchant"),
+    reason: b("信任名單商戶", "Allowlisted merchant"),
   },
   {
     id: "f19",
@@ -390,7 +390,7 @@ export const liveFeed: FeedItem[] = [
     merchant: b("NYT", "NYT"),
     amount: 0.05,
     status: "auto-approved",
-    reason: b("白名單商戶", "Allowlisted merchant"),
+    reason: b("信任名單商戶", "Allowlisted merchant"),
   },
   {
     id: "f20",
@@ -400,7 +400,7 @@ export const liveFeed: FeedItem[] = [
     merchant: b("OpenAI API", "OpenAI API"),
     amount: 0.18,
     status: "auto-approved",
-    reason: b("白名單商戶", "Allowlisted merchant"),
+    reason: b("信任名單商戶", "Allowlisted merchant"),
   },
 ];
 
@@ -535,7 +535,7 @@ export const pendingApprovals: PendingApproval[] = [
         "Second-best option: skip the full Nature subscription and buy the 3 articles individually on JSTOR for a one-time $18. There's an 82% chance you won't need a 4th this month (based on your reading pace).",
       ),
       triggeredRule: b(
-        "Agent 備案．用白名單商戶取代訂閱",
+        "Agent 備案．用信任名單商戶取代訂閱",
         "Agent counter-offer · allowlisted merchant instead of subscription",
       ),
       merchantTrust: "allowlisted",
@@ -626,7 +626,7 @@ export const auditLog: AuditEntry[] = [
     decision: "auto-approved",
     approvedBy: "system",
     reasoning: b(
-      "白名單商戶、低於單筆 5 USDC 限額、本月類別用量 42% 仍在安全區間。",
+      "信任名單商戶、低於單筆 5 USDC 限額、本月類別用量 42% 仍在安全區間。",
       "Allowlisted merchant · under $5 per-tx cap · category usage at 42% still within safe range.",
     ),
     txHash: "0xdef2a8...3c91",
@@ -642,7 +642,7 @@ export const auditLog: AuditEntry[] = [
     decision: "auto-approved",
     approvedBy: "system",
     reasoning: b(
-      "白名單商戶、訂閱類型已有信任紀錄、本月第一筆此商戶扣款符合月付頻率。",
+      "信任名單商戶、訂閱類型已有信任紀錄、本月第一筆此商戶扣款符合月付頻率。",
       "Allowlisted merchant · trusted subscription type · first charge this month matches expected monthly cadence.",
     ),
     txHash: "0x882ef1...4b12",
@@ -658,7 +658,7 @@ export const auditLog: AuditEntry[] = [
     decision: "rejected",
     approvedBy: "system",
     reasoning: b(
-      "偵測到商戶未通過身分驗證且手續費異常（佔交易額 18%）。已自動加入黑名單。",
+      "偵測到商戶未通過身分驗證且手續費異常（佔交易額 18%）。已自動加入封鎖名單。",
       "Detected an unverified merchant with abnormally high fees (18% of transaction). Auto-blocklisted.",
     ),
     userAction: b("系統自動拒絕", "System auto-rejected"),
@@ -678,7 +678,7 @@ export const auditLog: AuditEntry[] = [
       "京都賞櫻行程的新幹線票，已比對時間與你的日曆。",
       "Shinkansen ticket for the Kyoto cherry-blossom trip. Cross-checked with your calendar.",
     ),
-    userAction: b("核准並加入白名單", "Approved & allowlisted"),
+    userAction: b("核准並加入信任名單", "Approved & allowlisted"),
     txHash: "0x553cb9...7a22",
     gasFee: 0.0029,
   },
@@ -692,7 +692,7 @@ export const auditLog: AuditEntry[] = [
     decision: "auto-approved",
     approvedBy: "system",
     reasoning: b(
-      "白名單商戶、符合本月 API 類別用量。",
+      "信任名單商戶、符合本月 API 類別用量。",
       "Allowlisted merchant · within this month's API-category budget.",
     ),
     txHash: "0x7712da...8801",
@@ -708,7 +708,7 @@ export const auditLog: AuditEntry[] = [
     decision: "auto-approved",
     approvedBy: "system",
     reasoning: b(
-      "白名單商戶、單次論文查詢。",
+      "信任名單商戶、單次論文查詢。",
       "Allowlisted merchant · one-off article lookup.",
     ),
     txHash: "0x21abb3...0055",
@@ -724,7 +724,7 @@ export const auditLog: AuditEntry[] = [
     decision: "auto-approved",
     approvedBy: "system",
     reasoning: b(
-      "白名單商戶、月付第一次扣款符合頻率。",
+      "信任名單商戶、月付第一次扣款符合頻率。",
       "Allowlisted merchant · first monthly charge matches expected cadence.",
     ),
     txHash: "0x998ec1...2344",
@@ -772,7 +772,7 @@ export const auditLog: AuditEntry[] = [
     amount: 0.2,
     decision: "auto-approved",
     approvedBy: "system",
-    reasoning: b("白名單商戶、使用量正常。", "Allowlisted merchant · usage within normal range."),
+    reasoning: b("信任名單商戶、使用量正常。", "Allowlisted merchant · usage within normal range."),
     txHash: "0x77aacd...9911",
     gasFee: 0.0013,
   },
@@ -785,7 +785,7 @@ export const auditLog: AuditEntry[] = [
     amount: 10.0,
     decision: "auto-approved",
     approvedBy: "system",
-    reasoning: b("白名單商戶、月付。", "Allowlisted merchant · monthly subscription."),
+    reasoning: b("信任名單商戶、月付。", "Allowlisted merchant · monthly subscription."),
     txHash: "0x556fde...1e02",
     gasFee: 0.0022,
   },
@@ -799,7 +799,7 @@ export const auditLog: AuditEntry[] = [
     decision: "auto-approved",
     approvedBy: "system",
     reasoning: b(
-      "白名單商戶、單篇付費閱讀。",
+      "信任名單商戶、單篇付費閱讀。",
       "Allowlisted merchant · single-article pay-per-read.",
     ),
     txHash: "0x99eedd...2203",

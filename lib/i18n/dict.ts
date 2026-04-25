@@ -14,11 +14,11 @@ export const dict: Dict = {
   // ==================== Nav ====================
   "nav.dashboard.label": { zh: "指揮中心", en: "Command Center" },
   "nav.dashboard.sub": { zh: "即時總覽", en: "Live overview" },
-  "nav.rules.label": { zh: "規則引擎", en: "Rule Engine" },
+  "nav.rules.label": { zh: "花費規則", en: "Rule Engine" },
   "nav.rules.sub": { zh: "額度與信任名單", en: "Budgets & trust lists" },
-  "nav.approvals.label": { zh: "審核佇列", en: "Approvals" },
+  "nav.approvals.label": { zh: "待我決定", en: "Approvals" },
   "nav.approvals.sub": { zh: "等候審核", en: "Waiting on you" },
-  "nav.audit.label": { zh: "審計軌跡", en: "Audit Trail" },
+  "nav.audit.label": { zh: "決策紀錄", en: "Audit Trail" },
   "nav.audit.sub": { zh: "決策日誌", en: "Decision log" },
   "nav.guide.label": { zh: "使用說明", en: "Guide" },
   "nav.guide.sub": { zh: "3 分鐘快速上手", en: "3-minute walkthrough" },
@@ -283,13 +283,13 @@ export const dict: Dict = {
   "approvals.eyebrow": { zh: "Approvals", en: "Approvals" },
   "approvals.title": { zh: "等候審核", en: "Waiting on you" },
   "approvals.desc": {
-    zh: "這裡是所有超出規則邊界的 AI 助理請求。每張卡都把 AI 助理的推理翻成人話，幫你 30 秒內決定放行或終止。",
+    zh: "這裡會列出超出規則的 AI 支付請求。每張卡都會說明它為什麼想花這筆錢，讓你快速決定核准、拒絕，或請 AI 找替代方案。",
     en: "Agent requests that fell outside your rules. Each card translates the agent's reasoning into plain language so you can decide in under 30 seconds.",
   },
   "approvals.badge": { zh: "筆待你決定", en: "need your decision" },
   "approvals.next": { zh: "下一筆待審核", en: "Next approval" },
   "approvals.empty": {
-    zh: "所有待審處理完，這裡就會乾淨．AI 助理會自己在規則內做事．你什麼都不用做。",
+    zh: "目前沒有待審請求。AI 會照規則處理小額支付，有需要你判斷時再提醒你。",
     en: "When everything's handled, this page goes calm. Agents work within the rules. You don't have to do anything.",
   },
 
@@ -300,6 +300,33 @@ export const dict: Dict = {
   "approval.counterBadge": { zh: "AI 助理備案", en: "Agent's counter-offer" },
   "approval.requestedPay": { zh: "請求支付", en: "is requesting" },
   "approval.why": { zh: "AI 助理為什麼要花這筆錢", en: "Why the agent wants to spend this" },
+  "approval.suggestion.label": { zh: "AI 建議", en: "AI suggests" },
+  "approval.suggestion.approve": {
+    zh: "核准這一次",
+    en: "Approve this one",
+  },
+  "approval.suggestion.reject": { zh: "拒絕這筆", en: "Reject this" },
+  "approval.suggestion.counter": {
+    zh: "請 AI 找替代方案",
+    en: "Ask AI for an alternative",
+  },
+  "approval.suggestion.reason.counter": {
+    zh: "首次商戶、金額超過單筆上限，建議請 AI 找更省的方案。",
+    en: "First-time merchant and over the per-tx cap — ask for a cheaper alternative.",
+  },
+  "approval.suggestion.reason.reject": {
+    zh: "商戶風險偏高，建議直接拒絕。",
+    en: "Merchant looks risky — better to reject.",
+  },
+  "approval.suggestion.reason.approveOnce": {
+    zh: "首次商戶，建議先核准這次再決定要不要長期信任。",
+    en: "First-time merchant — approve once before deciding on long-term trust.",
+  },
+  "approval.suggestion.reason.approveSafe": {
+    zh: "符合既有規則，可以核准。",
+    en: "Matches existing rules — safe to approve.",
+  },
+  "approval.context.expand": { zh: "詳細脈絡", en: "More context" },
   "approval.context": { zh: "脈絡", en: "Context" },
   "approval.context.taskId": { zh: "目前任務", en: "Current task" },
   "approval.context.spentOnTask": { zh: "任務已花", en: "Spent on task" },
@@ -309,19 +336,19 @@ export const dict: Dict = {
   "approval.context.similarUnit": { zh: "筆", en: "" },
   "approval.triggered": { zh: "觸發規則：", en: "Triggered rule: " },
 
-  "approval.trust.allowlisted": { zh: "白名單商戶", en: "Allowlisted merchant" },
-  "approval.trust.blocklisted": { zh: "黑名單商戶", en: "Blocklisted merchant" },
+  "approval.trust.allowlisted": { zh: "信任名單商戶", en: "Allowlisted merchant" },
+  "approval.trust.blocklisted": { zh: "封鎖名單商戶", en: "Blocklisted merchant" },
   "approval.trust.review": { zh: "審核中．首次交易", en: "Under review — first transaction" },
   "approval.trust.firstTime": { zh: "首次交易", en: "First transaction" },
 
   "approval.action.approve": { zh: "單次核准", en: "Approve once" },
-  "approval.action.allow": { zh: "核准並加入白名單", en: "Approve & allowlist" },
-  "approval.action.counter": { zh: "要求 AI 助理提備案", en: "Ask for an alternative" },
+  "approval.action.allow": { zh: "核准並加入信任名單", en: "Approve & allowlist" },
+  "approval.action.counter": { zh: "請 AI 找替代方案", en: "Ask for an alternative" },
   "approval.action.counterDisabled": {
     zh: "這筆沒有備案可提",
     en: "No alternative is available for this request",
   },
-  "approval.action.reject": { zh: "終止這筆", en: "Reject" },
+  "approval.action.reject": { zh: "拒絕這筆", en: "Reject" },
 
   "approval.handled.title": { zh: "已處理 · {merchant}", en: "Handled · {merchant}" },
   "approval.handled.hint": { zh: "下一筆審核會自動遞補到這裡", en: "Next approval will take this spot" },
@@ -332,12 +359,12 @@ export const dict: Dict = {
     zh: "{merchant}．{amount} USDC．單次生效",
     en: "{merchant}．{amount} USDC．One-time",
   },
-  "approval.toast.allowed.title": { zh: "已核准並加入白名單", en: "Approved & allowlisted" },
+  "approval.toast.allowed.title": { zh: "已核准並加入信任名單", en: "Approved & allowlisted" },
   "approval.toast.allowed.desc": {
     zh: "{merchant} 未來將自動放行",
     en: "{merchant} will pass automatically from now on",
   },
-  "approval.toast.rejected.title": { zh: "已終止這筆交易", en: "Transaction rejected" },
+  "approval.toast.rejected.title": { zh: "已拒絕這筆交易", en: "Transaction rejected" },
   "approval.toast.rejected.desc": { zh: "{agent} 已被通知需重新規劃", en: "{agent} has been notified to retry" },
   "approval.toast.counter.title": { zh: "已要求 {agent} 提出備案", en: "Asked {agent} for an alternative" },
   "approval.toast.counter.desc": {
@@ -374,11 +401,11 @@ export const dict: Dict = {
   },
   "rules.trust.title": { zh: "商戶信任名單", en: "Merchant trust lists" },
   "rules.trust.desc": {
-    zh: "白名單自動放行、黑名單直接拒絕、審核中的商戶每一筆都要過你的眼。",
+    zh: "信任名單自動放行、封鎖名單直接拒絕、審核中的商戶每一筆都要過你的眼。",
     en: "Allowlisted merchants pass automatically, blocklisted ones get denied, merchants under review need your approval each time.",
   },
-  "rules.trust.tab.allow": { zh: "白名單", en: "Allowlist" },
-  "rules.trust.tab.block": { zh: "黑名單", en: "Blocklist" },
+  "rules.trust.tab.allow": { zh: "信任名單", en: "Allowlist" },
+  "rules.trust.tab.block": { zh: "封鎖名單", en: "Blocklist" },
   "rules.trust.tab.review": { zh: "審核中", en: "Under review" },
   "rules.trust.manage": { zh: "管理", en: "Manage" },
   "rules.trust.remove": { zh: "移除", en: "Remove" },
@@ -471,19 +498,49 @@ export const dict: Dict = {
   "audit.decision.approved": { zh: "核准", en: "Approved" },
   "audit.decision.rejected": { zh: "拒絕", en: "Rejected" },
   "audit.decision.auto": { zh: "自動放行", en: "Auto" },
-  "audit.expand.reasoning": { zh: "AI 助理推理", en: "Agent reasoning" },
+  "audit.expand.reasoning": { zh: "AI 判斷理由", en: "Agent reasoning" },
   "audit.expand.userAction": { zh: "你的決定", en: "Your decision" },
   "audit.field.tx": { zh: "鏈上回執", en: "On-chain receipt" },
   "audit.field.gas": { zh: "Gas 費用", en: "Gas fee" },
   "audit.field.approvedBy": { zh: "審核者", en: "Decided by" },
   "audit.field.time": { zh: "時間戳", en: "Timestamp" },
   "audit.approvedBy.user": { zh: "Megan（你）", en: "Megan (you)" },
-  "audit.approvedBy.system": { zh: "系統規則引擎", en: "System rule engine" },
+  "audit.approvedBy.system": { zh: "系統花費規則", en: "System rule engine" },
   "audit.eu": { zh: "EU AI Act · Art. 14 合規可追溯", en: "EU AI Act · Art. 14 traceable" },
 
   // ==================== Welcome modal ====================
   "welcome.badge": { zh: "Interactive Prototype", en: "Interactive Prototype" },
   "welcome.timeHint": { zh: "閱讀時間約 3 分鐘", en: "~3 min read" },
+  /* Trimmed welcome — three lines + three quick actions. The longer Phase 2
+     / limits / module-walkthrough copy stays in the dict as legacy keys but
+     is no longer rendered. */
+  "welcome.summary.line1": {
+    zh: "這是一個 AI 支付控制台。",
+    en: "An AI payment control hub.",
+  },
+  "welcome.summary.line2": {
+    zh: "AI 可以在規則內自動花錢，超出邊界時會先問你。",
+    en: "AI spends within your rules and asks first when something goes outside the lines.",
+  },
+  "welcome.summary.line3": {
+    zh: "所有操作都是模擬資料，不會真的付款或上鏈。",
+    en: "Everything here is mock data — nothing actually pays or hits a chain.",
+  },
+  "welcome.action.dashboard.title": { zh: "看 Dashboard", en: "Check the Dashboard" },
+  "welcome.action.dashboard.desc": {
+    zh: "現在有沒有事要你決定",
+    en: "See what needs your decision",
+  },
+  "welcome.action.rules.title": { zh: "去 Rules", en: "Open Rules" },
+  "welcome.action.rules.desc": {
+    zh: "用一句話新增花費規則",
+    en: "Add a spending rule in one sentence",
+  },
+  "welcome.action.approvals.title": { zh: "去 Approvals", en: "Open Approvals" },
+  "welcome.action.approvals.desc": {
+    zh: "核准、拒絕，或請 AI 找替代方案",
+    en: "Approve, reject, or ask AI for an alternative",
+  },
   "welcome.title": { zh: "歡迎來到 soon-ga.agent control hub", en: "Welcome to soon-ga.agent control hub" },
   "welcome.desc": {
     zh: "這是 AI 助理支付控制層的互動原型。所有資料都是模擬的，不會真的付錢、不會上鏈、你的操作也不會離開這個瀏覽器。",
@@ -496,7 +553,7 @@ export const dict: Dict = {
     en: "Triggers a simulated agent transaction. A new one also appears every 3 seconds",
   },
   "welcome.s2.title": {
-    zh: "去 /approvals 按「要求 AI 助理提備案」",
+    zh: "去 /approvals 按「請 AI 找替代方案」",
     en: "Hit \"Ask for an alternative\" on /approvals",
   },
   "welcome.s2.desc": {
@@ -538,14 +595,14 @@ export const dict: Dict = {
     zh: "一頁看此刻有沒有事要決定．沒事就安靜、有事亮橘色。",
     en: "A single page answering: do I need to decide anything right now? Calm when no, alerts when yes.",
   },
-  "welcome.module.rules.title": { zh: "規則引擎（Rule Engine）", en: "Rule Engine" },
+  "welcome.module.rules.title": { zh: "花費規則（Rule Engine）", en: "Rule Engine" },
   "welcome.module.rules.desc": {
     zh: "類別預算、單筆上限、商戶信任名單三層決定 AI 助理的自主邊界。",
     en: "Three layers: category budgets, per-transaction caps, and merchant trust lists.",
   },
   "welcome.module.approvals.title": { zh: "等候審核（Approvals）", en: "Approvals" },
   "welcome.module.approvals.desc": {
-    zh: "AI 助理推理翻成人話．30 秒內決定放行、拒絕、或請它提備案。",
+    zh: "AI 判斷理由翻成人話．30 秒內決定核准、拒絕，或請 AI 找替代方案。",
     en: "Agent reasoning in plain language. Decide in 30 seconds: approve, reject, or ask for a counter-offer.",
   },
   "welcome.module.audit.title": { zh: "決策日誌（Audit Trail）", en: "Audit Trail" },
@@ -569,7 +626,7 @@ export const dict: Dict = {
     en: "x402 handshake: real HTTP 402 protocol + USDC transactions",
   },
   "welcome.phase2.item3": {
-    zh: "規則引擎上鏈 enforce（ERC-4337 Session Keys 或鏈下 relayer）",
+    zh: "花費規則上鏈 enforce（ERC-4337 Session Keys 或鏈下 relayer）",
     en: "On-chain rule enforcement (ERC-4337 Session Keys or off-chain relayer)",
   },
   "welcome.phase2.item4": {
@@ -626,16 +683,16 @@ export const dict: Dict = {
   },
 
   // ==================== Trust list add ====================
-  "trust.add.allow": { zh: "加入白名單", en: "Add to allowlist" },
-  "trust.add.block": { zh: "加入黑名單", en: "Add to blocklist" },
-  "trust.add.title.allow": { zh: "新增白名單商戶", en: "Add merchant to allowlist" },
-  "trust.add.title.block": { zh: "新增黑名單商戶", en: "Add merchant to blocklist" },
+  "trust.add.allow": { zh: "加入信任名單", en: "Add to allowlist" },
+  "trust.add.block": { zh: "加入封鎖名單", en: "Add to blocklist" },
+  "trust.add.title.allow": { zh: "新增信任名單商戶", en: "Add merchant to allowlist" },
+  "trust.add.title.block": { zh: "新增封鎖名單商戶", en: "Add merchant to blocklist" },
   "trust.add.desc.allow": {
-    zh: "白名單商戶以後 AI 助理碰到都自動放行，不用每次找你審核。加入前會先做線上安全偵測。",
+    zh: "加入信任名單後，AI 遇到這個商戶可以自動放行，不會每次都打擾你。加入前會先做安全風險預檢（模擬）。",
     en: "Allowlisted merchants will auto-approve without asking you each time. We run a safety check before adding.",
   },
   "trust.add.desc.block": {
-    zh: "黑名單商戶 AI 助理碰到會直接拒絕。加入前會先做線上安全偵測確認原因。",
+    zh: "加入封鎖名單後，AI 遇到這個商戶會直接擋下付款。加入前會先做安全風險預檢（模擬）確認原因。",
     en: "Blocklisted merchants are rejected outright. We run a safety check first to confirm the reason.",
   },
   "trust.add.merchantLabel": { zh: "商戶名稱或網址", en: "Merchant name or URL" },
@@ -649,19 +706,19 @@ export const dict: Dict = {
     zh: "為什麼要擋這家商戶？（一句話描述）",
     en: "Why are you blocking this merchant? (one line)",
   },
-  "trust.add.submit.allow": { zh: "加入白名單", en: "Add to allowlist" },
-  "trust.add.submit.block": { zh: "加入黑名單", en: "Add to blocklist" },
+  "trust.add.submit.allow": { zh: "加入信任名單", en: "Add to allowlist" },
+  "trust.add.submit.block": { zh: "加入封鎖名單", en: "Add to blocklist" },
   "trust.add.confirm.risky": {
-    zh: "⚠ 偵測到這家商戶有高風險．還是要加白名單嗎？",
+    zh: "⚠ 偵測到這家商戶有高風險．還是要加信任名單嗎？",
     en: "⚠ Warning: risk indicators detected. Are you sure you want to allowlist this?",
   },
   "trust.add.confirm.safe": {
-    zh: "這家商戶看起來沒有風險訊號．還是要加黑名單嗎？",
+    zh: "這家商戶看起來沒有風險訊號．還是要加封鎖名單嗎？",
     en: "Note: no risk signals detected. Are you sure you want to blocklist this?",
   },
   "trust.add.missing": { zh: "先填商戶名稱", en: "Please enter a merchant name first" },
   "trust.add.toast.allow.title": {
-    zh: "已加入白名單：{merchant}",
+    zh: "已加入信任名單：{merchant}",
     en: "Added {merchant} to allowlist",
   },
   "trust.add.toast.allow.desc": {
@@ -669,7 +726,7 @@ export const dict: Dict = {
     en: "Agents will auto-approve this merchant from now on",
   },
   "trust.add.toast.block.title": {
-    zh: "已加入黑名單：{merchant}",
+    zh: "已加入封鎖名單：{merchant}",
     en: "Added {merchant} to blocklist",
   },
   "trust.add.toast.block.desc": {
@@ -678,7 +735,7 @@ export const dict: Dict = {
   },
 
   // Safety check UI
-  "safety.title": { zh: "線上安全偵測", en: "Online safety check" },
+  "safety.title": { zh: "安全風險預檢（模擬）", en: "Safety pre-check (mock)" },
   "safety.checking": { zh: "檢查中⋯", en: "Checking⋯" },
   "safety.score": { zh: "安全分數", en: "Safety score" },
   "safety.level.safe": { zh: "安全", en: "Safe" },
@@ -702,7 +759,7 @@ export const dict: Dict = {
     en: "Describe it in plain language; AI turns it into a concrete rule.",
   },
   "rules.unified.chooser.ai.example": {
-    zh: "例：「每月 50 USDC 買學術論文」、「Booking.com 加入白名單」",
+    zh: "例：「每月 50 USDC 買學術論文」、「Booking.com 加入信任名單」",
     en: 'e.g. "$50/mo for academic papers", "allowlist Booking.com"',
   },
   "rules.ai.inputLabel": { zh: "用自己的話描述規則", en: "Describe the rule" },
@@ -720,7 +777,7 @@ export const dict: Dict = {
     en: "AI suggests a category budget",
   },
   "rules.ai.result.draftAllow": {
-    zh: "AI 建議加入白名單",
+    zh: "AI 建議加入信任名單",
     en: "AI suggests an allowlist entry",
   },
   "rules.ai.result.categoryName": { zh: "類別名稱", en: "Category name" },
@@ -748,6 +805,18 @@ export const dict: Dict = {
     zh: "切換到封鎖商戶",
     en: "Switch to blocklist",
   },
+  "rules.ai.dialog.title": {
+    zh: "用一句話告訴 AI",
+    en: "Describe it to AI",
+  },
+  "rules.ai.dialog.desc": {
+    zh: "AI 會把你的描述整理成一條花費規則，你可以直接建立或繼續微調。",
+    en: "AI turns your description into a concrete rule. Create it directly or fine-tune the fields first.",
+  },
+  "rules.ai.manualAdjust": {
+    zh: "手動調整",
+    en: "Manual adjust",
+  },
   "rules.unified.chooser.category.title": { zh: "類別預算", en: "Category budget" },
   "rules.unified.chooser.category.desc": {
     zh: "給某類支出設月度上限與單筆限額",
@@ -757,7 +826,7 @@ export const dict: Dict = {
     zh: "例：AI 服務每月 $80、單筆上限 $5",
     en: "e.g. AI services — $80/mo, $5 max per transaction",
   },
-  "rules.unified.chooser.allow.title": { zh: "放行商戶（白名單）", en: "Allowlist merchant" },
+  "rules.unified.chooser.allow.title": { zh: "信任商戶", en: "Allowlist merchant" },
   "rules.unified.chooser.allow.desc": {
     zh: "這家商戶我信任．AI 助理碰到它就自動放行",
     en: "Trust this merchant — agents auto-approve every time",
@@ -766,7 +835,7 @@ export const dict: Dict = {
     zh: "例：OpenAI API、NYT",
     en: "e.g. OpenAI API, NYT",
   },
-  "rules.unified.chooser.block.title": { zh: "封鎖商戶（黑名單）", en: "Blocklist merchant" },
+  "rules.unified.chooser.block.title": { zh: "封鎖商戶", en: "Blocklist merchant" },
   "rules.unified.chooser.block.desc": {
     zh: "這家商戶一律不能付錢．AI 助理碰到會被直接擋掉",
     en: "Never allow payments here — agents get rejected outright",
