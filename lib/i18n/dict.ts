@@ -451,7 +451,7 @@ export const dict: Dict = {
   "rules.eyebrow": { zh: "Rule Engine", en: "Rule Engine" },
   "rules.title": { zh: "額度與信任名單", en: "Budgets & trust lists" },
   "rules.desc": {
-    zh: "三層管 AI 助理：類別額度、單筆上限、信任名單。超出邊界就會自動進 Approvals 排隊等你決定。",
+    zh: "三層管 AI 助理：類別額度、單筆上限、信任名單。超出邊界就會自動進入待審核等你確認。",
     en: "Three layers define agent autonomy: category budgets, per-transaction caps, and merchant trust lists. Anything over the line joins your approval queue.",
   },
   "rules.newRule": { zh: "新增規則", en: "New rule" },
