@@ -69,7 +69,7 @@ export default function ApprovalsPage() {
       const next = buildCounterApproval(original);
       if (!next) return;
       setApprovals((prev) => [...prev, next]);
-      toast.info(t("approval.toast.counterArrived.title", { agent: original.agent }), {
+      toast.info(t("approval.toast.counterArrived.title", { agent: t(`agent.${original.agent}.name`) }), {
         description: t("approval.toast.counterArrived.desc", {
           merchant: next.merchant[locale],
           amount: next.amount.toFixed(2),

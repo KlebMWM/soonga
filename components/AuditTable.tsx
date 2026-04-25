@@ -84,7 +84,7 @@ export function AuditTable() {
             <option value="all">{t("audit.filter.allAgents")}</option>
             {agents.map((a) => (
               <option key={a.id} value={a.name}>
-                {a.name}
+                {t(`agent.${a.name}.name`)}
               </option>
             ))}
           </select>
@@ -113,7 +113,7 @@ export function AuditTable() {
                 <AgentIcon agent={entry.agent} size="md" />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-medium text-sm">{entry.agent}</span>
+                    <span className="font-medium text-sm">{t(`agent.${entry.agent}.name`)}</span>
                     <span className="text-muted-foreground text-sm">→</span>
                     <span className="text-sm">{merchant}</span>
                     <span className="text-sm tabular-nums text-muted-foreground">

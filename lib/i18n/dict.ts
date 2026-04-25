@@ -3,6 +3,14 @@ import type { Locale } from "./config";
 type Dict = Record<string, { zh: string; en: string }>;
 
 export const dict: Dict = {
+  // ==================== Agents ====================
+  // Functional names (no human personas). Looked up via
+  // `t(\`agent.${id}.name\`)` wherever the agent surfaces in UI text.
+  "agent.travel.name": { zh: "旅行助理", en: "Travel" },
+  "agent.research.name": { zh: "研究助理", en: "Research" },
+  "agent.shopping.name": { zh: "採購助理", en: "Shopping" },
+  "agent.newsletter.name": { zh: "內容彙整", en: "Curator" },
+
   // ==================== Nav ====================
   "nav.dashboard.label": { zh: "Command Center", en: "Command Center" },
   "nav.dashboard.sub": { zh: "即時總覽", en: "Live overview" },
@@ -699,8 +707,8 @@ export const dict: Dict = {
   },
   "rules.ai.inputLabel": { zh: "用自己的話描述規則", en: "Describe the rule" },
   "rules.ai.placeholder": {
-    zh: "例：讓 ResearchBot 每月最多花 50 USDC 在學術論文上",
-    en: "e.g. Let ResearchBot spend up to $50/month on academic papers",
+    zh: "例：讓研究助理每月最多花 50 USDC 在學術論文上",
+    en: "e.g. Let Research spend up to $50/month on academic papers",
   },
   "rules.ai.parseButton": { zh: "✨ 讓 AI 解析", en: "✨ Ask AI to parse" },
   "rules.ai.parsing": { zh: "解析中……", en: "Parsing…" },

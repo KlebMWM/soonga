@@ -2,9 +2,13 @@ import { b, type Bilingual } from "./i18n/config";
 
 export type Agent = {
   id: string;
-  /** Canonical id used as the lookup key across data and AgentIcon. */
+  /** Canonical lowercase id ("travel", "research", "shopping", "newsletter").
+   *  Used as the lookup key across mock data, the simulator, AgentIcon's
+   *  AGENT_MAP, and the i18n keys (`agent.${name}.name`). */
   name: string;
-  /** Human-readable display name shown in UI ("Kai", "Maya", etc.). */
+  /** Default display label (Chinese functional name). Most UI sites should
+   *  resolve via i18n — `t(\`agent.${name}.name\`)` — for locale awareness;
+   *  this field is the static fallback. */
   displayName: string;
   avatar: string;
   role: Bilingual;
@@ -84,8 +88,8 @@ export type AuditEntry = {
 export const agents: Agent[] = [
   {
     id: "a1",
-    name: "ResearchBot",
-    displayName: "Kai",
+    name: "research",
+    displayName: "研究助理",
     avatar: "🧠",
     role: b("學術研究助理", "Academic research assistant"),
     status: "active",
@@ -94,8 +98,8 @@ export const agents: Agent[] = [
   },
   {
     id: "a2",
-    name: "TravelAgent",
-    displayName: "Maya",
+    name: "travel",
+    displayName: "旅行助理",
     avatar: "✈️",
     role: b("差旅規劃", "Travel planner"),
     status: "active",
@@ -104,8 +108,8 @@ export const agents: Agent[] = [
   },
   {
     id: "a3",
-    name: "ShoppingBot",
-    displayName: "Rin",
+    name: "shopping",
+    displayName: "採購助理",
     avatar: "🛒",
     role: b("日用採購", "Daily shopping"),
     status: "paused",
@@ -114,8 +118,8 @@ export const agents: Agent[] = [
   },
   {
     id: "a4",
-    name: "NewsletterCurator",
-    displayName: "Lumi",
+    name: "newsletter",
+    displayName: "內容彙整",
     avatar: "📰",
     role: b("電子報訂閱管理", "Newsletter subscriptions"),
     status: "active",
@@ -196,7 +200,7 @@ export const liveFeed: FeedItem[] = [
   {
     id: "f1",
     time: "23:19",
-    agent: "ResearchBot",
+    agent: "research",
     agentAvatar: "🧠",
     merchant: b("JSTOR", "JSTOR"),
     amount: 0.28,
@@ -207,7 +211,7 @@ export const liveFeed: FeedItem[] = [
   {
     id: "f2",
     time: "23:19",
-    agent: "ResearchBot",
+    agent: "research",
     agentAvatar: "🧠",
     merchant: b("OpenAI API", "OpenAI API"),
     amount: 0.09,
@@ -218,7 +222,7 @@ export const liveFeed: FeedItem[] = [
   {
     id: "f3",
     time: "23:19",
-    agent: "ShoppingBot",
+    agent: "shopping",
     agentAvatar: "🛒",
     merchant: b("Uniqlo JP", "Uniqlo JP"),
     amount: 16.54,
@@ -229,7 +233,7 @@ export const liveFeed: FeedItem[] = [
   {
     id: "f4",
     time: "23:18",
-    agent: "TravelAgent",
+    agent: "travel",
     agentAvatar: "✈️",
     merchant: b("Booking.com", "Booking.com"),
     amount: 132.73,
@@ -240,7 +244,7 @@ export const liveFeed: FeedItem[] = [
   {
     id: "f5",
     time: "23:18",
-    agent: "NewsletterCurator",
+    agent: "newsletter",
     agentAvatar: "📰",
     merchant: b("Stratechery", "Stratechery"),
     amount: 12.0,
@@ -251,7 +255,7 @@ export const liveFeed: FeedItem[] = [
   {
     id: "f6",
     time: "07:58",
-    agent: "ResearchBot",
+    agent: "research",
     agentAvatar: "🧠",
     merchant: b("Anthropic API", "Anthropic API"),
     amount: 0.34,
@@ -261,7 +265,7 @@ export const liveFeed: FeedItem[] = [
   {
     id: "f7",
     time: "07:42",
-    agent: "ShoppingBot",
+    agent: "shopping",
     agentAvatar: "🛒",
     merchant: b("Amazon Gift Card", "Amazon Gift Card"),
     amount: 30.0,
@@ -271,7 +275,7 @@ export const liveFeed: FeedItem[] = [
   {
     id: "f8",
     time: "07:20",
-    agent: "NewsletterCurator",
+    agent: "newsletter",
     agentAvatar: "📰",
     merchant: b("Stratechery", "Stratechery"),
     amount: 12.0,
@@ -281,7 +285,7 @@ export const liveFeed: FeedItem[] = [
   {
     id: "f9",
     time: "06:55",
-    agent: "ResearchBot",
+    agent: "research",
     agentAvatar: "🧠",
     merchant: b("JSTOR", "JSTOR"),
     amount: 0.25,
@@ -291,7 +295,7 @@ export const liveFeed: FeedItem[] = [
   {
     id: "f10",
     time: "06:30",
-    agent: "ResearchBot",
+    agent: "research",
     agentAvatar: "🧠",
     merchant: b("Nature 期刊", "Nature Journal"),
     amount: 35.0,
@@ -301,7 +305,7 @@ export const liveFeed: FeedItem[] = [
   {
     id: "f11",
     time: "06:10",
-    agent: "TravelAgent",
+    agent: "travel",
     agentAvatar: "✈️",
     merchant: b("Uber Japan", "Uber Japan"),
     amount: 12.3,
@@ -311,7 +315,7 @@ export const liveFeed: FeedItem[] = [
   {
     id: "f12",
     time: "05:48",
-    agent: "ResearchBot",
+    agent: "research",
     agentAvatar: "🧠",
     merchant: b("OpenAI API", "OpenAI API"),
     amount: 0.08,
@@ -321,7 +325,7 @@ export const liveFeed: FeedItem[] = [
   {
     id: "f13",
     time: "05:22",
-    agent: "NewsletterCurator",
+    agent: "newsletter",
     agentAvatar: "📰",
     merchant: b("Lenny's Newsletter", "Lenny's Newsletter"),
     amount: 15.0,
@@ -331,7 +335,7 @@ export const liveFeed: FeedItem[] = [
   {
     id: "f14",
     time: "04:55",
-    agent: "ResearchBot",
+    agent: "research",
     agentAvatar: "🧠",
     merchant: b("Perplexity Pro", "Perplexity Pro"),
     amount: 0.2,
@@ -341,7 +345,7 @@ export const liveFeed: FeedItem[] = [
   {
     id: "f15",
     time: "04:30",
-    agent: "TravelAgent",
+    agent: "travel",
     agentAvatar: "✈️",
     merchant: b("Klook Tokyo", "Klook Tokyo"),
     amount: 42.0,
@@ -351,7 +355,7 @@ export const liveFeed: FeedItem[] = [
   {
     id: "f16",
     time: "04:02",
-    agent: "ResearchBot",
+    agent: "research",
     agentAvatar: "🧠",
     merchant: b("Anthropic API", "Anthropic API"),
     amount: 0.45,
@@ -361,7 +365,7 @@ export const liveFeed: FeedItem[] = [
   {
     id: "f17",
     time: "03:40",
-    agent: "ShoppingBot",
+    agent: "shopping",
     agentAvatar: "🛒",
     merchant: b("Uniqlo JP", "Uniqlo JP"),
     amount: 28.0,
@@ -371,7 +375,7 @@ export const liveFeed: FeedItem[] = [
   {
     id: "f18",
     time: "03:18",
-    agent: "NewsletterCurator",
+    agent: "newsletter",
     agentAvatar: "📰",
     merchant: b("The Information", "The Information"),
     amount: 10.0,
@@ -381,7 +385,7 @@ export const liveFeed: FeedItem[] = [
   {
     id: "f19",
     time: "02:55",
-    agent: "ResearchBot",
+    agent: "research",
     agentAvatar: "🧠",
     merchant: b("NYT", "NYT"),
     amount: 0.05,
@@ -391,7 +395,7 @@ export const liveFeed: FeedItem[] = [
   {
     id: "f20",
     time: "02:30",
-    agent: "ResearchBot",
+    agent: "research",
     agentAvatar: "🧠",
     merchant: b("OpenAI API", "OpenAI API"),
     amount: 0.18,
@@ -466,7 +470,7 @@ export const burnRate = burnRate7d;
 export const pendingApprovals: PendingApproval[] = [
   {
     id: "ap_001",
-    agent: "TravelAgent",
+    agent: "travel",
     agentAvatar: "✈️",
     merchant: b("Booking.com", "Booking.com"),
     amount: 184.0,
@@ -501,7 +505,7 @@ export const pendingApprovals: PendingApproval[] = [
   },
   {
     id: "ap_002",
-    agent: "ResearchBot",
+    agent: "research",
     agentAvatar: "🧠",
     merchant: b("Nature 期刊", "Nature Journal"),
     amount: 35.0,
@@ -539,7 +543,7 @@ export const pendingApprovals: PendingApproval[] = [
   },
   {
     id: "ap_003",
-    agent: "ShoppingBot",
+    agent: "shopping",
     agentAvatar: "🛒",
     merchant: b("Amazon Gift Card", "Amazon Gift Card"),
     amount: 30.0,
@@ -581,7 +585,7 @@ export const auditLog: AuditEntry[] = [
   {
     id: "tx_042",
     timestamp: "2026-04-22 14:33",
-    agent: "ResearchBot",
+    agent: "research",
     agentAvatar: "🧠",
     merchant: b("Nature 期刊", "Nature Journal"),
     amount: 12.0,
@@ -598,7 +602,7 @@ export const auditLog: AuditEntry[] = [
   {
     id: "tx_041",
     timestamp: "2026-04-22 11:08",
-    agent: "TravelAgent",
+    agent: "travel",
     agentAvatar: "✈️",
     merchant: b("Booking.com", "Booking.com"),
     amount: 142.0,
@@ -615,7 +619,7 @@ export const auditLog: AuditEntry[] = [
   {
     id: "tx_040",
     timestamp: "2026-04-22 09:15",
-    agent: "ResearchBot",
+    agent: "research",
     agentAvatar: "🧠",
     merchant: b("OpenAI API", "OpenAI API"),
     amount: 0.42,
@@ -631,7 +635,7 @@ export const auditLog: AuditEntry[] = [
   {
     id: "tx_039",
     timestamp: "2026-04-22 08:47",
-    agent: "NewsletterCurator",
+    agent: "newsletter",
     agentAvatar: "📰",
     merchant: b("Substack（Lenny's Newsletter）", "Substack (Lenny's Newsletter)"),
     amount: 15.0,
@@ -647,7 +651,7 @@ export const auditLog: AuditEntry[] = [
   {
     id: "tx_038",
     timestamp: "2026-04-21 22:14",
-    agent: "ShoppingBot",
+    agent: "shopping",
     agentAvatar: "🛒",
     merchant: b("meme-nft-drop.xyz", "meme-nft-drop.xyz"),
     amount: 48.0,
@@ -664,7 +668,7 @@ export const auditLog: AuditEntry[] = [
   {
     id: "tx_037",
     timestamp: "2026-04-21 18:02",
-    agent: "TravelAgent",
+    agent: "travel",
     agentAvatar: "✈️",
     merchant: b("JR 東日本", "JR East Japan"),
     amount: 89.4,
@@ -681,7 +685,7 @@ export const auditLog: AuditEntry[] = [
   {
     id: "tx_036",
     timestamp: "2026-04-21 14:35",
-    agent: "ResearchBot",
+    agent: "research",
     agentAvatar: "🧠",
     merchant: b("Anthropic API", "Anthropic API"),
     amount: 0.87,
@@ -697,7 +701,7 @@ export const auditLog: AuditEntry[] = [
   {
     id: "tx_035",
     timestamp: "2026-04-21 10:22",
-    agent: "ResearchBot",
+    agent: "research",
     agentAvatar: "🧠",
     merchant: b("JSTOR", "JSTOR"),
     amount: 0.25,
@@ -713,7 +717,7 @@ export const auditLog: AuditEntry[] = [
   {
     id: "tx_034",
     timestamp: "2026-04-21 09:00",
-    agent: "NewsletterCurator",
+    agent: "newsletter",
     agentAvatar: "📰",
     merchant: b("Stratechery", "Stratechery"),
     amount: 12.0,
@@ -729,7 +733,7 @@ export const auditLog: AuditEntry[] = [
   {
     id: "tx_033",
     timestamp: "2026-04-20 21:47",
-    agent: "ShoppingBot",
+    agent: "shopping",
     agentAvatar: "🛒",
     merchant: b("Uniqlo JP", "Uniqlo JP"),
     amount: 28.0,
@@ -745,7 +749,7 @@ export const auditLog: AuditEntry[] = [
   {
     id: "tx_032",
     timestamp: "2026-04-20 15:12",
-    agent: "TravelAgent",
+    agent: "travel",
     agentAvatar: "✈️",
     merchant: b("Klook Tokyo", "Klook Tokyo"),
     amount: 42.0,
@@ -762,7 +766,7 @@ export const auditLog: AuditEntry[] = [
   {
     id: "tx_031",
     timestamp: "2026-04-20 11:33",
-    agent: "ResearchBot",
+    agent: "research",
     agentAvatar: "🧠",
     merchant: b("Perplexity Pro", "Perplexity Pro"),
     amount: 0.2,
@@ -775,7 +779,7 @@ export const auditLog: AuditEntry[] = [
   {
     id: "tx_030",
     timestamp: "2026-04-20 08:40",
-    agent: "NewsletterCurator",
+    agent: "newsletter",
     agentAvatar: "📰",
     merchant: b("The Information", "The Information"),
     amount: 10.0,
@@ -788,7 +792,7 @@ export const auditLog: AuditEntry[] = [
   {
     id: "tx_029",
     timestamp: "2026-04-19 19:15",
-    agent: "ResearchBot",
+    agent: "research",
     agentAvatar: "🧠",
     merchant: b("NYT", "NYT"),
     amount: 0.05,
@@ -804,7 +808,7 @@ export const auditLog: AuditEntry[] = [
   {
     id: "tx_028",
     timestamp: "2026-04-19 14:02",
-    agent: "TravelAgent",
+    agent: "travel",
     agentAvatar: "✈️",
     merchant: b("Uber Japan", "Uber Japan"),
     amount: 12.3,

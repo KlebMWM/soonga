@@ -314,7 +314,7 @@ export default function DashboardPage() {
                 return (
                   <li key={agent.id} className="space-y-1.5">
                     <div className="flex items-center gap-2 text-sm">
-                      <span className="font-medium">{agent.name}</span>
+                      <span className="font-medium">{t(`agent.${agent.name}.name`)}</span>
                       {isPaused && (
                         <Badge variant="outline" className="h-5 text-[11px] font-medium text-muted-foreground">
                           {t("dashboard.agent.paused")}

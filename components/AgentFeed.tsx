@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { AgentIcon, getAgentDisplay } from "@/components/AgentIcon";
+import { AgentIcon } from "@/components/AgentIcon";
 import { liveFeed, stats, type FeedItem } from "@/lib/mockData";
 import { simulateAgentAction } from "@/lib/simulateAgent";
 import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
@@ -63,7 +63,8 @@ export function AgentFeed({
       const next = simulateAgentAction();
       setItems((prev) => [next, ...prev].slice(0, limit));
       if (next.status === "pending") {
-        const title = t("feed.toast.pending.title", { agent: next.agent });
+        const agentName = t(`agent.${next.agent}.name`);
+        const title = t("feed.toast.pending.title", { agent: agentName });
         const desc = t("feed.toast.pending.desc", {
           merchant: next.merchant[locale],
           amount: next.amount.toFixed(2),
@@ -204,7 +205,7 @@ export function AgentFeed({
                       className="font-mono"
                       style={{ color: "var(--text-mid)" }}
                     >
-                      {getAgentDisplay(item.agent)}
+                      {t(`agent.${item.agent}.name`)}
                     </span>
                     <span
                       aria-hidden

@@ -10,18 +10,18 @@ type MerchantDef = {
 };
 
 const merchantsPool: MerchantDef[] = [
-  { name: "OpenAI API", agent: "ResearchBot", agentAvatar: "🧠", range: [0.05, 0.9], whitelist: true },
-  { name: "Anthropic API", agent: "ResearchBot", agentAvatar: "🧠", range: [0.1, 1.2], whitelist: true },
-  { name: "Perplexity Pro", agent: "ResearchBot", agentAvatar: "🧠", range: [0.1, 0.4], whitelist: true },
-  { name: "NYT", agent: "ResearchBot", agentAvatar: "🧠", range: [0.03, 0.08], whitelist: true },
-  { name: "Substack", agent: "NewsletterCurator", agentAvatar: "📰", range: [5, 20], whitelist: true },
-  { name: "Stratechery", agent: "NewsletterCurator", agentAvatar: "📰", range: [12, 12], whitelist: true },
-  { name: "Uber Japan", agent: "TravelAgent", agentAvatar: "✈️", range: [8, 30], whitelist: false },
-  { name: "Klook Tokyo", agent: "TravelAgent", agentAvatar: "✈️", range: [22, 65], whitelist: false },
-  { name: "Booking.com", agent: "TravelAgent", agentAvatar: "✈️", range: [120, 220], whitelist: false },
-  { name: "Amazon Gift Card", agent: "ShoppingBot", agentAvatar: "🛒", range: [20, 50], whitelist: false },
-  { name: "Uniqlo JP", agent: "ShoppingBot", agentAvatar: "🛒", range: [15, 45], whitelist: false },
-  { name: "JSTOR", agent: "ResearchBot", agentAvatar: "🧠", range: [0.2, 0.4], whitelist: true },
+  { name: "OpenAI API", agent: "research", agentAvatar: "🧠", range: [0.05, 0.9], whitelist: true },
+  { name: "Anthropic API", agent: "research", agentAvatar: "🧠", range: [0.1, 1.2], whitelist: true },
+  { name: "Perplexity Pro", agent: "research", agentAvatar: "🧠", range: [0.1, 0.4], whitelist: true },
+  { name: "NYT", agent: "research", agentAvatar: "🧠", range: [0.03, 0.08], whitelist: true },
+  { name: "Substack", agent: "newsletter", agentAvatar: "📰", range: [5, 20], whitelist: true },
+  { name: "Stratechery", agent: "newsletter", agentAvatar: "📰", range: [12, 12], whitelist: true },
+  { name: "Uber Japan", agent: "travel", agentAvatar: "✈️", range: [8, 30], whitelist: false },
+  { name: "Klook Tokyo", agent: "travel", agentAvatar: "✈️", range: [22, 65], whitelist: false },
+  { name: "Booking.com", agent: "travel", agentAvatar: "✈️", range: [120, 220], whitelist: false },
+  { name: "Amazon Gift Card", agent: "shopping", agentAvatar: "🛒", range: [20, 50], whitelist: false },
+  { name: "Uniqlo JP", agent: "shopping", agentAvatar: "🛒", range: [15, 45], whitelist: false },
+  { name: "JSTOR", agent: "research", agentAvatar: "🧠", range: [0.2, 0.4], whitelist: true },
 ];
 
 function randomAmount(min: number, max: number) {

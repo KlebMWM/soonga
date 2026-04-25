@@ -54,7 +54,7 @@ export function ApprovalCard({
   const act = (outcome: NonNullable<typeof handled>) => {
     setHandled(outcome);
     const toastParams = {
-      agent: approval.agent,
+      agent: t(`agent.${approval.agent}.name`),
       merchant,
       amount: approval.amount.toFixed(2),
     };
@@ -127,7 +127,7 @@ export function ApprovalCard({
           <AgentIcon agent={approval.agent} size="lg" />
           <div className="min-w-0 flex-1">
             <div className="flex items-baseline gap-2 flex-wrap">
-              <span className="text-base font-semibold">{approval.agent}</span>
+              <span className="text-base font-semibold">{t(`agent.${approval.agent}.name`)}</span>
               <span className="text-sm text-muted-foreground">{t("approval.requestedPay")}</span>
             </div>
             <div className="mt-2 flex items-baseline gap-2 flex-wrap">
