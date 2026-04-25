@@ -642,6 +642,27 @@ export const dict: Dict = {
   },
   "welcome.cta": { zh: "開始試玩", en: "Start exploring" },
 
+  // Display-name personalization (localStorage-only, no backend)
+  "welcome.name.label": {
+    zh: "你希望 AI 助理怎麼稱呼你？",
+    en: "What would you like the AI agent to call you?",
+  },
+  "welcome.name.placeholder": { zh: "Megan", en: "Megan" },
+  "welcome.name.privacy": {
+    zh: "此原型會把顯示名稱保存在瀏覽器本機，不會上傳。",
+    en: "This prototype stores your display name locally in this browser. It is not uploaded.",
+  },
+
+  // Prototype scope — desktop notification disclaimer
+  "welcome.scope.notify": {
+    zh: "這個原型使用瀏覽器桌面通知模擬待審核提醒。尚未包含後端推播、手機推播或真實付款事件。",
+    en: "This prototype uses browser desktop notifications to simulate approval alerts. It does not include backend push, mobile push, or real payment events.",
+  },
+  "notify.scopeHint": {
+    zh: "瀏覽器通知 Demo，只在此頁開啟時運作",
+    en: "Browser notification demo. Works only while this page is open.",
+  },
+
   // Guide — what is it
   "welcome.what.title": { zh: "這個產品在做什麼？", en: "What does this do?" },
   "welcome.what.body": {

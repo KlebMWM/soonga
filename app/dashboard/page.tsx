@@ -16,6 +16,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { agents, stats } from "@/lib/mockData";
 import { usePendingApprovals } from "@/lib/stores";
+import { useDisplayName } from "@/lib/useDisplayName";
 import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
 
 function phraseKey(hour: number): string {
@@ -41,6 +42,7 @@ export default function DashboardPage() {
   // need for event-based syncing between pages.
   const pendingApprovals = usePendingApprovals();
   const pendingCount = pendingApprovals.length;
+  const { name: displayName } = useDisplayName();
 
   useEffect(() => {
     setNow(new Date());
@@ -105,7 +107,7 @@ export default function DashboardPage() {
                 padding: "0 4px",
               }}
             >
-              {t("dashboard.greeting.name")}
+              {displayName}
             </span>
           </h1>
 

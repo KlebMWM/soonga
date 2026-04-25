@@ -111,17 +111,26 @@ export function NotificationPermissionPill() {
     padding: "10px 12px",
   };
 
+  // Native title — surfaces the prototype scope on hover so visitors don't
+  // mistake this pill for a production push-notification system.
+  const scopeHint = t("notify.scopeHint");
+
   return clickable ? (
     <button
       type="button"
       onClick={handleEnable}
+      title={scopeHint}
       className="flex items-center w-full text-left transition-colors hover:bg-[rgba(80,132,208,0.06)]"
       style={sharedStyle}
     >
       {body}
     </button>
   ) : (
-    <div className="flex items-center w-full" style={sharedStyle}>
+    <div
+      className="flex items-center w-full"
+      style={sharedStyle}
+      title={scopeHint}
+    >
       {body}
     </div>
   );

@@ -8,11 +8,13 @@ import { Badge } from "@/components/ui/badge";
 import { AgentIcon } from "@/components/AgentIcon";
 import { HudCard } from "@/components/ui/hud-card";
 import { agents, pendingApprovals } from "@/lib/mockData";
+import { useDisplayName } from "@/lib/useDisplayName";
 import { useT } from "@/lib/i18n/LocaleProvider";
 import { cn } from "@/lib/utils";
 
 export function DashboardHero({ pendingCount }: { pendingCount?: number } = {}) {
   const t = useT();
+  const { name: displayName } = useDisplayName();
   const pending = pendingApprovals;
   // Prefer the lifted count from the page (so resolving a row in AgentFeed
   // can animate this number down). Falls back to the static mock length.
@@ -78,7 +80,7 @@ export function DashboardHero({ pendingCount }: { pendingCount?: number } = {}) 
                 fontFamily: "var(--font-instrument-serif), Georgia, serif",
               }}
             >
-              Megan
+              {displayName}
             </span>
             {t("dashboard.hero.empty.quote.after")}
           </p>

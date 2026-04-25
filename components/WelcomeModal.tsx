@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
+  Bell,
   ChevronRight,
   Inbox,
   LayoutDashboard,
@@ -17,7 +18,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useT } from "@/lib/i18n/LocaleProvider";
+import { useDisplayName } from "@/lib/useDisplayName";
 
 const STORAGE_KEY = "soon-welcome-seen-v1";
 
@@ -53,6 +57,11 @@ const ACTIONS = [
 export function WelcomeModal() {
   const t = useT();
   const [open, setOpen] = useState(false);
+  const { name: storedName, setName: persistName } = useDisplayName();
+  // Local draft so typing doesn't write to localStorage on every keystroke;
+  // commit happens on close. Re-syncs whenever the modal opens so a re-open
+  // shows the most recently saved name (per spec).
+  const [nameDraft, setNameDraft] = useState(storedName);
 
   useEffect(() => {
     const seen =
@@ -70,7 +79,14 @@ export function WelcomeModal() {
     };
   }, []);
 
+  // Re-sync draft whenever modal opens (user may have typed but not saved
+  // last time, or storedName changed via another tab).
+  useEffect(() => {
+    if (open) setNameDraft(storedName);
+  }, [open, storedName]);
+
   const handleClose = () => {
+    persistName(nameDraft);
     window.localStorage.setItem(STORAGE_KEY, "1");
     setOpen(false);
   };
@@ -88,6 +104,43 @@ export function WelcomeModal() {
         <div className="space-y-2 text-[14px] leading-relaxed text-foreground/80">
           <p>{t("welcome.summary.line2")}</p>
           <p>{t("welcome.summary.line3")}</p>
+        </div>
+
+        {/* Display-name field — local-only personalization. Empty input
+            means "use the default Megan"; the hook handles trim + fallback. */}
+        <div className="mt-4 space-y-1.5">
+          <Label htmlFor="welcome-display-name" className="text-[13px]">
+            {t("welcome.name.label")}
+          </Label>
+          <Input
+            id="welcome-display-name"
+            value={nameDraft}
+            onChange={(e) => setNameDraft(e.target.value)}
+            placeholder={t("welcome.name.placeholder")}
+            maxLength={20}
+            className="h-9 text-sm"
+          />
+          <p className="text-[11px] text-muted-foreground leading-relaxed">
+            {t("welcome.name.privacy")}
+          </p>
+        </div>
+
+        {/* Notification scope note — small Bell + paragraph explaining this
+            is a Browser Notification API demo, not production push. */}
+        <div
+          className="mt-3 rounded-md border p-3 flex items-start gap-2"
+          style={{
+            background: "var(--bg-soft)",
+            borderColor: "var(--border)",
+          }}
+        >
+          <Bell
+            className="h-3.5 w-3.5 shrink-0 mt-0.5"
+            style={{ color: "var(--text-mid)" }}
+          />
+          <p className="text-[12px] leading-relaxed text-muted-foreground">
+            {t("welcome.scope.notify")}
+          </p>
         </div>
 
         <ul className="mt-4 space-y-2">
