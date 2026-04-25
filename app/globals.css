@@ -164,6 +164,9 @@
   --border-accent: var(--border-blue);
   --cyan: #5eead4;
 
+  /* Grid stroke for body::after — overridden in .dark for a softer mesh */
+  --grid-stroke: color-mix(in oklab, var(--foreground) 4%, transparent);
+
   /* =======================================================================
      Sidebar — light blue-gray "companion surface"
      =======================================================================
@@ -185,9 +188,89 @@
 /* .dark — pre-seeded overrides for tokens that need a different value in
    the dark palette. Full dark-mode token swap lands in SPRINT 3. */
 .dark {
+  /* =======================================================================
+     Dark palette — deep blue night, not pure black
+     =======================================================================
+     Backgrounds tinted toward navy so the canvas reads as "late-night
+     workspace" rather than OLED black. --ikea-blue warms slightly so it
+     doesn't disappear against the dark canvas. Yellow stays — it has the
+     highest contrast on dark and remains the unambiguous CTA signal. */
+
+  /* Backgrounds */
+  --bg: #0b1220;
+  --bg-soft: #141c2e;
+  --bg-accent: #1f2a44;
+
+  /* IKEA blue — warmer + slightly brighter for dark contrast */
+  --ikea-blue: #6a95db;
+  --ikea-blue-deep: #5680c0;
+  --ikea-blue-darker: #3a6cb8;
+  --ikea-blue-bright: #8fb1e6;
+
+  /* Text — inverted toward light */
+  --headline: #e6ecf5;
+  --text: #c8d1e0;
+  --paragraph: #9aa6bc;
+  --text-mid: #7a86a0;
+  --text-dim: #5a6478;
+
+  /* Yellow stays (overrides not needed — :root values inherit) */
+
+  /* Amber + terracotta — pre-seeded earlier */
   --amber: #fbbf24;
   --amber-wash: rgba(251, 191, 36, 0.12);
   --terracotta: #c28769;
+
+  /* Borders — light alpha on dark surfaces */
+  --border: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.18);
+  --border-blue: rgba(106, 149, 219, 0.35);
+  --input: rgba(255, 255, 255, 0.15);
+
+  /* shadcn theme slots */
+  --background: var(--bg);
+  --foreground: var(--headline);
+  --card: var(--bg);
+  --card-foreground: var(--headline);
+  --popover: var(--bg-soft);
+  --popover-foreground: var(--headline);
+  --primary: var(--ikea-blue);
+  --primary-foreground: #ffffff;
+  --secondary: var(--bg-accent);
+  --secondary-foreground: var(--headline);
+  --muted: var(--bg-soft);
+  --muted-foreground: var(--text-mid);
+  --accent: var(--ikea-blue);
+  --accent-foreground: #ffffff;
+  --ring: var(--ikea-blue);
+  --chart-1: var(--ikea-blue);
+
+  /* HUD extras */
+  --bg-elev-1: var(--bg);
+  --bg-elev-2: var(--bg-soft);
+  --bg-elev-3: var(--bg-accent);
+  --text-bright: #ffffff;
+  --border-accent: rgba(106, 149, 219, 0.4);
+
+  /* Component-compat aliases — repointed for dark */
+  --mint-deep: var(--ikea-blue-darker);
+  --mint: var(--ikea-blue);
+  --mint-soft: var(--ikea-blue-bright);
+  --mint-bg: var(--bg-accent);
+  --mint-glow: rgba(106, 149, 219, 0.25);
+
+  /* Grid mesh — softer in dark per spec (4% → 2.5%) */
+  --grid-stroke: color-mix(in oklab, var(--foreground) 2.5%, transparent);
+
+  /* Sidebar — slightly off from main bg for the companion-surface read */
+  --sidebar: #08111c;
+  --sidebar-foreground: var(--text);
+  --sidebar-primary: var(--ikea-blue);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(106, 149, 219, 0.12);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-ring: var(--ikea-blue);
 }
 
 @layer base {
@@ -224,21 +307,15 @@
     z-index: 0;
   }
 
-  /* HUD grid — ink-tinted lines on cream, masked to fade toward edges */
+  /* HUD grid — ink-tinted lines, masked to fade toward edges. Stroke alpha
+     uses --grid-stroke so dark mode can soften it independently. */
   body::after {
     content: "";
     position: fixed;
     inset: 0;
     background-image:
-      linear-gradient(
-        color-mix(in oklab, var(--foreground) 4%, transparent) 1px,
-        transparent 1px
-      ),
-      linear-gradient(
-        90deg,
-        color-mix(in oklab, var(--foreground) 4%, transparent) 1px,
-        transparent 1px
-      );
+      linear-gradient(var(--grid-stroke) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-stroke) 1px, transparent 1px);
     background-size: 56px 56px;
     pointer-events: none;
     z-index: 0;

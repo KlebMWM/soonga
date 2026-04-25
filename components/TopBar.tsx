@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { LocaleToggle } from "@/components/LocaleToggle";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { useT } from "@/lib/i18n/LocaleProvider";
 
 /**
@@ -71,8 +72,9 @@ export function TopBar() {
         )}
       </div>
 
-      {/* Right: meta items (locale toggle for now; more can be added here) */}
-      <div className="flex items-center gap-3 shrink-0">
+      {/* Right: meta toggles (theme + locale) */}
+      <div className="flex items-center gap-2 shrink-0">
+        <ThemeToggle variant="sidebar" />
         <LocaleToggle variant="sidebar" />
       </div>
     </div>

@@ -60,6 +60,15 @@ export default function RootLayout({
       lang="zh-Hant"
       className={`${inter.variable} ${jetbrainsMono.variable} ${instrumentSerif.variable} ${notoSansTC.variable} ${notoSerifTC.variable} h-full antialiased`}
     >
+      <head>
+        {/* No-flash dark-mode hydration: applies stored theme to <html> before
+            React paints, so the first frame matches user preference. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem('soon-theme');if(t==='dark')document.documentElement.classList.add('dark');}catch(e){}`,
+          }}
+        />
+      </head>
       <body className="min-h-full bg-background text-foreground">
         <LocaleProvider>
           <div className="flex min-h-screen">
