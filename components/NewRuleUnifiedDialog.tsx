@@ -38,7 +38,10 @@ import { cn } from "@/lib/utils";
 export type AllowEntry = { merchant: string; category: string; addedAt: string };
 export type BlockEntry = { merchant: string; reason: { zh: string; en: string }; addedAt: string };
 
-type Mode = "ai" | "chooser" | "category" | "allow" | "block";
+// "first" is the combined entry screen — AI quick input on top, 3 chooser
+// cards below, both always visible. Sub-modes are reached either by clicking
+// a chooser card or by 手動調整 from the parsed preview.
+type Mode = "first" | "category" | "allow" | "block";
 
 type Props = {
   categories: { id: string; label: string }[];
@@ -69,9 +72,7 @@ export function NewRuleUnifiedDialog({ categories, onCreateCategory, onAddAllow,
   const t = useT();
   const { locale } = useLocale();
   const [open, setOpen] = useState(false);
-  // AI-first: default to the natural-language layer. Manual chooser is a
-  // fallback reachable via "switch to manual form" from the AI screen.
-  const [mode, setMode] = useState<Mode>("ai");
+  const [mode, setMode] = useState<Mode>("first");
 
   // Category form state
   const [catName, setCatName] = useState("");
@@ -87,7 +88,7 @@ export function NewRuleUnifiedDialog({ categories, onCreateCategory, onAddAllow,
   const [safety, setSafety] = useState<SafetyResult | null>(null);
 
   const reset = () => {
-    setMode("ai");
+    setMode("first");
     setCatName("");
     setCatDesc("");
     setCatMonthly(100);
@@ -125,7 +126,7 @@ export function NewRuleUnifiedDialog({ categories, onCreateCategory, onAddAllow,
 
   const closeAndReset = () => {
     setOpen(false);
-    // Delay reset so the dialog fade-out doesn't flash the chooser
+    // Delay reset so the dialog fade-out doesn't flash the first screen
     setTimeout(reset, 200);
   };
 
@@ -190,16 +191,14 @@ export function NewRuleUnifiedDialog({ categories, onCreateCategory, onAddAllow,
   };
 
   const title = {
-    ai: t("rules.ai.dialog.title"),
-    chooser: t("rules.unified.chooser.title"),
+    first: t("rules.unified.first.title"),
     category: t("rules.new.title"),
     allow: t("trust.add.title.allow"),
     block: t("trust.add.title.block"),
   }[mode];
 
   const description = {
-    ai: t("rules.ai.dialog.desc"),
-    chooser: t("rules.unified.chooser.desc"),
+    first: t("rules.unified.first.desc"),
     category: t("rules.new.desc"),
     allow: t("trust.add.desc.allow"),
     block: t("trust.add.desc.block"),
@@ -220,11 +219,9 @@ export function NewRuleUnifiedDialog({ categories, onCreateCategory, onAddAllow,
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <div className="flex items-center gap-2">
-            {mode !== "ai" && (
+            {mode !== "first" && (
               <button
-                onClick={() =>
-                  setMode(mode === "chooser" ? "ai" : "chooser")
-                }
+                onClick={() => setMode("first")}
                 className="inline-flex items-center gap-1 text-[12px] text-muted-foreground hover:text-foreground transition-colors"
               >
                 <ArrowLeft className="h-3 w-3" />
@@ -236,9 +233,10 @@ export function NewRuleUnifiedDialog({ categories, onCreateCategory, onAddAllow,
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
 
-        {mode === "ai" && (
-          <AiForm
+        {mode === "first" && (
+          <FirstScreen
             categoryIds={categories.map((c) => c.id)}
+            onPick={setMode}
             onApplyCategory={(c) => {
               onCreateCategory(c);
               toast.success(
@@ -284,11 +282,8 @@ export function NewRuleUnifiedDialog({ categories, onCreateCategory, onAddAllow,
               setReason(parsedReason);
               setMode("block");
             }}
-            onSwitchToManual={() => setMode("chooser")}
           />
         )}
-
-        {mode === "chooser" && <Chooser onPick={setMode} />}
 
         {mode === "category" && (
           <CategoryForm
@@ -300,22 +295,8 @@ export function NewRuleUnifiedDialog({ categories, onCreateCategory, onAddAllow,
             setMonthly={setCatMonthly}
             single={catSingle}
             setSingle={setCatSingle}
-            categoryIds={categories.map((c) => c.id)}
-            onSwitchToAllow={(m) => {
-              // When the AI helper detects an allowlist intent, jump across
-              // to the allowlist form with the merchant pre-filled.
-              setMerchant(m);
-              setMode("allow");
-            }}
-            onSwitchToBlock={(m, defaultReason) => {
-              // Block intent — same hop pattern, with the parsed reason
-              // pre-filled into the block form's free-text field.
-              setMerchant(m);
-              setReason(defaultReason);
-              setMode("block");
-            }}
             onSubmit={handleCreateCategory}
-            onCancel={() => setMode("chooser")}
+            onCancel={() => setMode("first")}
           />
         )}
 
@@ -333,7 +314,7 @@ export function NewRuleUnifiedDialog({ categories, onCreateCategory, onAddAllow,
             safety={safety}
             warningKey={warningKey}
             onSubmit={mode === "allow" ? handleAddAllow : handleAddBlock}
-            onCancel={() => setMode("chooser")}
+            onCancel={() => setMode("first")}
           />
         )}
       </DialogContent>
@@ -341,30 +322,28 @@ export function NewRuleUnifiedDialog({ categories, onCreateCategory, onAddAllow,
   );
 }
 
-// ==================== AI form (top-level) ====================
+// ==================== First screen — combined AI input + chooser cards ====================
 
-function AiForm({
+function FirstScreen({
   categoryIds,
+  onPick,
   onApplyCategory,
   onApplyAllow,
   onApplyBlock,
   onAdjustCategory,
   onAdjustAllow,
   onAdjustBlock,
-  onSwitchToManual,
 }: {
   categoryIds: string[];
+  onPick: (m: Exclude<Mode, "first">) => void;
   onApplyCategory: (c: Category) => void;
   onApplyAllow: (a: AllowEntry) => void;
   onApplyBlock: (b: BlockEntry) => void;
   /** "Manual adjust" handlers — pre-fill the corresponding manual form
-   *  with the parsed values, then the parent jumps to that mode. */
+   *  with the parsed values, then jump to that mode. */
   onAdjustCategory: (c: Category) => void;
   onAdjustAllow: (merchant: string) => void;
   onAdjustBlock: (merchant: string, reason: string) => void;
-  /** Bare merchant or "unknown" parse outcome — fall back to the chooser
-   *  so the user can pick a manual path without a pre-filled hint. */
-  onSwitchToManual: () => void;
 }) {
   const t = useT();
   const { locale } = useLocale();
@@ -414,84 +393,112 @@ function AiForm({
     else if (parsed.kind === "allow") onAdjustAllow(parsed.allow.merchant);
     else if (parsed.kind === "block")
       onAdjustBlock(parsed.block.merchant, parsed.block.reason[locale]);
-    else onSwitchToManual();
   };
 
   return (
-    <>
-      <div className="space-y-4 py-2">
-        <div className="space-y-2">
-          <Label className="text-sm flex items-center gap-1.5">
-            <Sparkles
-              className="h-3.5 w-3.5"
-              style={{ color: "var(--ikea-blue-darker)" }}
-            />
-            {t("rules.ai.inputLabel")}
-          </Label>
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder={t("rules.ai.placeholder")}
-            rows={3}
-            maxLength={200}
-            disabled={parsing}
-            autoFocus
-            className="w-full resize-none rounded-md border border-border bg-card px-3 py-2 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-ring"
+    <div className="space-y-4 py-2">
+      {/* AI quick input — top section, tinted block to read as an AI capability
+          rather than a regular form field. After parse, the editable textarea
+          collapses into a one-line read-only summary so the chooser cards stay
+          visible without scrolling. */}
+      <section
+        className="rounded-md border p-3 space-y-2"
+        style={{
+          borderColor: "var(--border-blue)",
+          background: "var(--bg-soft)",
+        }}
+      >
+        <Label className="text-[13px] flex items-center gap-1.5">
+          <Sparkles
+            className="h-3.5 w-3.5"
+            style={{ color: "var(--ikea-blue-darker)" }}
           />
-        </div>
+          {t("rules.ai.inputLabel")}
+          <span className="text-muted-foreground text-[12px] font-normal">
+            ({t("rules.new.descOptional")})
+          </span>
+        </Label>
 
-        {!parsed && (
-          <Button
-            onClick={handleParse}
-            disabled={!input.trim() || parsing}
-            variant="raised"
-            className="w-full gap-2"
-          >
-            {parsing ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                {t("rules.ai.parsing")}
-              </>
-            ) : (
-              <>
-                <Sparkles className="h-4 w-4" />
-                {t("rules.ai.parseButton")}
-              </>
-            )}
-          </Button>
-        )}
-
-        {parsed && <AiDraftPreview parsed={parsed} locale={locale} />}
-      </div>
-
-      <DialogFooter>
-        {parsed?.kind === "unknown" ? (
+        {!parsed ? (
           <>
-            <Button variant="outline" onClick={handleReset}>
-              {t("rules.ai.tryAgain")}
-            </Button>
-            <Button onClick={onSwitchToManual} className="gap-1.5">
-              {t("rules.ai.switchToManual")}
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </>
-        ) : parsed ? (
-          <>
-            <Button variant="outline" onClick={handleManualAdjust}>
-              {t("rules.ai.manualAdjust")}
-            </Button>
-            <Button onClick={handleCreate} className="gap-1.5">
-              <Check className="h-4 w-4" />
-              {t("rules.ai.apply")}
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder={t("rules.ai.placeholder")}
+              rows={2}
+              maxLength={200}
+              disabled={parsing}
+              className="w-full resize-none rounded-md border border-border bg-card px-3 py-2 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+            <Button
+              onClick={handleParse}
+              disabled={!input.trim() || parsing}
+              variant="raised"
+              size="sm"
+              className="gap-1.5"
+            >
+              {parsing ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  {t("rules.ai.parsing")}
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-3.5 w-3.5" />
+                  {t("rules.ai.parseButton")}
+                </>
+              )}
             </Button>
           </>
         ) : (
-          <Button variant="outline" onClick={onSwitchToManual}>
-            {t("rules.ai.switchToManual")}
-          </Button>
+          <>
+            <div
+              className="rounded-md border border-border bg-card px-3 py-1.5 text-[12px] leading-relaxed truncate"
+              style={{ color: "var(--text-mid)" }}
+              title={input}
+            >
+              <span className="opacity-70 mr-1">「</span>
+              {input}
+              <span className="opacity-70 ml-1">」</span>
+            </div>
+            <AiDraftPreview parsed={parsed} locale={locale} />
+            {parsed.kind === "unknown" ? (
+              <Button variant="outline" size="sm" onClick={handleReset}>
+                {t("rules.ai.tryAgain")}
+              </Button>
+            ) : (
+              <div className="flex flex-wrap items-center gap-2">
+                <Button onClick={handleCreate} size="sm" className="gap-1.5">
+                  <Check className="h-3.5 w-3.5" />
+                  {t("rules.ai.apply")}
+                </Button>
+                <Button variant="outline" size="sm" onClick={handleManualAdjust}>
+                  {t("rules.ai.manualAdjust")}
+                </Button>
+                <Button variant="ghost" size="sm" onClick={handleReset}>
+                  {t("rules.ai.tryAgain")}
+                </Button>
+              </div>
+            )}
+          </>
         )}
-      </DialogFooter>
-    </>
+      </section>
+
+      {/* Divider with eyebrow — the chooser remains visible alongside the AI
+          input so users always see the manual paths. */}
+      <div className="flex items-center gap-3">
+        <div className="h-px flex-1" style={{ background: "var(--border)" }} />
+        <span
+          className="text-[11px] uppercase tracking-[0.18em] font-mono"
+          style={{ color: "var(--text-mid)" }}
+        >
+          {t("rules.unified.first.or")}
+        </span>
+        <div className="h-px flex-1" style={{ background: "var(--border)" }} />
+      </div>
+
+      <Chooser onPick={onPick} />
+    </div>
   );
 }
 
@@ -507,7 +514,7 @@ function AiDraftPreview({
   if (parsed.kind === "unknown") {
     return (
       <div
-        className="rounded-lg border p-3 text-[13px] leading-relaxed flex items-start gap-2"
+        className="rounded-md border p-3 text-[13px] leading-relaxed flex items-start gap-2"
         style={{
           color: "var(--amber-deep)",
           background: "var(--amber-wash)",
@@ -529,12 +536,12 @@ function AiDraftPreview({
 
   return (
     <div
-      className="rounded-lg border overflow-hidden"
-      style={{ borderColor: "var(--border-blue)", background: "var(--bg-soft)" }}
+      className="rounded-md border overflow-hidden"
+      style={{ borderColor: "var(--border-blue)", background: "var(--card)" }}
     >
       <div
         className="flex items-center gap-2 px-3 py-2 border-b"
-        style={{ borderColor: "var(--border)", background: "var(--card)" }}
+        style={{ borderColor: "var(--border)", background: "var(--bg-soft)" }}
       >
         <Sparkles className="h-3.5 w-3.5" style={{ color: "var(--ikea-blue-darker)" }} />
         <span className="text-[13px] font-semibold" style={{ color: "var(--headline)" }}>
@@ -634,11 +641,11 @@ function DraftRow({
 
 // ==================== Chooser ====================
 
-function Chooser({ onPick }: { onPick: (m: Mode) => void }) {
+function Chooser({ onPick }: { onPick: (m: Exclude<Mode, "first">) => void }) {
   const t = useT();
 
   type ChooserOption = {
-    mode: Exclude<Mode, "chooser">;
+    mode: Exclude<Mode, "first">;
     icon: typeof SlidersHorizontal;
     titleKey: string;
     descKey: string;
@@ -646,8 +653,6 @@ function Chooser({ onPick }: { onPick: (m: Mode) => void }) {
     toneClass: string;
   };
 
-  // Category has a built-in AI helper now — the standalone "ai" entry was
-  // redundant (both paths produced the same kind of rule).
   const options: ChooserOption[] = [
     {
       mode: "category",
@@ -676,18 +681,18 @@ function Chooser({ onPick }: { onPick: (m: Mode) => void }) {
   ];
 
   return (
-    <div className="space-y-2 mt-2">
+    <div className="space-y-2">
       {options.map((opt) => {
         const Icon = opt.icon;
         return (
           <button
             key={opt.mode}
             onClick={() => onPick(opt.mode)}
-            className="group w-full text-left border border-border bg-card hover:bg-muted/40 hover:border-foreground/20 p-4 flex items-start gap-3 transition-colors"
+            className="group w-full text-left rounded-md border border-border bg-card hover:bg-muted/40 hover:border-foreground/20 p-4 flex items-start gap-3 transition-colors"
           >
             <div
               className={cn(
-                "flex h-10 w-10 shrink-0 items-center justify-center",
+                "flex h-10 w-10 shrink-0 items-center justify-center rounded-md",
                 opt.toneClass,
               )}
             >
@@ -710,7 +715,7 @@ function Chooser({ onPick }: { onPick: (m: Mode) => void }) {
   );
 }
 
-// ==================== Category form (with built-in AI helper) ====================
+// ==================== Category form ====================
 
 function CategoryForm({
   name,
@@ -721,9 +726,6 @@ function CategoryForm({
   setMonthly,
   single,
   setSingle,
-  categoryIds,
-  onSwitchToAllow,
-  onSwitchToBlock,
   onSubmit,
   onCancel,
 }: {
@@ -735,192 +737,14 @@ function CategoryForm({
   setMonthly: (v: number) => void;
   single: number;
   setSingle: (v: number) => void;
-  categoryIds: string[];
-  /** AI helper detected an allowlist intent on a merchant — parent hops to
-   *  the allowlist form with the merchant pre-filled. */
-  onSwitchToAllow: (merchant: string) => void;
-  /** AI helper detected a blocklist intent — parent hops to the blocklist
-   *  form with the merchant + parsed reason pre-filled. */
-  onSwitchToBlock: (merchant: string, defaultReason: string) => void;
   onSubmit: () => void;
   onCancel: () => void;
 }) {
   const t = useT();
-  const { locale } = useLocale();
-
-  // Local state for the AI helper — doesn't leak outside the form.
-  const [aiInput, setAiInput] = useState("");
-  const [parsing, setParsing] = useState(false);
-  const [aiResult, setAiResult] = useState<
-    | { kind: "idle" }
-    | { kind: "filled"; confidence: "high" | "medium" | "low" }
-    | { kind: "allow"; merchant: string; rationale: string }
-    | { kind: "block"; merchant: string; reason: string; rationale: string }
-    | { kind: "unknown"; message: string }
-  >({ kind: "idle" });
-
-  const handleParse = () => {
-    if (!aiInput.trim() || parsing) return;
-    setParsing(true);
-    setAiResult({ kind: "idle" });
-    // Simulate model latency; swap for a real Claude call at this seam.
-    setTimeout(() => {
-      const parsed = parseRuleRequest(aiInput, categoryIds);
-      if (parsed.kind === "category") {
-        // Auto-fill the form fields below. User can still tweak any of them
-        // before submitting.
-        setName(parsed.category.name[locale]);
-        setDesc(parsed.category.description[locale]);
-        setMonthly(parsed.category.monthlyLimit);
-        setSingle(parsed.category.singleLimit);
-        setAiResult({ kind: "filled", confidence: parsed.confidence });
-      } else if (parsed.kind === "allow") {
-        setAiResult({
-          kind: "allow",
-          merchant: parsed.allow.merchant,
-          rationale: parsed.rationale[locale],
-        });
-      } else if (parsed.kind === "block") {
-        setAiResult({
-          kind: "block",
-          merchant: parsed.block.merchant,
-          reason: parsed.block.reason[locale],
-          rationale: parsed.rationale[locale],
-        });
-      } else {
-        setAiResult({ kind: "unknown", message: parsed.rationale[locale] });
-      }
-      setParsing(false);
-    }, 900);
-  };
 
   return (
     <>
       <div className="space-y-5 py-2">
-        {/* AI helper — optional natural-language input that fills the form
-            fields below. Lives in its own tinted block so it reads as a
-            distinct capability, not another form field. */}
-        <div
-          className="rounded-md border p-3 space-y-2.5"
-          style={{
-            borderColor: "var(--border-blue)",
-            background: "var(--bg-soft)",
-          }}
-        >
-          <Label className="text-[13px] flex items-center gap-1.5">
-            <Sparkles
-              className="h-3.5 w-3.5"
-              style={{ color: "var(--ikea-blue-darker)" }}
-            />
-            {t("rules.ai.inputLabel")}
-            <span className="text-muted-foreground text-[12px] font-normal">
-              ({t("rules.new.descOptional")})
-            </span>
-          </Label>
-          <textarea
-            value={aiInput}
-            onChange={(e) => setAiInput(e.target.value)}
-            placeholder={t("rules.ai.placeholder")}
-            rows={2}
-            maxLength={200}
-            disabled={parsing}
-            autoFocus
-            className="w-full resize-none rounded-md border border-border bg-card px-3 py-2 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-ring"
-          />
-          <div className="flex items-center gap-2.5">
-            <Button
-              onClick={handleParse}
-              disabled={!aiInput.trim() || parsing}
-              variant="raised"
-              size="sm"
-              className="gap-1.5"
-            >
-              {parsing ? (
-                <>
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  {t("rules.ai.parsing")}
-                </>
-              ) : (
-                <>
-                  <Sparkles className="h-3.5 w-3.5" />
-                  {t("rules.ai.parseButton")}
-                </>
-              )}
-            </Button>
-            {aiResult.kind === "filled" && (
-              <span
-                className="inline-flex items-center gap-1 text-[12px]"
-                style={{ color: "var(--sage)" }}
-              >
-                <Check className="h-3 w-3" />
-                {t("rules.ai.result.filled", {
-                  confidence: t(
-                    `rules.ai.result.confidence.${aiResult.confidence}`,
-                  ),
-                })}
-              </span>
-            )}
-          </div>
-
-          {aiResult.kind === "allow" && (
-            <div
-              className="rounded-md border p-2.5 text-[12px] flex items-start gap-2"
-              style={{
-                color: "var(--ikea-blue-darker)",
-                background: "rgba(255, 216, 3, 0.15)",
-                borderColor: "rgba(255, 216, 3, 0.5)",
-              }}
-            >
-              <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5" />
-              <div className="flex-1 leading-relaxed">
-                {aiResult.rationale}
-                <button
-                  type="button"
-                  onClick={() => onSwitchToAllow(aiResult.merchant)}
-                  className="ml-1 font-semibold underline underline-offset-2 hover:no-underline"
-                >
-                  {t("rules.ai.switchToAllow")}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {aiResult.kind === "block" && (
-            <div
-              className="rounded-md border p-2.5 text-[12px] flex items-start gap-2"
-              style={{
-                color: "var(--destructive)",
-                background: "color-mix(in oklab, var(--destructive) 8%, transparent)",
-                borderColor:
-                  "color-mix(in oklab, var(--destructive) 35%, transparent)",
-              }}
-            >
-              <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5" />
-              <div className="flex-1 leading-relaxed">
-                {aiResult.rationale}
-                <button
-                  type="button"
-                  onClick={() =>
-                    onSwitchToBlock(aiResult.merchant, aiResult.reason)
-                  }
-                  className="ml-1 font-semibold underline underline-offset-2 hover:no-underline"
-                >
-                  {t("rules.ai.switchToBlock")}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {aiResult.kind === "unknown" && (
-            <div
-              className="text-[12px] italic leading-relaxed"
-              style={{ color: "var(--text-mid)" }}
-            >
-              {aiResult.message}
-            </div>
-          )}
-        </div>
-
         <div className="space-y-2">
           <Label className="text-sm">{t("rules.new.nameLabel")}</Label>
           <Input
@@ -928,6 +752,7 @@ function CategoryForm({
             onChange={(e) => setName(e.target.value)}
             placeholder={t("rules.new.namePlaceholder")}
             maxLength={20}
+            autoFocus
           />
         </div>
         <div className="space-y-2">
@@ -1042,11 +867,11 @@ function TrustForm({
             {t("safety.title")}
           </div>
           {!merchant.trim() ? (
-            <div className="rounded-lg border border-dashed border-border bg-muted/30 p-3 text-[12px] text-muted-foreground">
+            <div className="rounded-md border border-dashed border-border bg-muted/30 p-3 text-[12px] text-muted-foreground">
               {t("safety.emptyInput")}
             </div>
           ) : checking ? (
-            <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/30 p-3 text-[12px] text-muted-foreground">
+            <div className="flex items-center gap-2 rounded-md border border-border bg-muted/30 p-3 text-[12px] text-muted-foreground">
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
               {t("safety.checking")}
             </div>
@@ -1083,7 +908,7 @@ function TrustForm({
         )}
 
         {warningKey && (
-          <div className="rounded-lg border border-accent/30 bg-accent/5 p-3 text-[13px] text-accent leading-relaxed flex items-start gap-2">
+          <div className="rounded-md border border-accent/30 bg-accent/5 p-3 text-[13px] text-accent leading-relaxed flex items-start gap-2">
             <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
             <span>{t(warningKey)}</span>
           </div>
@@ -1114,7 +939,7 @@ function SafetyCard({
   const meta = LEVEL_META[result.level];
   const Icon = meta.icon;
   return (
-    <div className={cn("rounded-lg border p-3", meta.tone)}>
+    <div className={cn("rounded-md border p-3", meta.tone)}>
       <div className="flex items-center gap-2">
         <Icon className="h-4 w-4" />
         <span className="text-[13px] font-semibold">{t(meta.labelKey)}</span>

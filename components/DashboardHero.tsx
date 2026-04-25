@@ -87,7 +87,7 @@ export function DashboardHero({ pendingCount }: { pendingCount?: number } = {}) 
         {/* Bottom — two-cell stats strip. Mirrors the .pending state's
             stats bar so the layout feels structurally familiar even though
             the content has shifted from "act" to "rest". */}
-        <div className="grid grid-cols-2 gap-4 border border-white/10 bg-white/[0.08] p-3">
+        <div className="grid grid-cols-2 gap-4 rounded-md border border-white/10 bg-white/[0.08] p-3">
           <div className="flex flex-col gap-0.5">
             <span className="text-[10px] uppercase tracking-[0.12em] text-white/55 font-mono">
               {t("dashboard.hero.empty.stat1.label")}
@@ -126,7 +126,7 @@ export function DashboardHero({ pendingCount }: { pendingCount?: number } = {}) 
       {/* Top row: "需要你核准" yellow pill + total amount mono readout */}
       <div className="flex items-start justify-between gap-3">
         <Badge
-          variant="hud-yellow"
+          variant="hud-amber"
           className="h-6 gap-2 px-2.5 text-[11px] font-semibold"
         >
           <span className="hud-dot" style={{ width: 6, height: 6 }} />

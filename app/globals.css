@@ -134,7 +134,10 @@
   --chart-3: var(--sage);
   --chart-4: var(--dusk);
   --chart-5: var(--plum);
-  --radius: 0;
+  /* Subtle 8px radius — softens the surface without losing the structural
+     "control hub" read. Earlier iterations used 0 for a sharper console
+     feel; the 8px version reads friendlier across cards, dialogs, pills. */
+  --radius: 8px;
 
   /* =======================================================================
      Component-compat aliases
@@ -339,11 +342,13 @@
 }
 
 @layer components {
-  /* HudCard — base surface for the Command Center aesthetic */
+  /* HudCard — base surface for the control-hub aesthetic. Uses --radius so
+     the cards inherit the subtle 8px softening from the token. */
   .hud-card {
     position: relative;
     overflow: hidden;
     border: 1px solid var(--border);
+    border-radius: var(--radius);
     background: var(--card);
     transition:
       border-color 0.3s,
@@ -559,9 +564,9 @@
   }
 
   .badge-hud-warning {
-    color: oklch(0.52 0.14 40); /* darker coral for AA contrast */
-    background: var(--coral-bg);
-    border-color: color-mix(in oklab, var(--coral) 50%, transparent);
+    color: var(--amber-deep);
+    background: var(--amber-wash);
+    border-color: var(--amber);
   }
 
   .badge-hud-accent {
@@ -583,14 +588,17 @@
     border-color: rgba(255, 255, 255, 0.2);
   }
 
-  /* Yellow — for "ACTION REQUIRED" pills inside the Pending hero card.
-     Yellow text on a 12%-yellow wash, meant to sit on the solid IKEA blue
-     hero bg (contrast holds). Don't use on a light canvas — yellow on white
-     fails contrast. */
-  .badge-hud-yellow {
-    color: var(--yellow);
-    background: rgba(255, 216, 3, 0.12);
-    border-color: rgba(255, 216, 3, 0.5);
+  /* Amber — for "ACTION REQUIRED" pills inside the Pending hero card.
+     Pending semantic, distinct from the yellow CTA + yellow numeral on the
+     same card. Warm amber text on amber wash sits cleanly against the solid
+     IKEA blue hero bg without competing with the brand yellow.
+     Color is hard-coded (not via --amber-wash token): in dark mode the
+     wash token resolves to a translucent fill meant for backgrounds and
+     becomes nearly invisible as text. */
+  .badge-hud-amber {
+    color: #fef3c7;
+    background: color-mix(in oklab, var(--amber) 22%, transparent);
+    border-color: color-mix(in oklab, var(--amber) 55%, transparent);
   }
 
   /* .hud-en — opt-in English mono styling.

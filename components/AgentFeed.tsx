@@ -109,26 +109,24 @@ export function AgentFeed({
     };
   }, [limit, locale, t, notify]);
 
-  // DemoControls hooks — resolve-booking mimics a user click on the Booking
-  // pending row's amber pill; reset restores the initial mock items.
+  // DemoControls hooks — resolve-pending mimics a user click on the first
+  // pending row's amber pill (any merchant); reset restores the initial mock
+  // items.
   useEffect(() => {
-    const onResolveBooking = () => {
-      const booking = items.find(
-        (i) =>
-          i.merchant.en === "Booking.com" &&
-          i.status === "pending" &&
-          !resolving.has(i.id),
+    const onResolvePending = () => {
+      const next = items.find(
+        (i) => i.status === "pending" && !resolving.has(i.id),
       );
-      if (booking) handleResolve(booking.id);
+      if (next) handleResolve(next.id);
     };
     const onReset = () => {
       setItems(liveFeed.slice(0, limit));
       setResolving(new Set());
     };
-    window.addEventListener(DEMO_EVENTS.resolveBooking, onResolveBooking);
+    window.addEventListener(DEMO_EVENTS.resolvePending, onResolvePending);
     window.addEventListener(DEMO_EVENTS.reset, onReset);
     return () => {
-      window.removeEventListener(DEMO_EVENTS.resolveBooking, onResolveBooking);
+      window.removeEventListener(DEMO_EVENTS.resolvePending, onResolvePending);
       window.removeEventListener(DEMO_EVENTS.reset, onReset);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -215,8 +213,7 @@ export function AgentFeed({
       </div>
 
       {/* List + footer — single bordered box with the list above and the
-          view-all button below. No rounded corners; the design language is
-          edge-aligned per --radius: 0. */}
+          view-all button below. */}
       <div
         style={{
           background: "var(--card)",

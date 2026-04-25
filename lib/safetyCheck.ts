@@ -72,7 +72,7 @@ export function checkMerchantSafety(raw: string): SafetyResult {
     signals.push({
       severity: "positive",
       detail: b(
-        "商戶在公開信譽資料庫中具備長期紀錄",
+        "付款對象在公開信譽資料庫中具備長期紀錄",
         "Long-standing presence in public reputation databases",
       ),
     });
@@ -146,7 +146,7 @@ export function checkMerchantSafety(raw: string): SafetyResult {
     signals.push({
       severity: "neutral",
       detail: b(
-        "首次觀察此商戶．沒有歷史紀錄可比對",
+        "首次觀察此付款對象．沒有歷史紀錄可比對",
         "First time seeing this merchant. No historical signals to compare against.",
       ),
     });

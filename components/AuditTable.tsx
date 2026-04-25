@@ -115,10 +115,10 @@ export function AuditTable() {
                 <AgentIcon agent={entry.agent} size="md" />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-medium text-sm">{t(`agent.${entry.agent}.name`)}</span>
+                    <span className="font-sans font-medium text-sm">{t(`agent.${entry.agent}.name`)}</span>
                     <span className="text-muted-foreground text-sm">→</span>
-                    <span className="text-sm">{merchant}</span>
-                    <span className="text-sm tabular-nums text-muted-foreground">
+                    <span className="font-sans text-sm">{merchant}</span>
+                    <span className="text-sm font-mono tabular-nums text-muted-foreground">
                       ．{entry.amount.toFixed(2)} USDC
                     </span>
                   </div>

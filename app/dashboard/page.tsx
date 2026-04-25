@@ -15,7 +15,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { agents, stats } from "@/lib/mockData";
-import { pendingStore, usePendingApprovals } from "@/lib/stores";
+import { usePendingApprovals } from "@/lib/stores";
 import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
 
 function phraseKey(hour: number): string {
@@ -136,7 +136,7 @@ export default function DashboardPage() {
             sizes so the three numbers read at a glance instead of squinted. */}
         <div className="flex flex-col gap-2 md:min-w-[280px] shrink-0">
           <div
-            className="flex items-center justify-between gap-3 px-4 py-3 border"
+            className="flex items-center justify-between gap-3 px-4 py-3 rounded-md border"
             style={{
               background: "var(--bg-soft)",
               borderColor: "var(--border)",
@@ -156,27 +156,27 @@ export default function DashboardPage() {
             </span>
           </div>
           <div
-            className="flex items-center justify-between gap-3 px-4 py-3 border"
+            className="flex items-center justify-between gap-3 px-4 py-3 rounded-md border"
             style={{
-              background: "rgba(255, 216, 3, 0.18)",
-              borderColor: "rgba(255, 216, 3, 0.5)",
+              background: "var(--sage-bg)",
+              borderColor: "rgba(139, 164, 114, 0.4)",
             }}
           >
             <span
               className="text-[13px] font-mono uppercase tracking-[0.08em]"
-              style={{ color: "var(--ikea-blue-darker)" }}
+              style={{ color: "var(--sage)" }}
             >
               {t("dashboard.status.auto")}
             </span>
             <span
               className="text-[15px] font-mono font-bold tabular-nums"
-              style={{ color: "var(--ikea-blue-darker)" }}
+              style={{ color: "var(--sage)" }}
             >
               {automationPct}%
             </span>
           </div>
           <div
-            className="flex items-center justify-between gap-3 px-4 py-3 border"
+            className="flex items-center justify-between gap-3 px-4 py-3 rounded-md border"
             style={{
               background: "rgba(224, 120, 86, 0.08)",
               borderColor: "rgba(224, 120, 86, 0.3)",

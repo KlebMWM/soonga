@@ -10,24 +10,26 @@ import {
   X,
 } from "lucide-react";
 import { useTheme } from "@/components/ThemeToggle";
-import { auditStore, pendingStore } from "@/lib/stores";
+import { auditStore, pendingStore, usePendingApprovals } from "@/lib/stores";
 
 /**
  * Demo-only floating control panel. Drives imperative state changes for
  * preview / screenshot scenarios.
  *
- * Approve-one / toggle-empty / reset hit the shared stores directly now —
+ * Approve-one / toggle-empty / reset hit the shared stores directly —
  * Dashboard, Approvals, Sidebar badge all read from those, so a single
- * mutation propagates everywhere. Resolve-booking still goes through a
- * window event because the target lives in AgentFeed's local items state
- * (the store doesn't know about feed rows).
+ * mutation propagates everywhere. Resolve-pending dispatches a window event
+ * because the visual target lives in AgentFeed's local items state (the
+ * store doesn't track feed rows). The handler picks the first pending item
+ * by recency, no merchant binding.
  *
  * Visibility: dev mode OR `?demo=1` in the URL. Hidden on production builds
  * by default. Visibility check runs in a useEffect so SSR markup is empty
  * and the panel pops in post-mount.
  */
 export const DEMO_EVENTS = {
-  resolveBooking: "soon-demo:resolve-booking",
+  /** Resolve the first pending item visible in AgentFeed (any merchant). */
+  resolvePending: "soon-demo:resolve-pending",
   /** Fires after stores are reset; AgentFeed listens to also reset its
    *  local items state (which doesn't live in any shared store). */
   reset: "soon-demo:reset",
@@ -41,6 +43,8 @@ export function DemoControls() {
   const [visible, setVisible] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const { theme, toggle: toggleTheme, mounted } = useTheme();
+  const pending = usePendingApprovals();
+  const hasPending = pending.length > 0;
 
   useEffect(() => {
     const isDev = process.env.NODE_ENV === "development";
@@ -105,20 +109,14 @@ export function DemoControls() {
           <DemoButton icon={ThemeIcon} label={themeLabel} onClick={toggleTheme} />
           <DemoButton
             icon={Check}
-            label="核准一筆"
-            onClick={() => {
-              const queue = pendingStore.getAll();
-              if (queue.length > 0) pendingStore.remove(queue[0].id);
-            }}
-          />
-          <DemoButton
-            icon={Check}
-            label="解決 Booking 那筆"
-            onClick={() => dispatchDemo(DEMO_EVENTS.resolveBooking)}
+            label="處理一筆待審核"
+            disabled={!hasPending}
+            disabledTitle="目前沒有待審核項目"
+            onClick={() => dispatchDemo(DEMO_EVENTS.resolvePending)}
           />
           <DemoButton
             icon={Inbox}
-            label="切換空態 / 待辦態"
+            label="切換空態 / 待審核態"
             onClick={() => {
               if (pendingStore.getAll().length > 0) {
                 pendingStore.setAll([]);
@@ -129,7 +127,7 @@ export function DemoControls() {
           />
           <DemoButton
             icon={RotateCcw}
-            label="重置全部"
+            label="重置 Demo"
             onClick={() => {
               pendingStore.reset();
               auditStore.reset();
@@ -146,16 +144,24 @@ function DemoButton({
   icon: Icon,
   label,
   onClick,
+  disabled,
+  disabledTitle,
 }: {
   icon: typeof Check;
   label: string;
   onClick: () => void;
+  disabled?: boolean;
+  /** Tooltip shown only when disabled — explains why the button is greyed
+   *  out without firing a toast. */
+  disabledTitle?: string;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="flex items-center gap-2.5 w-full px-2.5 py-2 text-[12px] text-left transition-colors hover:bg-[rgba(80,132,208,0.08)]"
+      disabled={disabled}
+      title={disabled ? disabledTitle : undefined}
+      className="flex items-center gap-2.5 w-full px-2.5 py-2 text-[12px] text-left transition-colors enabled:hover:bg-[rgba(80,132,208,0.08)] disabled:opacity-40 disabled:cursor-not-allowed"
       style={{ color: "var(--text)" }}
     >
       <Icon

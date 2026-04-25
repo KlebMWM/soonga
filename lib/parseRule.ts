@@ -136,7 +136,7 @@ export function parseRuleRequest(
       block: {
         merchant: matchedMerchant,
         reason: {
-          zh: "使用者要求封鎖此商戶",
+          zh: "使用者要求封鎖此付款對象",
           en: "User requested to block this merchant",
         },
         addedAt: today,
@@ -164,7 +164,7 @@ export function parseRuleRequest(
       rationale: {
         zh: allowIntent
           ? `偵測到你想將「${matchedMerchant}」加入白名單。`
-          : `偵測到商家「${matchedMerchant}」，預設建議加入白名單；如果其實想封鎖，請補上「封鎖」之類的字眼再試。`,
+          : `偵測到網站「${matchedMerchant}」，預設建議加入白名單；如果其實想封鎖，請補上「封鎖」之類的字眼再試。`,
         en: allowIntent
           ? `Detected intent to allowlist "${matchedMerchant}".`
           : `Detected merchant "${matchedMerchant}". Defaulting to allowlist; add words like "block" if you meant the opposite.`,
@@ -215,7 +215,7 @@ export function parseRuleRequest(
   return {
     kind: "unknown",
     rationale: {
-      zh: "無法推斷出具體規則。試試描述金額（例：「每月 50 USDC」）或指定商家名稱（例：「加 Booking.com 到白名單」）。",
+      zh: "無法推斷出具體規則。試試描述金額（例：「每月 50 USDC」）或指定網站名稱（例：「加 Booking.com 到白名單」）。",
       en: 'Couldn\'t infer a specific rule. Try describing an amount ("$50/month") or a specific merchant ("allowlist Booking.com").',
     },
   };
