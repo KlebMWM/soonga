@@ -12,13 +12,13 @@ export const dict: Dict = {
   "agent.newsletter.name": { zh: "內容彙整", en: "Curator" },
 
   // ==================== Nav ====================
-  "nav.dashboard.label": { zh: "Command Center", en: "Command Center" },
+  "nav.dashboard.label": { zh: "指揮中心", en: "Command Center" },
   "nav.dashboard.sub": { zh: "即時總覽", en: "Live overview" },
-  "nav.rules.label": { zh: "Rule Engine", en: "Rule Engine" },
+  "nav.rules.label": { zh: "規則引擎", en: "Rule Engine" },
   "nav.rules.sub": { zh: "額度與信任名單", en: "Budgets & trust lists" },
-  "nav.approvals.label": { zh: "Approvals", en: "Approvals" },
+  "nav.approvals.label": { zh: "審核佇列", en: "Approvals" },
   "nav.approvals.sub": { zh: "等候審核", en: "Waiting on you" },
-  "nav.audit.label": { zh: "Audit Trail", en: "Audit Trail" },
+  "nav.audit.label": { zh: "審計軌跡", en: "Audit Trail" },
   "nav.audit.sub": { zh: "決策日誌", en: "Decision log" },
   "nav.guide.label": { zh: "使用說明", en: "Guide" },
   "nav.guide.sub": { zh: "3 分鐘快速上手", en: "3-minute walkthrough" },
@@ -48,7 +48,7 @@ export const dict: Dict = {
   "notify.granted.short": { zh: "已開啟", en: "ON" },
   "notify.denied.short": { zh: "已封鎖", en: "OFF" },
   "notify.default.short": { zh: "待開啟", en: "OFF" },
-  "topbar.section.commandCenter": { zh: "COMMAND CENTER", en: "COMMAND CENTER" },
+  "topbar.section.commandCenter": { zh: "指揮中心", en: "COMMAND CENTER" },
 
   // ==================== Wallet ====================
   "wallet.connect": { zh: "連接錢包", en: "Connect wallet" },

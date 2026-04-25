@@ -12,6 +12,7 @@ import {
   MiniBars,
   MiniDonut,
 } from "@/components/MetricCard";
+import { DEMO_EVENTS } from "@/components/DemoControls";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { agents, pendingApprovals, stats } from "@/lib/mockData";
@@ -38,13 +39,32 @@ export default function DashboardPage() {
   // Lifted so that resolving a pending row in AgentFeed can drive the big
   // numeral morph in DashboardHero — both components read this single
   // source of truth for "how many things still need a decision".
-  const [pendingCount, setPendingCount] = useState(pendingApprovals.length);
+  const initialPending = pendingApprovals.length;
+  const [pendingCount, setPendingCount] = useState(initialPending);
 
   useEffect(() => {
     setNow(new Date());
     const interval = setInterval(() => setNow(new Date()), 60_000);
     return () => clearInterval(interval);
   }, []);
+
+  // DemoControls hooks — let the floating panel poke pendingCount imperatively.
+  useEffect(() => {
+    const onApprove = () =>
+      setPendingCount((c) => Math.max(0, c - 1));
+    const onToggleEmpty = () =>
+      setPendingCount((c) => (c === 0 ? initialPending : 0));
+    const onReset = () => setPendingCount(initialPending);
+
+    window.addEventListener(DEMO_EVENTS.approveOne, onApprove);
+    window.addEventListener(DEMO_EVENTS.toggleEmpty, onToggleEmpty);
+    window.addEventListener(DEMO_EVENTS.reset, onReset);
+    return () => {
+      window.removeEventListener(DEMO_EVENTS.approveOne, onApprove);
+      window.removeEventListener(DEMO_EVENTS.toggleEmpty, onToggleEmpty);
+      window.removeEventListener(DEMO_EVENTS.reset, onReset);
+    };
+  }, [initialPending]);
 
   const burnPercent = Math.round((stats.monthSpent / stats.monthBudget) * 100);
   const remainingPct = Math.max(0, 100 - burnPercent);
@@ -68,7 +88,7 @@ export default function DashboardPage() {
         <div className="flex-1 min-w-0 space-y-3">
           {/* Tag */}
           <div
-            className="inline-flex items-center gap-2 border px-3 py-1.5 text-[11px] font-semibold"
+            className="inline-flex items-center gap-2.5 border px-4 py-2 text-[13px] font-semibold"
             style={{
               color: "var(--ikea-blue-darker)",
               background: "var(--bg-accent)",
@@ -76,10 +96,10 @@ export default function DashboardPage() {
             }}
           >
             <span
-              className="h-1.5 w-1.5 rounded-full"
+              className="h-2 w-2 rounded-full"
               style={{
                 background: "var(--yellow)",
-                boxShadow: "0 0 8px var(--yellow)",
+                boxShadow: "0 0 10px var(--yellow)",
               }}
             />
             {t(tagKey(hour))}
@@ -87,7 +107,7 @@ export default function DashboardPage() {
 
           {/* Headline */}
           <h1
-            className="text-[36px] md:text-[44px] tracking-tight leading-[1.05]"
+            className="text-[40px] md:text-[52px] tracking-tight leading-[1.05]"
             style={{ color: "var(--headline)" }}
           >
             <span style={{ fontFamily: "var(--font-noto-serif-tc), serif" }}>
@@ -109,7 +129,7 @@ export default function DashboardPage() {
 
           {/* Sub copy with bold numbers */}
           <p
-            className="text-[14px] leading-relaxed max-w-xl"
+            className="text-[16px] leading-relaxed max-w-xl"
             style={{ color: "var(--paragraph)" }}
           >
             {t("dashboard.greeting.sub.prefix")}
@@ -130,63 +150,64 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {/* Mini-status — 3 tight mono rows */}
-        <div className="flex flex-col gap-1.5 md:min-w-[220px] shrink-0">
+        {/* Mini-status — 3 mono rows. Roomy padding + bigger label/value
+            sizes so the three numbers read at a glance instead of squinted. */}
+        <div className="flex flex-col gap-2 md:min-w-[280px] shrink-0">
           <div
-            className="flex items-center justify-between gap-3 px-3 py-1.5 border font-mono text-[11px]"
+            className="flex items-center justify-between gap-3 px-4 py-3 border"
             style={{
               background: "var(--bg-soft)",
               borderColor: "var(--border)",
             }}
           >
             <span
-              className="uppercase tracking-[0.08em]"
-              style={{ color: "var(--text-dim)" }}
+              className="text-[13px] font-mono uppercase tracking-[0.08em]"
+              style={{ color: "var(--text-mid)" }}
             >
               {t("dashboard.status.budget")}
             </span>
             <span
-              className="font-bold tabular-nums"
+              className="text-[15px] font-mono font-bold tabular-nums"
               style={{ color: "var(--headline)" }}
             >
               {burnPercent}%
             </span>
           </div>
           <div
-            className="flex items-center justify-between gap-3 px-3 py-1.5 border font-mono text-[11px]"
+            className="flex items-center justify-between gap-3 px-4 py-3 border"
             style={{
               background: "rgba(255, 216, 3, 0.18)",
               borderColor: "rgba(255, 216, 3, 0.5)",
             }}
           >
             <span
-              className="uppercase tracking-[0.08em]"
+              className="text-[13px] font-mono uppercase tracking-[0.08em]"
               style={{ color: "var(--ikea-blue-darker)" }}
             >
               {t("dashboard.status.auto")}
             </span>
             <span
-              className="font-bold tabular-nums"
+              className="text-[15px] font-mono font-bold tabular-nums"
               style={{ color: "var(--ikea-blue-darker)" }}
             >
               {automationPct}%
             </span>
           </div>
           <div
-            className="flex items-center justify-between gap-3 px-3 py-1.5 border font-mono text-[11px]"
+            className="flex items-center justify-between gap-3 px-4 py-3 border"
             style={{
               background: "rgba(224, 120, 86, 0.08)",
               borderColor: "rgba(224, 120, 86, 0.3)",
             }}
           >
             <span
-              className="uppercase tracking-[0.08em]"
-              style={{ color: "var(--text-dim)" }}
+              className="text-[13px] font-mono uppercase tracking-[0.08em]"
+              style={{ color: "var(--text-mid)" }}
             >
               {t("dashboard.status.pending")}
             </span>
             <span
-              className="font-bold tabular-nums"
+              className="text-[15px] font-mono font-bold tabular-nums"
               style={{ color: "var(--coral)" }}
             >
               {pendingCount}

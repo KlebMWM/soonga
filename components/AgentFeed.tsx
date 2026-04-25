@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AgentIcon } from "@/components/AgentIcon";
+import { DEMO_EVENTS } from "@/components/DemoControls";
 import { liveFeed, stats, type FeedItem } from "@/lib/mockData";
 import { simulateAgentAction } from "@/lib/simulateAgent";
 import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
@@ -79,6 +80,31 @@ export function AgentFeed({
       if (tickRef.current) clearInterval(tickRef.current);
     };
   }, [limit, locale, t, notify]);
+
+  // DemoControls hooks — resolve-booking mimics a user click on the Booking
+  // pending row's amber pill; reset restores the initial mock items.
+  useEffect(() => {
+    const onResolveBooking = () => {
+      const booking = items.find(
+        (i) =>
+          i.merchant.en === "Booking.com" &&
+          i.status === "pending" &&
+          !resolving.has(i.id),
+      );
+      if (booking) handleResolve(booking.id);
+    };
+    const onReset = () => {
+      setItems(liveFeed.slice(0, limit));
+      setResolving(new Set());
+    };
+    window.addEventListener(DEMO_EVENTS.resolveBooking, onResolveBooking);
+    window.addEventListener(DEMO_EVENTS.reset, onReset);
+    return () => {
+      window.removeEventListener(DEMO_EVENTS.resolveBooking, onResolveBooking);
+      window.removeEventListener(DEMO_EVENTS.reset, onReset);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items, resolving, limit]);
 
   const filtered = useMemo(() => {
     if (filter === "all") return items;

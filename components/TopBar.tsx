@@ -38,33 +38,33 @@ export function TopBar() {
     <div
       className="hidden md:flex items-center justify-between"
       style={{
-        padding: "14px 32px",
+        padding: "18px 32px",
         background: "var(--card)",
         borderBottom: "1px solid var(--border)",
       }}
     >
       {/* Left: breadcrumb */}
-      <div className="flex items-center gap-2 min-w-0">
+      <div className="flex items-center gap-2.5 min-w-0">
         <span
-          className="text-[11px] uppercase whitespace-nowrap"
+          className="text-[13px] uppercase whitespace-nowrap"
           style={{
             color: "var(--text-mid)",
             fontFamily: "var(--font-jetbrains-mono), monospace",
-            letterSpacing: "0.18em",
+            letterSpacing: "0.16em",
           }}
         >
           {t("topbar.section.commandCenter")}
         </span>
         <span
           aria-hidden
-          className="text-[11px]"
+          className="text-[13px]"
           style={{ color: "var(--text-dim)" }}
         >
           /
         </span>
         {subKey && (
           <span
-            className="text-[13px] font-semibold truncate"
+            className="text-[15px] font-semibold truncate"
             style={{ color: "var(--headline)" }}
           >
             {t(subKey)}
