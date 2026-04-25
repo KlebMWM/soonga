@@ -138,10 +138,10 @@ export function NotificationPermissionPill() {
   );
 
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-1">
       {pill}
       <p
-        className="text-[11px] leading-snug px-1"
+        className="text-[11px] leading-[1.4] px-1"
         style={{ color: "var(--text-mid)" }}
       >
         {scopeHint}

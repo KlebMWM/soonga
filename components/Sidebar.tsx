@@ -176,11 +176,11 @@ export function Sidebar() {
           onClick={() =>
             window.dispatchEvent(new CustomEvent("soon-open-welcome"))
           }
-          className="flex items-center gap-2 text-[12px] transition-colors hover:text-foreground"
+          className="flex items-center gap-2 text-[12px] transition-colors hover:text-[var(--ikea-blue-darker)]"
           style={{ color: "var(--text-mid)", padding: "2px 4px" }}
         >
-          <HelpCircle className="h-3.5 w-3.5 shrink-0" />
-          <span>{t("nav.desktop.help")}</span>
+          <HelpCircle className="h-4 w-4 shrink-0" />
+          <span>{t("nav.help.label")}</span>
         </button>
         <UserPill />
       </div>

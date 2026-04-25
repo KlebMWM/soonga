@@ -28,7 +28,7 @@ export const dict: Dict = {
   "nav.mobile.approvals": { zh: "審核", en: "Approvals" },
   "nav.mobile.audit": { zh: "日誌", en: "Audit" },
   "nav.mobile.guide": { zh: "說明", en: "Guide" },
-  "nav.desktop.help": { zh: "原型說明", en: "Prototype guide" },
+  "nav.help.label": { zh: "原型說明", en: "Prototype guide" },
 
   "brand.tagline": { zh: "control hub", en: "control hub" },
   "brand.prototype": { zh: "PROTOTYPE", en: "PROTOTYPE" },
@@ -240,7 +240,7 @@ export const dict: Dict = {
   "dashboard.hero.pending.line1": { zh: "筆待審核", en: "to-do" },
   "dashboard.hero.pending.line2": {
     zh: "需要你確認後才會付款",
-    en: "awaiting your approval",
+    en: "Will not pay until you confirm",
   },
   "dashboard.hero.pending.total": {
     zh: "總金額 {amount} USDC",
