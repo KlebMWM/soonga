@@ -274,7 +274,7 @@ export function AgentFeed({
 
                 {/* Amount — mono, deep-blue digits + small gray USDC */}
                 <span
-                  className="text-[13px] font-mono font-semibold tabular-nums text-right whitespace-nowrap"
+                  className="activity-amount text-[13px] font-mono font-semibold tabular-nums text-right whitespace-nowrap"
                   style={{ color: "var(--headline)" }}
                 >
                   {item.amount.toFixed(2)}

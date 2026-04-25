@@ -766,6 +766,26 @@
     background: rgba(80, 132, 208, 0.12);
   }
 
+  /* Mobile — collapse the 5-column grid into 2 columns (icon | content)
+     and stack rule pill / amount / status under the agent → merchant line.
+     Below 640px the desktop grid would crush the 5 inline cells. */
+  @media (max-width: 640px) {
+    .activity-row {
+      grid-template-columns: 36px 1fr;
+      gap: 8px 12px;
+      padding: 14px;
+    }
+
+    .activity-row .rule-pill,
+    .activity-row .activity-amount,
+    .activity-row .status-pending,
+    .activity-row .status-auto {
+      grid-column: 2;
+      justify-self: start;
+      text-align: left;
+    }
+  }
+
   /* Rule pill — ok (light blue) / warn (yellow) */
   .rule-pill {
     display: inline-flex;

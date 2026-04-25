@@ -24,7 +24,7 @@ export function MetricCard({
   return (
     <HudCard
       variant="stat"
-      className={cn("flex flex-col gap-3 min-h-[163px] p-[18px]", className)}
+      className={cn("flex flex-col gap-3 min-h-[150px] p-4", className)}
     >
       {/* Label row: 4x4 yellow square with deep-blue border + label text */}
       <div className="flex items-center gap-2">

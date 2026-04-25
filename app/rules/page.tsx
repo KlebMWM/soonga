@@ -149,7 +149,7 @@ export default function RulesPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {categories.map((c) => (
             <CategoryRuleCard key={c.id} category={c} />
           ))}
