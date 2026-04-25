@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { AlertCircle, ChevronDown, Sparkles, TrendingUp } from "lucide-react";
 import { DashboardHero } from "@/components/DashboardHero";
 import { AgentFeed } from "@/components/AgentFeed";
 import { BurnRateChart } from "@/components/BurnRateChart";
@@ -306,6 +306,174 @@ export default function DashboardPage() {
           onPendingCreated={() => setPendingCount((c) => c + 1)}
         />
       </div>
+
+      {/* Yesterday's briefing — fulfills the empty-state hero's
+          "明早 08:00 會有一份報表" promise. Mock data, hardcoded date. */}
+      <details className="group mt-6 rounded-lg border border-border bg-card overflow-hidden">
+        <summary className="list-none cursor-pointer px-5 py-4 flex items-center justify-between gap-4 select-none hover:bg-muted/30 transition-colors">
+          <div>
+            <div className="text-sm font-medium flex items-center gap-2">
+              <Sparkles
+                className="h-3.5 w-3.5"
+                style={{ color: "var(--ikea-blue-darker)" }}
+              />
+              {t("dashboard.briefing.title")}
+            </div>
+            <div className="text-[12px] text-muted-foreground mt-0.5">
+              {t("dashboard.briefing.sub", { date: "2026-04-24" })}
+            </div>
+          </div>
+          <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 transition-transform group-open:rotate-180" />
+        </summary>
+
+        <div className="border-t border-border p-5 space-y-5">
+          {/* Stat row — 4 numbers, the "five-finger view" of yesterday */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div
+              className="rounded-md border p-3"
+              style={{ borderColor: "var(--border)", background: "var(--bg-soft)" }}
+            >
+              <div className="text-[11px] uppercase tracking-wide" style={{ color: "var(--text-mid)" }}>
+                {t("dashboard.briefing.stat.auto.label")}
+              </div>
+              <div className="mt-1 text-[15px] font-semibold tabular-nums" style={{ color: "var(--headline)" }}>
+                {t("dashboard.briefing.stat.auto.value", { count: 38, amount: "12.40" })}
+              </div>
+            </div>
+            <div
+              className="rounded-md border p-3"
+              style={{ borderColor: "var(--border)", background: "var(--bg-soft)" }}
+            >
+              <div className="text-[11px] uppercase tracking-wide" style={{ color: "var(--text-mid)" }}>
+                {t("dashboard.briefing.stat.you.label")}
+              </div>
+              <div className="mt-1 text-[15px] font-semibold tabular-nums" style={{ color: "var(--headline)" }}>
+                {t("dashboard.briefing.stat.you.value", { n: 5 })}
+              </div>
+              <div className="text-[11px] mt-0.5" style={{ color: "var(--text-mid)" }}>
+                {t("dashboard.briefing.stat.you.breakdown", {
+                  approved: 3,
+                  rejected: 1,
+                  counter: 1,
+                })}
+              </div>
+            </div>
+            <div
+              className="rounded-md border p-3"
+              style={{ borderColor: "var(--border)", background: "var(--bg-soft)" }}
+            >
+              <div className="text-[11px] uppercase tracking-wide" style={{ color: "var(--text-mid)" }}>
+                {t("dashboard.briefing.stat.edge.label")}
+              </div>
+              <div className="mt-1 text-[15px] font-semibold tabular-nums" style={{ color: "var(--headline)" }}>
+                {t("dashboard.briefing.stat.edge.value", { n: 7 })}
+              </div>
+              <div className="text-[11px] mt-0.5" style={{ color: "var(--text-mid)" }}>
+                {t("dashboard.briefing.stat.edge.sub")}
+              </div>
+            </div>
+            <div
+              className="rounded-md border p-3"
+              style={{ borderColor: "var(--border)", background: "var(--bg-soft)" }}
+            >
+              <div className="text-[11px] uppercase tracking-wide" style={{ color: "var(--text-mid)" }}>
+                {t("dashboard.briefing.stat.budget.label")}
+              </div>
+              <div className="mt-1 text-[15px] font-semibold tabular-nums" style={{ color: "var(--headline)" }}>
+                {burnPercent}%
+              </div>
+              <div className="text-[11px] mt-0.5" style={{ color: "var(--text-mid)" }}>
+                {t("dashboard.briefing.stat.budget.sub", { days: 9 })}
+              </div>
+            </div>
+          </div>
+
+          {/* Highlights — 3 narrative bullets surfaced by mock heuristics */}
+          <div className="space-y-2">
+            <div
+              className="text-[11px] uppercase tracking-wide"
+              style={{ color: "var(--text-mid)" }}
+            >
+              {t("dashboard.briefing.highlights")}
+            </div>
+            <ul className="space-y-2">
+              {[
+                {
+                  icon: TrendingUp,
+                  key: "dashboard.briefing.highlight.newMerchant",
+                  tone: "blue",
+                },
+                {
+                  icon: AlertCircle,
+                  key: "dashboard.briefing.highlight.budgetWarning",
+                  tone: "amber",
+                },
+                {
+                  icon: AlertCircle,
+                  key: "dashboard.briefing.highlight.agentPaused",
+                  tone: "muted",
+                },
+              ].map((h) => {
+                const Icon = h.icon;
+                const color =
+                  h.tone === "amber"
+                    ? "var(--amber-deep)"
+                    : h.tone === "blue"
+                      ? "var(--ikea-blue-darker)"
+                      : "var(--text-mid)";
+                return (
+                  <li
+                    key={h.key}
+                    className="flex items-start gap-2 text-[13px] leading-relaxed"
+                    style={{ color: "var(--paragraph)" }}
+                  >
+                    <Icon
+                      className="h-3.5 w-3.5 shrink-0 mt-0.5"
+                      style={{ color }}
+                    />
+                    <span>{t(h.key)}</span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+
+          {/* AI suggestion — single next-step prompt */}
+          <div
+            className="rounded-md border p-3 flex items-start gap-2.5"
+            style={{
+              borderColor: "var(--border-blue)",
+              background: "var(--bg-accent)",
+            }}
+          >
+            <Sparkles
+              className="h-4 w-4 shrink-0 mt-0.5"
+              style={{ color: "var(--ikea-blue-darker)" }}
+            />
+            <div className="min-w-0 flex-1">
+              <div
+                className="text-[11px] font-semibold uppercase tracking-wide"
+                style={{ color: "var(--ikea-blue-darker)" }}
+              >
+                {t("dashboard.briefing.suggestion.label")}
+              </div>
+              <div
+                className="mt-1 text-[13px] leading-relaxed"
+                style={{ color: "var(--headline)" }}
+              >
+                {t("dashboard.briefing.suggestion.text")}
+              </div>
+              <a
+                href="/rules"
+                className="mt-2 inline-flex items-center gap-1 text-[12px] font-semibold underline underline-offset-2 hover:no-underline"
+                style={{ color: "var(--ikea-blue-darker)" }}
+              >
+                {t("dashboard.briefing.suggestion.action")} →
+              </a>
+            </div>
+          </div>
+        </div>
+      </details>
 
       <details className="group mt-6 rounded-lg border border-border bg-card overflow-hidden">
         <summary className="list-none cursor-pointer px-5 py-4 flex items-center justify-between gap-4 select-none hover:bg-muted/30 transition-colors">

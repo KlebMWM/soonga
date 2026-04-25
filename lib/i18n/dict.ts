@@ -121,6 +121,63 @@ export const dict: Dict = {
     zh: "指揮中心",
     en: "Command Center",
   },
+  /* Yesterday's briefing — fulfills the late-night empty-state promise that
+     "明早 08:00 會有一份報表". Five-finger view of yesterday's AI activity. */
+  "dashboard.briefing.title": { zh: "昨日摘要", en: "Yesterday's briefing" },
+  "dashboard.briefing.sub": {
+    zh: "{date} · AI 處理動態 + 你的決定",
+    en: "{date} · AI activity + your decisions",
+  },
+  "dashboard.briefing.stat.auto.label": { zh: "自動處理", en: "Auto-handled" },
+  "dashboard.briefing.stat.auto.value": {
+    zh: "{count} 筆 · {amount} USDC",
+    en: "{count} txns · {amount} USDC",
+  },
+  "dashboard.briefing.stat.you.label": { zh: "你的決定", en: "Your calls" },
+  "dashboard.briefing.stat.you.value": {
+    zh: "{n} 筆",
+    en: "{n} decisions",
+  },
+  "dashboard.briefing.stat.you.breakdown": {
+    zh: "{approved} 核准 · {rejected} 拒絕 · {counter} 找替代",
+    en: "{approved} approved · {rejected} rejected · {counter} counter",
+  },
+  "dashboard.briefing.stat.edge.label": { zh: "險些觸發", en: "Edge cases" },
+  "dashboard.briefing.stat.edge.value": {
+    zh: "{n} 次",
+    en: "{n} hits",
+  },
+  "dashboard.briefing.stat.edge.sub": {
+    zh: "都已被規則擋下",
+    en: "All caught by rules",
+  },
+  "dashboard.briefing.stat.budget.label": { zh: "本月預算", en: "Month budget" },
+  "dashboard.briefing.stat.budget.sub": {
+    zh: "剩餘 {days} 天",
+    en: "{days} days left",
+  },
+  "dashboard.briefing.highlights": { zh: "幾件值得注意", en: "Worth noting" },
+  "dashboard.briefing.highlight.newMerchant": {
+    zh: "新商家「Klook Tokyo」出現過 2 次，可考慮加進信任名單",
+    en: "New merchant Klook Tokyo appeared 2× — consider allowlisting",
+  },
+  "dashboard.briefing.highlight.budgetWarning": {
+    zh: "研究助理本月已用 78%，月底前小心預算",
+    en: "Research assistant at 78% of monthly budget — watch the rest of the month",
+  },
+  "dashboard.briefing.highlight.agentPaused": {
+    zh: "採購助理整天無交易（目前處於暫停狀態）",
+    en: "Shopping assistant had no transactions (currently paused)",
+  },
+  "dashboard.briefing.suggestion.label": { zh: "AI 建議", en: "AI suggestion" },
+  "dashboard.briefing.suggestion.text": {
+    zh: "研究助理本週用量比上週高 28%。要不要把月限額從 50 USDC 拉到 65？",
+    en: "Research assistant is 28% above last week. Bump the monthly cap from $50 to $65?",
+  },
+  "dashboard.briefing.suggestion.action": {
+    zh: "去調整月限額",
+    en: "Adjust monthly cap",
+  },
   /* Greeting phrase-only variants (without time suffix) — used in the new
      Dashboard greeting where the phrase renders in Noto Serif TC and the name
      is pulled out as a separate Instrument Serif italic element with a yellow
