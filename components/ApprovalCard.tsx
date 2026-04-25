@@ -35,9 +35,18 @@ const TRUST_KEY: Record<PendingApproval["context"]["merchantTrust"], string> = {
 export function ApprovalCard({
   approval,
   onCounter,
+  onHandled,
 }: {
   approval: PendingApproval;
   onCounter?: (approval: PendingApproval) => void;
+  /** Fires after the user resolves the card via approve / allow / reject so
+   *  the parent can remove it from the queue. Counter actions don't trigger
+   *  this — the original stays in the queue while the AI works on a
+   *  counter-offer. */
+  onHandled?: (
+    id: string,
+    outcome: "approved" | "allowed" | "rejected",
+  ) => void;
 }) {
   const t = useT();
   const { locale } = useLocale();
@@ -84,6 +93,10 @@ export function ApprovalCard({
     (m.isDenied ? toast.error : toast.success)(m.title, { description: m.desc });
     if (outcome === "counter" && canCounter && onCounter) {
       onCounter(approval);
+      return;
+    }
+    if (outcome !== "counter") {
+      onHandled?.(approval.id, outcome);
     }
   };
 

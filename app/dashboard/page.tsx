@@ -303,6 +303,7 @@ export default function DashboardPage() {
           onPendingResolve={() =>
             setPendingCount((c) => Math.max(0, c - 1))
           }
+          onPendingCreated={() => setPendingCount((c) => c + 1)}
         />
       </div>
 

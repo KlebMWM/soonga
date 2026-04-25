@@ -29,6 +29,7 @@ export function AgentFeed({
   limit = 5,
   viewAllHref = "/audit",
   onPendingResolve,
+  onPendingCreated,
 }: {
   limit?: number;
   viewAllHref?: string;
@@ -36,6 +37,11 @@ export function AgentFeed({
    *  parent decrement the dashboard's pending count so the big numeral
    *  morphs in sync with the row sliding out. */
   onPendingResolve?: () => void;
+  /** Fires whenever the simulator generates a new pending item, so the
+   *  parent can bump pendingCount and trigger an upward numeral morph in
+   *  the hero card. Without this, "AI just asked for a decision" toasts
+   *  fire but the dashboard's big number stays stale. */
+  onPendingCreated?: () => void;
 } = {}) {
   const t = useT();
   const { locale } = useLocale();
@@ -64,6 +70,7 @@ export function AgentFeed({
       const next = simulateAgentAction();
       setItems((prev) => [next, ...prev].slice(0, limit));
       if (next.status === "pending") {
+        onPendingCreated?.();
         const agentName = t(`agent.${next.agent}.name`);
         const title = t("feed.toast.pending.title", { agent: agentName });
         const desc = t("feed.toast.pending.desc", {
@@ -79,7 +86,7 @@ export function AgentFeed({
     return () => {
       if (tickRef.current) clearInterval(tickRef.current);
     };
-  }, [limit, locale, t, notify]);
+  }, [limit, locale, t, notify, onPendingCreated]);
 
   // DemoControls hooks — resolve-booking mimics a user click on the Booking
   // pending row's amber pill; reset restores the initial mock items.
@@ -317,17 +324,11 @@ export function AgentFeed({
           })}
         </ul>
 
-        {/* Footer: full-width "view all" button, merges into the outer box */}
-        <button
-          type="button"
-          className="feed-view-all"
-          onClick={() => {
-            // No-op for the mock — the audit page is reachable via the link
-            // above. Left as a visual affordance per spec.
-          }}
-        >
+        {/* Footer: full-width link to the audit page. Merges into the outer
+            list box and points at the same destination as the header link. */}
+        <Link href={viewAllHref} className="feed-view-all">
           {t("feed.viewAllTransactions", { n: stats.todayTransactions })}
-        </button>
+        </Link>
       </div>
     </div>
   );

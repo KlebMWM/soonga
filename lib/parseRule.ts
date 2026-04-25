@@ -22,6 +22,12 @@ export type ParsedAllow = {
   addedAt: string;
 };
 
+export type ParsedBlock = {
+  merchant: string;
+  reason: { zh: string; en: string };
+  addedAt: string;
+};
+
 export type ParsedRule =
   | {
       kind: "category";
@@ -32,6 +38,12 @@ export type ParsedRule =
   | {
       kind: "allow";
       allow: ParsedAllow;
+      confidence: Confidence;
+      rationale: { zh: string; en: string };
+    }
+  | {
+      kind: "block";
+      block: ParsedBlock;
       confidence: Confidence;
       rationale: { zh: string; en: string };
     }
@@ -105,22 +117,57 @@ export function parseRuleRequest(
     };
   }
 
-  // 1) Merchant name — highest-signal match. Treat as allowlist intent.
+  // 1) Merchant name + intent. Block intent first — defaulting an unqualified
+  //    merchant to allowlist is unsafe for a payment-control product, since a
+  //    user typing "封鎖 Booking.com" should never end up creating an
+  //    allowlist entry.
   const matchedMerchant = KNOWN_MERCHANTS.find((m) =>
     text.toLowerCase().includes(m.toLowerCase()),
   );
+  const blockIntent =
+    /封鎖|拒絕|不要|禁止|擋下|阻擋|block|deny|reject|disallow/i.test(text);
+  const allowIntent =
+    /白名單|信任|允許|放行|加入名單|allow|trust|whitelist/i.test(text);
+  const today = new Date().toISOString().slice(0, 10);
+
+  if (matchedMerchant && blockIntent) {
+    return {
+      kind: "block",
+      block: {
+        merchant: matchedMerchant,
+        reason: {
+          zh: "使用者要求封鎖此商戶",
+          en: "User requested to block this merchant",
+        },
+        addedAt: today,
+      },
+      confidence: "high",
+      rationale: {
+        zh: `偵測到你想封鎖「${matchedMerchant}」，建議加入封鎖名單。`,
+        en: `Detected intent to block "${matchedMerchant}". Suggesting blocklist entry.`,
+      },
+    };
+  }
+
   if (matchedMerchant) {
+    // No explicit intent → default to allow only when allow intent OR no
+    // signal in either direction. The explicit allowIntent boosts confidence;
+    // a bare merchant mention falls back to medium.
     return {
       kind: "allow",
       allow: {
         merchant: matchedMerchant,
         category: availableCategoryIds[0] ?? "api",
-        addedAt: new Date().toISOString().slice(0, 10),
+        addedAt: today,
       },
-      confidence: "high",
+      confidence: allowIntent ? "high" : "medium",
       rationale: {
-        zh: `偵測到商家「${matchedMerchant}」，建議加入白名單。`,
-        en: `Detected merchant "${matchedMerchant}". Suggesting allowlist entry.`,
+        zh: allowIntent
+          ? `偵測到你想將「${matchedMerchant}」加入白名單。`
+          : `偵測到商家「${matchedMerchant}」，預設建議加入白名單；如果其實想封鎖，請補上「封鎖」之類的字眼再試。`,
+        en: allowIntent
+          ? `Detected intent to allowlist "${matchedMerchant}".`
+          : `Detected merchant "${matchedMerchant}". Defaulting to allowlist; add words like "block" if you meant the opposite.`,
       },
     };
   }

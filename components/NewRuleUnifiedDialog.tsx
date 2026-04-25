@@ -244,11 +244,17 @@ export function NewRuleUnifiedDialog({ categories, onCreateCategory, onAddAllow,
             setSingle={setCatSingle}
             categoryIds={categories.map((c) => c.id)}
             onSwitchToAllow={(m) => {
-              // When the AI helper detects a merchant name, jump across to
-              // the allowlist form with the merchant pre-filled — avoids
-              // making the user re-type what they already said.
+              // When the AI helper detects an allowlist intent, jump across
+              // to the allowlist form with the merchant pre-filled.
               setMerchant(m);
               setMode("allow");
+            }}
+            onSwitchToBlock={(m, defaultReason) => {
+              // Block intent — same hop pattern, with the parsed reason
+              // pre-filled into the block form's free-text field.
+              setMerchant(m);
+              setReason(defaultReason);
+              setMode("block");
             }}
             onSubmit={handleCreateCategory}
             onCancel={() => setMode("chooser")}
@@ -368,6 +374,7 @@ function CategoryForm({
   setSingle,
   categoryIds,
   onSwitchToAllow,
+  onSwitchToBlock,
   onSubmit,
   onCancel,
 }: {
@@ -380,9 +387,12 @@ function CategoryForm({
   single: number;
   setSingle: (v: number) => void;
   categoryIds: string[];
-  /** Called when the AI helper detects a merchant name — parent hops to the
-   *  allowlist form with the merchant pre-filled. */
+  /** AI helper detected an allowlist intent on a merchant — parent hops to
+   *  the allowlist form with the merchant pre-filled. */
   onSwitchToAllow: (merchant: string) => void;
+  /** AI helper detected a blocklist intent — parent hops to the blocklist
+   *  form with the merchant + parsed reason pre-filled. */
+  onSwitchToBlock: (merchant: string, defaultReason: string) => void;
   onSubmit: () => void;
   onCancel: () => void;
 }) {
@@ -396,6 +406,7 @@ function CategoryForm({
     | { kind: "idle" }
     | { kind: "filled"; confidence: "high" | "medium" | "low" }
     | { kind: "allow"; merchant: string; rationale: string }
+    | { kind: "block"; merchant: string; reason: string; rationale: string }
     | { kind: "unknown"; message: string }
   >({ kind: "idle" });
 
@@ -418,6 +429,13 @@ function CategoryForm({
         setAiResult({
           kind: "allow",
           merchant: parsed.allow.merchant,
+          rationale: parsed.rationale[locale],
+        });
+      } else if (parsed.kind === "block") {
+        setAiResult({
+          kind: "block",
+          merchant: parsed.block.merchant,
+          reason: parsed.block.reason[locale],
           rationale: parsed.rationale[locale],
         });
       } else {
@@ -513,6 +531,32 @@ function CategoryForm({
                   className="ml-1 font-semibold underline underline-offset-2 hover:no-underline"
                 >
                   {t("rules.ai.switchToAllow")}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {aiResult.kind === "block" && (
+            <div
+              className="rounded-md border p-2.5 text-[12px] flex items-start gap-2"
+              style={{
+                color: "var(--destructive)",
+                background: "color-mix(in oklab, var(--destructive) 8%, transparent)",
+                borderColor:
+                  "color-mix(in oklab, var(--destructive) 35%, transparent)",
+              }}
+            >
+              <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+              <div className="flex-1 leading-relaxed">
+                {aiResult.rationale}
+                <button
+                  type="button"
+                  onClick={() =>
+                    onSwitchToBlock(aiResult.merchant, aiResult.reason)
+                  }
+                  className="ml-1 font-semibold underline underline-offset-2 hover:no-underline"
+                >
+                  {t("rules.ai.switchToBlock")}
                 </button>
               </div>
             </div>
