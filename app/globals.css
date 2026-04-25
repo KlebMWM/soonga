@@ -87,6 +87,13 @@
   --yellow: #ffd803; /* CTA 主色 鮮黃 */
   --yellow-deep: #e6c200; /* 黃 hover */
 
+  /* Amber — reserved for warn + pending semantics. Separated from --yellow
+     so the yellow family stays purely a CTA treatment. No call sites yet;
+     migration to .rule-pill-warn / .status-pending happens in a later pass. */
+  --amber: #d97706;
+  --amber-deep: #b45309;
+  --amber-wash: #fef3c7;
+
   /* Agent 色 */
   --coral: #e07856; /* ShoppingBot */
   --sage: #5b9b6e; /* 綠 (自動核准) */
@@ -174,9 +181,11 @@
   --sidebar-ring: var(--ikea-blue);
 }
 
-/* .dark intentionally left unset — v9 is light-only. Retained selector hook
-   in case we ever want a true-dark variant, but no overrides today. */
+/* .dark — pre-seeded overrides for tokens that need a different value in
+   the dark palette. Full dark-mode token swap lands in SPRINT 3. */
 .dark {
+  --amber: #fbbf24;
+  --amber-wash: rgba(251, 191, 36, 0.12);
 }
 
 @layer base {
