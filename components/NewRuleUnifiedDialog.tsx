@@ -38,7 +38,7 @@ import { cn } from "@/lib/utils";
 export type AllowEntry = { merchant: string; category: string; addedAt: string };
 export type BlockEntry = { merchant: string; reason: { zh: string; en: string }; addedAt: string };
 
-type Mode = "chooser" | "category" | "allow" | "block";
+type Mode = "ai" | "chooser" | "category" | "allow" | "block";
 
 type Props = {
   categories: { id: string; label: string }[];
@@ -69,7 +69,9 @@ export function NewRuleUnifiedDialog({ categories, onCreateCategory, onAddAllow,
   const t = useT();
   const { locale } = useLocale();
   const [open, setOpen] = useState(false);
-  const [mode, setMode] = useState<Mode>("chooser");
+  // AI-first: default to the natural-language layer. Manual chooser is a
+  // fallback reachable via "switch to manual form" from the AI screen.
+  const [mode, setMode] = useState<Mode>("ai");
 
   // Category form state
   const [catName, setCatName] = useState("");
@@ -85,7 +87,7 @@ export function NewRuleUnifiedDialog({ categories, onCreateCategory, onAddAllow,
   const [safety, setSafety] = useState<SafetyResult | null>(null);
 
   const reset = () => {
-    setMode("chooser");
+    setMode("ai");
     setCatName("");
     setCatDesc("");
     setCatMonthly(100);
@@ -188,6 +190,7 @@ export function NewRuleUnifiedDialog({ categories, onCreateCategory, onAddAllow,
   };
 
   const title = {
+    ai: t("rules.ai.dialog.title"),
     chooser: t("rules.unified.chooser.title"),
     category: t("rules.new.title"),
     allow: t("trust.add.title.allow"),
@@ -195,6 +198,7 @@ export function NewRuleUnifiedDialog({ categories, onCreateCategory, onAddAllow,
   }[mode];
 
   const description = {
+    ai: t("rules.ai.dialog.desc"),
     chooser: t("rules.unified.chooser.desc"),
     category: t("rules.new.desc"),
     allow: t("trust.add.desc.allow"),
@@ -216,9 +220,11 @@ export function NewRuleUnifiedDialog({ categories, onCreateCategory, onAddAllow,
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <div className="flex items-center gap-2">
-            {mode !== "chooser" && (
+            {mode !== "ai" && (
               <button
-                onClick={() => setMode("chooser")}
+                onClick={() =>
+                  setMode(mode === "chooser" ? "ai" : "chooser")
+                }
                 className="inline-flex items-center gap-1 text-[12px] text-muted-foreground hover:text-foreground transition-colors"
               >
                 <ArrowLeft className="h-3 w-3" />
@@ -229,6 +235,58 @@ export function NewRuleUnifiedDialog({ categories, onCreateCategory, onAddAllow,
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
+
+        {mode === "ai" && (
+          <AiForm
+            categoryIds={categories.map((c) => c.id)}
+            onApplyCategory={(c) => {
+              onCreateCategory(c);
+              toast.success(
+                t("rules.new.createdTitle", { name: c.name[locale] }),
+                {
+                  description: t("rules.new.createdDesc", {
+                    monthly: c.monthlyLimit,
+                    single: c.singleLimit,
+                  }),
+                },
+              );
+              closeAndReset();
+            }}
+            onApplyAllow={(a) => {
+              onAddAllow(a);
+              toast.success(
+                t("trust.add.toast.allow.title", { merchant: a.merchant }),
+                { description: t("trust.add.toast.allow.desc") },
+              );
+              closeAndReset();
+            }}
+            onApplyBlock={(blk) => {
+              onAddBlock(blk);
+              toast.error(
+                t("trust.add.toast.block.title", { merchant: blk.merchant }),
+                { description: t("trust.add.toast.block.desc") },
+              );
+              closeAndReset();
+            }}
+            onAdjustCategory={(c) => {
+              setCatName(c.name[locale]);
+              setCatDesc(c.description[locale]);
+              setCatMonthly(c.monthlyLimit);
+              setCatSingle(c.singleLimit);
+              setMode("category");
+            }}
+            onAdjustAllow={(m) => {
+              setMerchant(m);
+              setMode("allow");
+            }}
+            onAdjustBlock={(m, parsedReason) => {
+              setMerchant(m);
+              setReason(parsedReason);
+              setMode("block");
+            }}
+            onSwitchToManual={() => setMode("chooser")}
+          />
+        )}
 
         {mode === "chooser" && <Chooser onPick={setMode} />}
 
@@ -280,6 +338,297 @@ export function NewRuleUnifiedDialog({ categories, onCreateCategory, onAddAllow,
         )}
       </DialogContent>
     </Dialog>
+  );
+}
+
+// ==================== AI form (top-level) ====================
+
+function AiForm({
+  categoryIds,
+  onApplyCategory,
+  onApplyAllow,
+  onApplyBlock,
+  onAdjustCategory,
+  onAdjustAllow,
+  onAdjustBlock,
+  onSwitchToManual,
+}: {
+  categoryIds: string[];
+  onApplyCategory: (c: Category) => void;
+  onApplyAllow: (a: AllowEntry) => void;
+  onApplyBlock: (b: BlockEntry) => void;
+  /** "Manual adjust" handlers — pre-fill the corresponding manual form
+   *  with the parsed values, then the parent jumps to that mode. */
+  onAdjustCategory: (c: Category) => void;
+  onAdjustAllow: (merchant: string) => void;
+  onAdjustBlock: (merchant: string, reason: string) => void;
+  /** Bare merchant or "unknown" parse outcome — fall back to the chooser
+   *  so the user can pick a manual path without a pre-filled hint. */
+  onSwitchToManual: () => void;
+}) {
+  const t = useT();
+  const { locale } = useLocale();
+  const [input, setInput] = useState("");
+  const [parsing, setParsing] = useState(false);
+  const [parsed, setParsed] = useState<ReturnType<typeof parseRuleRequest> | null>(
+    null,
+  );
+
+  const handleParse = () => {
+    if (!input.trim() || parsing) return;
+    setParsing(true);
+    setParsed(null);
+    // Simulate model latency. Swap the timeout body for a real Claude call
+    // when the API is wired up — the ParsedRule shape stays the same.
+    setTimeout(() => {
+      setParsed(parseRuleRequest(input, categoryIds));
+      setParsing(false);
+    }, 900);
+  };
+
+  const handleReset = () => {
+    setInput("");
+    setParsed(null);
+  };
+
+  const handleCreate = () => {
+    if (!parsed) return;
+    if (parsed.kind === "category") onApplyCategory(parsed.category);
+    else if (parsed.kind === "allow")
+      onApplyAllow({
+        merchant: parsed.allow.merchant,
+        category: parsed.allow.category,
+        addedAt: parsed.allow.addedAt,
+      });
+    else if (parsed.kind === "block")
+      onApplyBlock({
+        merchant: parsed.block.merchant,
+        reason: parsed.block.reason,
+        addedAt: parsed.block.addedAt,
+      });
+  };
+
+  const handleManualAdjust = () => {
+    if (!parsed) return;
+    if (parsed.kind === "category") onAdjustCategory(parsed.category);
+    else if (parsed.kind === "allow") onAdjustAllow(parsed.allow.merchant);
+    else if (parsed.kind === "block")
+      onAdjustBlock(parsed.block.merchant, parsed.block.reason[locale]);
+    else onSwitchToManual();
+  };
+
+  return (
+    <>
+      <div className="space-y-4 py-2">
+        <div className="space-y-2">
+          <Label className="text-sm flex items-center gap-1.5">
+            <Sparkles
+              className="h-3.5 w-3.5"
+              style={{ color: "var(--ikea-blue-darker)" }}
+            />
+            {t("rules.ai.inputLabel")}
+          </Label>
+          <textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder={t("rules.ai.placeholder")}
+            rows={3}
+            maxLength={200}
+            disabled={parsing}
+            autoFocus
+            className="w-full resize-none rounded-md border border-border bg-card px-3 py-2 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-ring"
+          />
+        </div>
+
+        {!parsed && (
+          <Button
+            onClick={handleParse}
+            disabled={!input.trim() || parsing}
+            variant="raised"
+            className="w-full gap-2"
+          >
+            {parsing ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                {t("rules.ai.parsing")}
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-4 w-4" />
+                {t("rules.ai.parseButton")}
+              </>
+            )}
+          </Button>
+        )}
+
+        {parsed && <AiDraftPreview parsed={parsed} locale={locale} />}
+      </div>
+
+      <DialogFooter>
+        {parsed?.kind === "unknown" ? (
+          <>
+            <Button variant="outline" onClick={handleReset}>
+              {t("rules.ai.tryAgain")}
+            </Button>
+            <Button onClick={onSwitchToManual} className="gap-1.5">
+              {t("rules.ai.switchToManual")}
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </>
+        ) : parsed ? (
+          <>
+            <Button variant="outline" onClick={handleManualAdjust}>
+              {t("rules.ai.manualAdjust")}
+            </Button>
+            <Button onClick={handleCreate} className="gap-1.5">
+              <Check className="h-4 w-4" />
+              {t("rules.ai.apply")}
+            </Button>
+          </>
+        ) : (
+          <Button variant="outline" onClick={onSwitchToManual}>
+            {t("rules.ai.switchToManual")}
+          </Button>
+        )}
+      </DialogFooter>
+    </>
+  );
+}
+
+function AiDraftPreview({
+  parsed,
+  locale,
+}: {
+  parsed: ReturnType<typeof parseRuleRequest>;
+  locale: "zh" | "en";
+}) {
+  const t = useT();
+
+  if (parsed.kind === "unknown") {
+    return (
+      <div
+        className="rounded-lg border p-3 text-[13px] leading-relaxed flex items-start gap-2"
+        style={{
+          color: "var(--amber-deep)",
+          background: "var(--amber-wash)",
+          borderColor: "var(--amber)",
+        }}
+      >
+        <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+        <span>{parsed.rationale[locale]}</span>
+      </div>
+    );
+  }
+
+  const confidenceTone =
+    parsed.confidence === "high"
+      ? { color: "var(--sage)", bg: "var(--sage-bg)", border: "rgba(139, 164, 114, 0.4)" }
+      : parsed.confidence === "medium"
+        ? { color: "var(--ikea-blue-darker)", bg: "var(--bg-accent)", border: "var(--border-blue)" }
+        : { color: "var(--text-mid)", bg: "var(--bg-soft)", border: "var(--border)" };
+
+  return (
+    <div
+      className="rounded-lg border overflow-hidden"
+      style={{ borderColor: "var(--border-blue)", background: "var(--bg-soft)" }}
+    >
+      <div
+        className="flex items-center gap-2 px-3 py-2 border-b"
+        style={{ borderColor: "var(--border)", background: "var(--card)" }}
+      >
+        <Sparkles className="h-3.5 w-3.5" style={{ color: "var(--ikea-blue-darker)" }} />
+        <span className="text-[13px] font-semibold" style={{ color: "var(--headline)" }}>
+          {parsed.kind === "category"
+            ? t("rules.ai.result.draftCategory")
+            : parsed.kind === "allow"
+              ? t("rules.ai.result.draftAllow")
+              : t("rules.ai.switchToBlock")}
+        </span>
+        <span
+          className="ml-auto text-[10px] font-bold uppercase px-1.5 py-0.5 font-mono border"
+          style={{
+            color: confidenceTone.color,
+            background: confidenceTone.bg,
+            borderColor: confidenceTone.border,
+            letterSpacing: "0.08em",
+          }}
+        >
+          {t(`rules.ai.result.confidence.${parsed.confidence}`)}
+        </span>
+      </div>
+
+      <div className="px-3 py-2.5 space-y-1.5">
+        {parsed.kind === "category" ? (
+          <>
+            <DraftRow label={t("rules.ai.result.categoryName")} value={parsed.category.name[locale]} />
+            <DraftRow
+              label={t("rules.ai.result.description")}
+              value={parsed.category.description[locale]}
+              subdued
+            />
+            <DraftRow label={t("rules.ai.result.monthly")} value={`$${parsed.category.monthlyLimit} USDC`} mono />
+            <DraftRow label={t("rules.ai.result.single")} value={`$${parsed.category.singleLimit} USDC`} mono />
+          </>
+        ) : parsed.kind === "allow" ? (
+          <>
+            <DraftRow label={t("rules.ai.result.merchant")} value={parsed.allow.merchant} mono />
+            <DraftRow label={t("rules.ai.result.category")} value={parsed.allow.category} subdued />
+          </>
+        ) : (
+          <>
+            <DraftRow label={t("rules.ai.result.merchant")} value={parsed.block.merchant} mono />
+            <DraftRow
+              label={t("approval.suggestion.label")}
+              value={parsed.block.reason[locale]}
+              subdued
+            />
+          </>
+        )}
+      </div>
+
+      <div
+        className="px-3 py-2 text-[12px] leading-relaxed border-t"
+        style={{
+          color: "var(--paragraph)",
+          borderColor: "var(--border)",
+          fontStyle: "italic",
+        }}
+      >
+        {parsed.rationale[locale]}
+      </div>
+    </div>
+  );
+}
+
+function DraftRow({
+  label,
+  value,
+  mono,
+  subdued,
+}: {
+  label: string;
+  value: string;
+  mono?: boolean;
+  subdued?: boolean;
+}) {
+  return (
+    <div className="flex items-baseline gap-3 text-[13px]">
+      <span
+        className="shrink-0 w-20 text-[11px] uppercase"
+        style={{ color: "var(--text-mid)", letterSpacing: "0.05em" }}
+      >
+        {label}
+      </span>
+      <span
+        className={cn("min-w-0 flex-1 truncate", mono && "font-mono tabular-nums")}
+        style={{
+          color: subdued ? "var(--paragraph)" : "var(--headline)",
+          fontWeight: subdued ? 400 : 600,
+        }}
+      >
+        {value}
+      </span>
+    </div>
   );
 }
 

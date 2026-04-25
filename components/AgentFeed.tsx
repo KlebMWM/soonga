@@ -82,7 +82,9 @@ export function AgentFeed({
         notify(title, desc);
       }
     };
-    tickRef.current = setInterval(tick, 3000);
+    // 12s instead of 3s — long enough that the activity feel stays alive
+    // without burying the canvas under toast notifications during a demo.
+    tickRef.current = setInterval(tick, 12000);
     return () => {
       if (tickRef.current) clearInterval(tickRef.current);
     };

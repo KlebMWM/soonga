@@ -754,16 +754,17 @@
     background: rgba(80, 132, 208, 0.03);
   }
 
-  /* needs-review row — left 3px IKEA-blue stripe + tinted bg. padding-left
-     compensates for the stripe so text stays in column. */
+  /* needs-review row — amber stripe + tint, semantic match for the row's
+     amber pending pill. Blue is reserved for brand / informational signals;
+     amber means "human decision required". */
   .activity-row.is-pending {
-    background: rgba(80, 132, 208, 0.06);
-    border-left: 3px solid var(--ikea-blue);
+    background: var(--amber-wash);
+    border-left: 3px solid var(--amber);
     padding-left: 17px;
   }
 
   .activity-row.is-pending:hover {
-    background: rgba(80, 132, 208, 0.12);
+    background: color-mix(in oklab, var(--amber-wash) 70%, var(--amber) 30%);
   }
 
   /* Mobile — collapse the 5-column grid into 2 columns (icon | content)
