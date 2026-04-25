@@ -2,7 +2,10 @@ import { b, type Bilingual } from "./i18n/config";
 
 export type Agent = {
   id: string;
+  /** Canonical id used as the lookup key across data and AgentIcon. */
   name: string;
+  /** Human-readable display name shown in UI ("Kai", "Maya", etc.). */
+  displayName: string;
   avatar: string;
   role: Bilingual;
   status: "active" | "paused";
@@ -82,6 +85,7 @@ export const agents: Agent[] = [
   {
     id: "a1",
     name: "ResearchBot",
+    displayName: "Kai",
     avatar: "🧠",
     role: b("學術研究助理", "Academic research assistant"),
     status: "active",
@@ -91,6 +95,7 @@ export const agents: Agent[] = [
   {
     id: "a2",
     name: "TravelAgent",
+    displayName: "Maya",
     avatar: "✈️",
     role: b("差旅規劃", "Travel planner"),
     status: "active",
@@ -100,6 +105,7 @@ export const agents: Agent[] = [
   {
     id: "a3",
     name: "ShoppingBot",
+    displayName: "Rin",
     avatar: "🛒",
     role: b("日用採購", "Daily shopping"),
     status: "paused",
@@ -109,6 +115,7 @@ export const agents: Agent[] = [
   {
     id: "a4",
     name: "NewsletterCurator",
+    displayName: "Lumi",
     avatar: "📰",
     role: b("電子報訂閱管理", "Newsletter subscriptions"),
     status: "active",

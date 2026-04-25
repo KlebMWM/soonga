@@ -11,38 +11,47 @@ type AgentMeta = {
   glow: string;
   /** Two-letter abbreviation, retained for accessibility and legacy fallbacks. */
   label: string;
+  /** Human-readable display name. Lookup key is the canonical id ("ResearchBot"
+   *  etc.); displayName is what the UI actually renders ("Kai"). */
+  displayName: string;
 };
 
-// v9 palette — sage / dusk / coral / plum. Each gradient pairs the base hue
-// with a ~10% darker variant for depth; glows use the base hue at 30% alpha.
+// Canonical ids stay (ResearchBot / TravelAgent / etc.) to avoid breaking
+// references in mockData / simulator. Display names are short, human, and
+// shown wherever the agent surfaces in the UI. Kai swaps from sage to
+// terracotta so sage stays reserved for the "auto-approved" system signal.
 const AGENT_MAP: Record<string, AgentMeta> = {
   ResearchBot: {
     icon: Brain,
-    color: "#8ba472",
-    gradient: "linear-gradient(135deg, #8ba472, #6d8855)",
-    glow: "0 0 14px rgba(139, 164, 114, 0.3)",
-    label: "RB",
+    color: "#a86a4f",
+    gradient: "linear-gradient(135deg, #a86a4f, #8a4f3a)",
+    glow: "0 0 14px rgba(168, 106, 79, 0.3)",
+    label: "Ka",
+    displayName: "Kai",
   },
   TravelAgent: {
     icon: Plane,
     color: "#7a8ba0",
     gradient: "linear-gradient(135deg, #7a8ba0, #5c6b82)",
     glow: "0 0 14px rgba(122, 139, 160, 0.3)",
-    label: "TA",
+    label: "Ma",
+    displayName: "Maya",
   },
   ShoppingBot: {
     icon: ShoppingBag,
     color: "#e07856",
     gradient: "linear-gradient(135deg, #e07856, #c05f3f)",
     glow: "0 0 14px rgba(224, 120, 86, 0.3)",
-    label: "SB",
+    label: "Ri",
+    displayName: "Rin",
   },
   NewsletterCurator: {
     icon: Newspaper,
     color: "#a06a8f",
     gradient: "linear-gradient(135deg, #a06a8f, #854c76)",
     glow: "0 0 14px rgba(160, 106, 143, 0.3)",
-    label: "NC",
+    label: "Lu",
+    displayName: "Lumi",
   },
 };
 
@@ -52,6 +61,7 @@ const FALLBACK: AgentMeta = {
   gradient: "linear-gradient(135deg, #6b6860, #4a4a44)",
   glow: "0 0 14px rgba(107, 104, 96, 0.25)",
   label: "AI",
+  displayName: "Agent",
 };
 
 export function getAgentColor(agent: string): string {
@@ -64,6 +74,10 @@ export function getAgentGradient(agent: string): string {
 
 export function getAgentGlow(agent: string): string {
   return (AGENT_MAP[agent] ?? FALLBACK).glow;
+}
+
+export function getAgentDisplay(agent: string): string {
+  return (AGENT_MAP[agent] ?? FALLBACK).displayName;
 }
 
 type Size = "xs" | "sm" | "md" | "lg";

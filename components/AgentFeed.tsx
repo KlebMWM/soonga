@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { AgentIcon } from "@/components/AgentIcon";
+import { AgentIcon, getAgentDisplay } from "@/components/AgentIcon";
 import { liveFeed, stats, type FeedItem } from "@/lib/mockData";
 import { simulateAgentAction } from "@/lib/simulateAgent";
 import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
@@ -179,7 +179,7 @@ export function AgentFeed({
                       className="font-mono"
                       style={{ color: "var(--text-mid)" }}
                     >
-                      {item.agent}
+                      {getAgentDisplay(item.agent)}
                     </span>
                     <span
                       aria-hidden

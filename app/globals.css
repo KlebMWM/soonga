@@ -95,10 +95,11 @@
   --amber-wash: #fef3c7;
 
   /* Agent 色 */
-  --coral: #e07856; /* ShoppingBot */
-  --sage: #5b9b6e; /* 綠 (自動核准) */
-  --dusk: #5c7aa0; /* TravelAgent */
-  --plum: #8e6aa0; /* NewsletterCurator */
+  --coral: #e07856; /* Rin (shopping) */
+  --sage: #5b9b6e; /* 綠 (自動核准) — system signal only */
+  --dusk: #5c7aa0; /* Maya (travel) */
+  --plum: #8e6aa0; /* Lumi (newsletter) */
+  --terracotta: #a86a4f; /* Kai (research) */
 
   /* 邊框 */
   --border: rgba(10, 37, 68, 0.08);
@@ -186,6 +187,7 @@
 .dark {
   --amber: #fbbf24;
   --amber-wash: rgba(251, 191, 36, 0.12);
+  --terracotta: #c28769;
 }
 
 @layer base {
