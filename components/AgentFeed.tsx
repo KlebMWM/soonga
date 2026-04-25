@@ -27,16 +27,36 @@ function ruleTone(reason: string): "ok" | "warn" {
 export function AgentFeed({
   limit = 5,
   viewAllHref = "/audit",
+  onPendingResolve,
 }: {
   limit?: number;
   viewAllHref?: string;
+  /** Fires after a pending row finishes its resolve animation. Lets the
+   *  parent decrement the dashboard's pending count so the big numeral
+   *  morphs in sync with the row sliding out. */
+  onPendingResolve?: () => void;
 } = {}) {
   const t = useT();
   const { locale } = useLocale();
   const { notify } = useDesktopNotifications();
   const [items, setItems] = useState<FeedItem[]>(() => liveFeed.slice(0, limit));
   const [filter, setFilter] = useState<FilterKind>("all");
+  const [resolving, setResolving] = useState<Set<string>>(new Set());
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const handleResolve = (id: string) => {
+    if (resolving.has(id)) return;
+    setResolving((prev) => new Set(prev).add(id));
+    setTimeout(() => {
+      setItems((prev) => prev.filter((i) => i.id !== id));
+      setResolving((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+      onPendingResolve?.();
+    }, 600);
+  };
 
   useEffect(() => {
     const tick = () => {
@@ -159,6 +179,7 @@ export function AgentFeed({
           )}
           {filtered.map((item, i) => {
             const isPending = item.status === "pending";
+            const isResolving = resolving.has(item.id);
             const tone = ruleTone(item.reason[locale]);
             const relative = item.relative?.[locale] ?? t("feed.relative.justNow");
             const isLast = i === filtered.length - 1;
@@ -166,7 +187,11 @@ export function AgentFeed({
             const row = (
               <li
                 key={item.id}
-                className={cn("activity-row", isPending && "is-pending")}
+                className={cn(
+                  "activity-row",
+                  isPending && "is-pending",
+                  isResolving && "resolving",
+                )}
                 style={isLast ? { borderBottom: "none" } : undefined}
               >
                 {/* Agent icon — 36x36 square tile with same-hue outer ring */}
@@ -227,12 +252,24 @@ export function AgentFeed({
                   </span>
                 </span>
 
-                {/* Status — auto (gray + sage dot) or pending (yellow pill) */}
+                {/* Status — auto (gray + sage dot) or pending (amber pill).
+                    Clicking the pending pill resolves the row in place
+                    (sage wash → slide out 600ms) and bumps the dashboard
+                    count. stopPropagation prevents the outer Link from also
+                    navigating to /approvals. */}
                 {isPending ? (
-                  <span className="status-pending">
+                  <button
+                    type="button"
+                    className="status-pending"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleResolve(item.id);
+                    }}
+                  >
                     <span className="status-pending-dot" />
                     {t("feed.status.pending")}
-                  </span>
+                  </button>
                 ) : (
                   <span className="status-auto">
                     <span className="status-auto-dot" />

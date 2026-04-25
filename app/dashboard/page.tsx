@@ -14,7 +14,7 @@ import {
 } from "@/components/MetricCard";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { agents, stats } from "@/lib/mockData";
+import { agents, pendingApprovals, stats } from "@/lib/mockData";
 import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
 
 function phraseKey(hour: number): string {
@@ -35,6 +35,10 @@ export default function DashboardPage() {
   const t = useT();
   const { locale } = useLocale();
   const [now, setNow] = useState<Date | null>(null);
+  // Lifted so that resolving a pending row in AgentFeed can drive the big
+  // numeral morph in DashboardHero — both components read this single
+  // source of truth for "how many things still need a decision".
+  const [pendingCount, setPendingCount] = useState(pendingApprovals.length);
 
   useEffect(() => {
     setNow(new Date());
@@ -44,7 +48,7 @@ export default function DashboardPage() {
 
   const burnPercent = Math.round((stats.monthSpent / stats.monthBudget) * 100);
   const remainingPct = Math.max(0, 100 - burnPercent);
-  const autoCount = stats.todayTransactions - stats.pendingCount;
+  const autoCount = stats.todayTransactions - pendingCount;
   const automationPct = Math.round((autoCount / stats.todayTransactions) * 100);
   const deltaDir: "up" | "down" = stats.yesterdayDeltaPct < 0 ? "down" : "up";
   const deltaAbs = Math.abs(stats.yesterdayDeltaPct);
@@ -185,7 +189,7 @@ export default function DashboardPage() {
               className="font-bold tabular-nums"
               style={{ color: "var(--coral)" }}
             >
-              {stats.pendingCount}
+              {pendingCount}
             </span>
           </div>
         </div>
@@ -194,7 +198,7 @@ export default function DashboardPage() {
       {/* Bento grid: pending hero (2x2) + 4 metrics (2x2) */}
       <div className="mt-6 grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-4 auto-rows-fr">
         <div className="md:col-span-2 md:row-span-2">
-          <DashboardHero />
+          <DashboardHero pendingCount={pendingCount} />
         </div>
 
         <MetricCard
@@ -272,7 +276,13 @@ export default function DashboardPage() {
       </div>
 
       <div className="mt-10">
-        <AgentFeed limit={5} viewAllHref="/audit" />
+        <AgentFeed
+          limit={5}
+          viewAllHref="/audit"
+          onPendingResolve={() =>
+            setPendingCount((c) => Math.max(0, c - 1))
+          }
+        />
       </div>
 
       <details className="group mt-6 rounded-lg border border-border bg-card overflow-hidden">

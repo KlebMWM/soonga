@@ -603,16 +603,78 @@
     border-radius: 50%;
     background: currentColor;
     box-shadow: 0 0 8px currentColor;
-    animation: hud-pulse 1.5s ease-in-out infinite;
+    animation: breathing 1500ms ease-in-out infinite;
   }
 
-  @keyframes hud-pulse {
+  /* Breathing — slow opacity sigh used by every .hud-dot. Replaces the
+     old hud-pulse name; functionally identical (1500ms, opacity 1↔0.4). */
+  @keyframes breathing {
     0%,
     100% {
       opacity: 1;
     }
     50% {
       opacity: 0.4;
+    }
+  }
+
+  /* ---------------- Motion: numeral morph ---------------- */
+
+  /* Old digit fades out + lifts up (240ms). Used on the exiting span when
+     the count transitions, sitting absolute over the entering one. */
+  @keyframes numeral-exit {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+  }
+
+  /* New digit fades in from below (400ms). Slightly slower than exit so the
+     two cross-fade rather than swap. */
+  @keyframes numeral-enter {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .numeral-exit {
+    animation: numeral-exit 240ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  .numeral-enter {
+    animation: numeral-enter 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* ---------------- Motion: activity row resolve ---------------- */
+
+  /* When user resolves a pending row, the row immediately re-skins to sage
+     (replaces the amber pending look with the same colour as auto-approved)
+     and slides 20px right while fading out over 600ms. JS removes it from
+     the list after the animation finishes. */
+  .activity-row.resolving {
+    background: var(--sage-bg) !important;
+    border-left: 3px solid var(--sage) !important;
+    animation: row-resolve-out 600ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    pointer-events: none;
+  }
+
+  @keyframes row-resolve-out {
+    0% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(20px);
     }
   }
 
@@ -774,7 +836,7 @@
     height: 5px;
     border-radius: 50%;
     background: var(--amber);
-    animation: hud-pulse 1.5s ease-in-out infinite;
+    animation: breathing 1500ms ease-in-out infinite;
   }
 
   /* ---------------- Sidebar nav items ---------------- */
@@ -894,6 +956,20 @@
   .feed-view-all:hover {
     background: var(--bg-accent);
     color: var(--ikea-blue-darker);
+  }
+}
+
+/* prefers-reduced-motion — disable every CSS animation + transition.
+   JS-driven timeouts (e.g. row-resolve removal delay) are unaffected; the
+   row simply disappears at 600ms without a slide instead of with one. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 

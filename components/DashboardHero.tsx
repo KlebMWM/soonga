@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,10 +12,26 @@ import { agents, pendingApprovals } from "@/lib/mockData";
 import { useT } from "@/lib/i18n/LocaleProvider";
 import { cn } from "@/lib/utils";
 
-export function DashboardHero() {
+export function DashboardHero({ pendingCount }: { pendingCount?: number } = {}) {
   const t = useT();
   const pending = pendingApprovals;
-  const count = pending.length;
+  // Prefer the lifted count from the page (so resolving a row in AgentFeed
+  // can animate this number down). Falls back to the static mock length.
+  const count = pendingCount ?? pending.length;
+
+  // Numeral morph state: when count changes, keep the previous digit around
+  // for 240ms so its exit animation can play overlapping with the new entry.
+  const [displayCount, setDisplayCount] = useState(count);
+  const [exitingCount, setExitingCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (count !== displayCount) {
+      setExitingCount(displayCount);
+      setDisplayCount(count);
+      const t = setTimeout(() => setExitingCount(null), 240);
+      return () => clearTimeout(t);
+    }
+  }, [count, displayCount]);
 
   // --------------- Clean state ---------------
   if (count === 0) {
@@ -69,15 +86,34 @@ export function DashboardHero() {
           Noto Serif TC phrase */}
       <div className="flex-1 flex flex-col justify-center gap-1.5">
         <div className="flex items-baseline gap-4 leading-none">
-          <span
-            className="italic tabular-nums font-normal leading-[0.85] text-[88px] md:text-[120px]"
-            style={{
-              color: "var(--yellow)",
-              fontFamily: "var(--font-instrument-serif), Georgia, serif",
-              filter: "drop-shadow(0 0 30px rgba(255, 216, 3, 0.4))",
-            }}
-          >
-            {count}
+          {/* Big numeral with morph — the entering digit takes natural flow,
+              the exiting digit overlays absolute on top until 240ms passes. */}
+          <span className="relative inline-block leading-[0.85]">
+            <span
+              key={displayCount}
+              className="numeral-enter italic tabular-nums font-normal leading-[0.85] text-[88px] md:text-[120px] inline-block"
+              style={{
+                color: "var(--yellow)",
+                fontFamily: "var(--font-instrument-serif), Georgia, serif",
+                filter: "drop-shadow(0 0 30px rgba(255, 216, 3, 0.4))",
+              }}
+            >
+              {displayCount}
+            </span>
+            {exitingCount !== null && (
+              <span
+                key={`exit-${exitingCount}`}
+                className="numeral-exit italic tabular-nums font-normal leading-[0.85] text-[88px] md:text-[120px] absolute left-0 top-0 pointer-events-none"
+                style={{
+                  color: "var(--yellow)",
+                  fontFamily: "var(--font-instrument-serif), Georgia, serif",
+                  filter: "drop-shadow(0 0 30px rgba(255, 216, 3, 0.4))",
+                }}
+                aria-hidden
+              >
+                {exitingCount}
+              </span>
+            )}
           </span>
           <span
             className="text-[22px] md:text-[26px] font-medium text-white leading-none"
