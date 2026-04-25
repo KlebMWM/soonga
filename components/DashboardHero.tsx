@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AgentIcon } from "@/components/AgentIcon";
@@ -33,24 +32,80 @@ export function DashboardHero({ pendingCount }: { pendingCount?: number } = {}) 
     }
   }, [count, displayCount]);
 
-  // --------------- Clean state ---------------
+  // --------------- Empty state — editorial late-night moment ---------------
   if (count === 0) {
     return (
-      <Card className="h-full p-6 md:p-8 bg-card border-success/25">
-        <div className="flex flex-col gap-5 h-full">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-success">
-            {t("dashboard.hero.clean.title")}
+      <HudCard
+        variant="hero"
+        className="is-empty h-full flex flex-col justify-between gap-6 p-6 md:p-8"
+      >
+        {/* Top — sage breathing dot + "夜已深 / LATE NIGHT" mono tag */}
+        <div className="flex items-center gap-2">
+          <span
+            className="hud-dot"
+            style={{
+              color: "var(--sage)",
+              width: 6,
+              height: 6,
+              boxShadow: "0 0 8px var(--sage)",
+            }}
+            aria-hidden
+          />
+          <span
+            className="text-[11px] font-semibold uppercase"
+            style={{
+              color: "rgba(255, 255, 255, 0.7)",
+              fontFamily: "var(--font-jetbrains-mono), monospace",
+              letterSpacing: "0.22em",
+            }}
+          >
+            {t("dashboard.hero.empty.tag")}
+          </span>
+        </div>
+
+        {/* Center — the quote. Noto Serif TC body, Instrument Serif italic
+            yellow "Megan" inline. Two natural lines via flex-col. */}
+        <div className="flex-1 flex flex-col justify-center">
+          <p
+            className="text-[28px] md:text-[34px] leading-[1.25] text-white"
+            style={{ fontFamily: "var(--font-noto-serif-tc), serif" }}
+          >
+            {t("dashboard.hero.empty.quote.before")}
+            <span
+              className="italic"
+              style={{
+                color: "var(--yellow)",
+                fontFamily: "var(--font-instrument-serif), Georgia, serif",
+              }}
+            >
+              Megan
+            </span>
+            {t("dashboard.hero.empty.quote.after")}
+          </p>
+        </div>
+
+        {/* Bottom — two-cell stats strip. Mirrors the .pending state's
+            stats bar so the layout feels structurally familiar even though
+            the content has shifted from "act" to "rest". */}
+        <div className="grid grid-cols-2 gap-4 border border-white/10 bg-white/[0.08] p-3">
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[10px] uppercase tracking-[0.12em] text-white/55 font-mono">
+              {t("dashboard.hero.empty.stat1.label")}
+            </span>
+            <span className="text-[13px] font-semibold text-white">
+              {t("dashboard.hero.empty.stat1.value")}
+            </span>
           </div>
-          <div className="flex-1 flex items-center justify-center">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-success/15 text-success">
-              <CheckCircle2 className="h-10 w-10" strokeWidth={1.5} />
-            </div>
-          </div>
-          <div className="text-sm text-muted-foreground leading-relaxed">
-            {t("dashboard.hero.clean.desc")}
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[10px] uppercase tracking-[0.12em] text-white/55 font-mono">
+              {t("dashboard.hero.empty.stat2.label")}
+            </span>
+            <span className="text-[13px] font-semibold text-white">
+              {t("dashboard.hero.empty.stat2.value")}
+            </span>
           </div>
         </div>
-      </Card>
+      </HudCard>
     );
   }
 

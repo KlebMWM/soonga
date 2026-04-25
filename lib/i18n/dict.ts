@@ -147,6 +147,22 @@ export const dict: Dict = {
     zh: "所有 agent 都在規則內做事，沒事找你。",
     en: "Every agent is operating within its rules. Nothing needs you.",
   },
+  /* Editorial late-night moment — replaces the plain "all clear" check when
+     pending = 0. Quote splits at the name so the locale-agnostic "Megan"
+     can render in Instrument Serif italic with a yellow accent. */
+  "dashboard.hero.empty.tag": { zh: "夜已深", en: "LATE NIGHT" },
+  "dashboard.hero.empty.quote.before": { zh: "去睡吧，", en: "Get some sleep, " },
+  "dashboard.hero.empty.quote.after": {
+    zh: "，agent 今晚會顧好一切。",
+    en: ". Agents will keep watch tonight.",
+  },
+  "dashboard.hero.empty.stat1.label": { zh: "今晚已處理", en: "Handled tonight" },
+  "dashboard.hero.empty.stat1.value": { zh: "12 筆", en: "12 transactions" },
+  "dashboard.hero.empty.stat2.label": { zh: "明早 08:00", en: "Tomorrow 08:00" },
+  "dashboard.hero.empty.stat2.value": {
+    zh: "會有一份報表",
+    en: "Daily report ready",
+  },
   "dashboard.hero.pending.title": {
     zh: "筆需要由你核准的待辦事項",
     en: "to-do items awaiting your approval",

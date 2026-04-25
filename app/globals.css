@@ -385,6 +385,16 @@
     z-index: 0;
   }
 
+  /* Empty-state corner bloom — sage instead of yellow. Used when pending = 0
+     so the hero reads as "rest now" rather than "act now". */
+  .hud-card--hero.is-empty::before {
+    background: radial-gradient(
+      circle,
+      rgba(91, 155, 110, 0.22),
+      transparent 60%
+    );
+  }
+
   .hud-card--hero > * {
     position: relative;
     z-index: 1;
