@@ -612,6 +612,8 @@ function AiDraftPreview({
         )}
       </div>
 
+      <ConsequencePreview parsed={parsed} locale={locale} t={t} />
+
       <div
         className="px-3 py-2 text-[12px] leading-relaxed border-t"
         style={{
@@ -622,6 +624,97 @@ function AiDraftPreview({
       >
         {parsed.rationale[locale]}
       </div>
+    </div>
+  );
+}
+
+// Consequence preview — spells out the actual outcomes once the parsed rule
+// applies. Inserted between the draft body and the rationale so the user sees
+// "this is what will happen" before "this is why I parsed it that way".
+type ParsedRuleNonUnknown = Exclude<
+  ReturnType<typeof parseRuleRequest>,
+  { kind: "unknown" }
+>;
+
+function ConsequencePreview({
+  parsed,
+  locale,
+  t,
+}: {
+  parsed: ParsedRuleNonUnknown;
+  locale: "zh" | "en";
+  t: (key: string, params?: Record<string, string | number>) => string;
+}) {
+  type Bullet = { tone: "auto" | "review" | "deny"; text: string };
+  const bullets: Bullet[] = [];
+
+  if (parsed.kind === "category") {
+    bullets.push({
+      tone: "auto",
+      text: t("rules.ai.consequence.category.auto", {
+        single: parsed.category.singleLimit,
+        monthly: parsed.category.monthlyLimit,
+      }),
+    });
+    bullets.push({
+      tone: "review",
+      text: t("rules.ai.consequence.category.review"),
+    });
+  } else if (parsed.kind === "allow") {
+    bullets.push({
+      tone: "auto",
+      text: t("rules.ai.consequence.allow.auto", {
+        merchant: parsed.allow.merchant,
+      }),
+    });
+    bullets.push({
+      tone: "review",
+      text: t("rules.ai.consequence.allow.review"),
+    });
+  } else {
+    bullets.push({
+      tone: "deny",
+      text: t("rules.ai.consequence.block.deny", {
+        merchant: parsed.block.merchant,
+      }),
+    });
+  }
+
+  const dotColor = (tone: Bullet["tone"]) =>
+    tone === "auto"
+      ? "var(--sage)"
+      : tone === "review"
+        ? "var(--amber)"
+        : "var(--destructive)";
+
+  return (
+    <div
+      className="px-3 py-2.5 border-t"
+      style={{ borderColor: "var(--border)" }}
+    >
+      <div
+        className="text-[10px] font-bold uppercase font-mono mb-2"
+        style={{ color: "var(--text-mid)", letterSpacing: "0.1em" }}
+      >
+        {t("rules.ai.consequence.heading")}
+      </div>
+      <ul className="space-y-1 text-[12px]">
+        {bullets.map((b, i) => (
+          <li key={i} className="flex items-start gap-1.5">
+            <span
+              aria-hidden
+              className="mt-[5px] h-1.5 w-1.5 rounded-full shrink-0"
+              style={{ background: dotColor(b.tone) }}
+            />
+            <span
+              className="leading-relaxed"
+              style={{ color: "var(--paragraph)" }}
+            >
+              {b.text}
+            </span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

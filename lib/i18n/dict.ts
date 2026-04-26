@@ -917,6 +917,33 @@ export const dict: Dict = {
     zh: "檢查並套用",
     en: "Review and apply",
   },
+  // Consequence preview — spelled-out outcomes the user will see once the
+  // parsed rule applies. Bullets are tone-coded (auto = sage / review = amber
+  // / deny = destructive). Currency-prefix uses literal $ + numeric placeholder.
+  "rules.ai.consequence.heading": {
+    zh: "規則生效後",
+    en: "When this rule applies",
+  },
+  "rules.ai.consequence.category.auto": {
+    zh: "單筆 ≤ ${single} 且月累計 ≤ ${monthly} 將自動核准",
+    en: "Payments ≤ ${single} per transaction and ≤ ${monthly} per month auto-approve",
+  },
+  "rules.ai.consequence.category.review": {
+    zh: "超過上限的付款會進入待審核佇列",
+    en: "Anything over the cap joins the approval queue",
+  },
+  "rules.ai.consequence.allow.auto": {
+    zh: "{merchant} 的付款受該類別上限自動核准",
+    en: "Payments to {merchant} auto-approve within the category cap",
+  },
+  "rules.ai.consequence.allow.review": {
+    zh: "超過該類別上限仍會進待審核",
+    en: "Amounts over the category cap still hit the approval queue",
+  },
+  "rules.ai.consequence.block.deny": {
+    zh: "{merchant} 的所有付款會直接拒絕，不進待審核",
+    en: "All payments to {merchant} are rejected outright — no approval queue",
+  },
   "rules.unified.chooser.category.title": { zh: "類別預算", en: "Category budget" },
   "rules.unified.chooser.category.desc": {
     zh: "給某類支出設月度上限與單筆限額",
