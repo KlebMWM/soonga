@@ -140,6 +140,16 @@ Layer 5   使用者控制台                soon-ga.agent 的位置
 
 黃色 CTA 維持不變，因為黃在深色背景上對比反而更好。這是少數可以「不換」的色票。
 
+### 3.6 跨模組整合走一致性 over 精準
+
+Approvals 頁的「修改規則 / r 鍵」按下去會跳到 Rules 頁、預填當前商家、自動開啟 NewRuleUnifiedDialog。三種觸發原因不同的 pending 都走同一條路徑。超過類別單筆上限的 Booking.com 跳 allow tab，訂閱首次扣款的 Nature 期刊跳 allow tab，可儲值類型強制審核的 Amazon Gift Card 也跳 allow tab。
+
+精準對應該長這樣。Booking.com 應該開啟對應的 CategoryRuleCard 直接改 singleLimit。Nature 期刊跟 Gift Card 應該各自新建一種目前還不存在的規則類型，例如訂閱白名單、儲值類型黑名單。三條 path 各做一條等於三倍工程量，且要在 PendingApproval 加 metadata 描述「該編的規則類型」、page 端做 dispatch、新增還沒有的 UI。
+
+Prototype 階段選一致性大於精準。Reviewer 看 demo 動作流暢、context 帶過去就夠，「allow 不是最佳對應」是 second-order detail。Migration 路徑也乾淨。未來在 PendingApproval 加 suggestedRuleKind 欄位（category-edit / new-subscription / new-blocklist）加 page 端一個 switch，就能升級到精準分流，沒白寫。
+
+這個取捨本身就是 PM 工作。寫進這裡是為了讓 reviewer 看到「為什麼選一致性」的思考，不是掩飾邊界。
+
 ---
 
 ## 4. What shipped
