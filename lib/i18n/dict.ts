@@ -341,8 +341,8 @@ export const dict: Dict = {
   "approvals.eyebrow": { zh: "Approvals", en: "Approvals" },
   "approvals.title": { zh: "待審核", en: "Waiting on you" },
   "approvals.desc": {
-    zh: "這裡會列出超出規則的 AI 支付請求。每張卡片都會說明需要花這筆費用，讓你快速決定核准、拒絕，或請 AI 找替代方案。",
-    en: "Agent requests that fell outside your rules. Each card translates the agent's reasoning into plain language so you can decide in under 30 seconds.",
+    zh: "這裡會列出超出規則的 AI 支付請求。每張卡片都會說明需要花這筆費用、風險在哪，以及每個決定接下來會發生什麼。",
+    en: "Agent requests that fell outside your rules. Each card explains the reasoning, risk, and what each decision will do next.",
   },
   "approvals.badge": { zh: "筆待審核", en: "need your decision" },
   "approvals.next": { zh: "下一筆待審核", en: "Next approval" },
@@ -350,6 +350,19 @@ export const dict: Dict = {
     zh: "目前沒有待審請求。AI 會照規則處理小額支付，有需要你判斷時再提醒你。",
     en: "When everything's handled, this page goes calm. Agents work within the rules. You don't have to do anything.",
   },
+  "approvals.list.title": { zh: "待審佇列", en: "Pending queue" },
+  "approvals.bulk.hint": {
+    zh: "目前有 {count} 筆待審，可以一次核准。",
+    en: "{count} approvals are waiting. You can approve them together.",
+  },
+  "approvals.bulk.button": { zh: "全部核准（{count} 筆）", en: "Approve all ({count})" },
+  "approvals.bulk.title": { zh: "全部核准 {count} 筆？", en: "Approve all {count}?" },
+  "approvals.bulk.desc": {
+    zh: "這會把下列請求全部核准，並各自寫入審計軌跡。",
+    en: "This approves every request below and writes each decision to the audit trail.",
+  },
+  "approvals.bulk.cancel": { zh: "取消", en: "Cancel" },
+  "approvals.bulk.confirm": { zh: "確認核准 {count} 筆", en: "Approve {count}" },
 
   "approval.severity.info": { zh: "資訊提示", en: "Heads-up" },
   "approval.severity.warning": { zh: "建議審核", en: "Worth a review" },
@@ -393,6 +406,7 @@ export const dict: Dict = {
   "approval.context.similar": { zh: "過去類似交易", en: "Similar past transactions" },
   "approval.context.similarUnit": { zh: "筆", en: "" },
   "approval.triggered": { zh: "觸發規則：", en: "Triggered rule: " },
+  "approval.risks.more": { zh: "項", en: "more" },
 
   "approval.trust.allowlisted": { zh: "信任名單網站", en: "Allowlisted merchant" },
   "approval.trust.blocklisted": { zh: "封鎖名單網站", en: "Blocklisted merchant" },
@@ -400,6 +414,7 @@ export const dict: Dict = {
   "approval.trust.firstTime": { zh: "首次交易", en: "First transaction" },
 
   "approval.action.approve": { zh: "單次核准", en: "Approve once" },
+  "approval.action.adjust": { zh: "修改規則", en: "Adjust rule" },
   "approval.action.allow": { zh: "核准並加入信任名單", en: "Approve & allowlist" },
   "approval.action.counter": { zh: "請 AI 找替代方案", en: "Ask for an alternative" },
   "approval.counter.working": {
@@ -426,6 +441,11 @@ export const dict: Dict = {
     zh: "{merchant} 未來將自動放行",
     en: "{merchant} will pass automatically from now on",
   },
+  "approval.toast.adjusted.title": { zh: "已保留這筆並準備修改規則", en: "Kept pending and opened rule review" },
+  "approval.toast.adjusted.desc": {
+    zh: "{merchant} 仍在待審核佇列中，修改後可重新判斷",
+    en: "{merchant} stays in the approval queue while you adjust the rule",
+  },
   "approval.toast.rejected.title": { zh: "已拒絕這筆交易", en: "Transaction rejected" },
   "approval.toast.rejected.desc": { zh: "{agent} 已被通知需重新規劃", en: "{agent} has been notified to retry" },
   "approval.toast.counter.title": { zh: "已要求 {agent} 提出備案", en: "Asked {agent} for an alternative" },
@@ -437,6 +457,11 @@ export const dict: Dict = {
   "approval.toast.counterArrived.desc": {
     zh: "{merchant}．{amount} USDC．點「下一筆」查看",
     en: "{merchant}．{amount} USDC．Click \"Next\" to view",
+  },
+  "approval.toast.bulk.title": { zh: "已核准 {count} 筆待審", en: "Approved {count} requests" },
+  "approval.toast.bulk.desc": {
+    zh: "每筆決策都已寫入審計軌跡",
+    en: "Each decision was written to Audit",
   },
 
   // ==================== Feed toasts ====================

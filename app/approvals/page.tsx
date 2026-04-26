@@ -1,11 +1,21 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { ChevronRight, Clock } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { Check, Clock } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { ApprovalCard } from "@/components/ApprovalCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { AgentIcon } from "@/components/AgentIcon";
 import { type PendingApproval } from "@/lib/mockData";
 import {
   approvalToAuditEntry,
@@ -13,47 +23,21 @@ import {
   pendingStore,
   usePendingApprovals,
 } from "@/lib/stores";
-import { b } from "@/lib/i18n/config";
 import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-const COUNTER_DELAY_MS = 10000;
+type ApprovalOutcome = "approved" | "allowed" | "rejected";
 
-function buildCounterApproval(original: PendingApproval): PendingApproval | null {
-  if (!original.counterOffer) return null;
-  const o = original.counterOffer;
-  const now = new Date();
-  const hh = now.getHours().toString().padStart(2, "0");
-  const mm = now.getMinutes().toString().padStart(2, "0");
-  const ss = now.getSeconds().toString().padStart(2, "0");
-  const saved = original.amount - o.amount;
-  const savedTag =
-    saved > 0
-      ? b(
-          `（比原方案省 ${saved.toFixed(2)} USDC）`,
-          ` (saves ${saved.toFixed(2)} USDC vs. original)`,
-        )
-      : b("", "");
-  return {
-    id: `${original.id}_counter_${now.getTime()}`,
-    agent: original.agent,
-    agentAvatar: original.agentAvatar,
-    merchant: o.merchant,
-    amount: o.amount,
-    currency: original.currency,
-    timestamp: `${original.timestamp.slice(0, 10)} ${hh}:${mm}:${ss}`,
-    why: {
-      zh: o.why.zh + savedTag.zh,
-      en: o.why.en + savedTag.en,
-    },
-    context: {
-      ...original.context,
-      merchantTrust: o.merchantTrust,
-    },
-    triggeredRule: o.triggeredRule,
-    severity: "info",
-    isCounterOffer: true,
-  };
+function decisionLine(
+  approval: PendingApproval,
+  locale: "zh" | "en",
+  agentName: string,
+) {
+  if (approval.reasoning?.what) return approval.reasoning.what[locale];
+  return locale === "zh"
+    ? `${agentName}想支付 ${approval.merchant.zh}，金額 ${approval.amount.toFixed(2)} ${approval.currency}。`
+    : `${agentName} wants to pay ${approval.merchant.en} for ${approval.amount.toFixed(2)} ${approval.currency}.`;
 }
 
 export default function ApprovalsPage() {
@@ -61,51 +45,92 @@ export default function ApprovalsPage() {
   const { locale } = useLocale();
   const approvals = usePendingApprovals();
   const [index, setIndex] = useState(0);
-  const pendingCounters = useRef<Set<string>>(new Set());
+  const [bulkOpen, setBulkOpen] = useState(false);
 
   const total = approvals.length;
-  const current = approvals[index];
-  const goNext = () =>
-    setIndex((i) => (total > 0 ? (i + 1) % total : 0));
+  const activeIndex = total > 0 ? Math.min(index, total - 1) : 0;
+  const current = approvals[activeIndex];
+  const goNext = useCallback(
+    () =>
+      setIndex((i) => (total > 0 ? (Math.min(i, total - 1) + 1) % total : 0)),
+    [total],
+  );
+  const goPrev = useCallback(
+    () =>
+      setIndex((i) =>
+        total > 0 ? (Math.min(i, total - 1) - 1 + total) % total : 0,
+      ),
+    [total],
+  );
 
-  // Clamp index when the queue shrinks (approval resolved). The store has
-  // already removed the entry by the time React re-runs this effect.
-  useEffect(() => {
-    if (index >= total && total > 0) setIndex(total - 1);
-    if (total === 0 && index !== 0) setIndex(0);
-  }, [total, index]);
+  const resolveApproval = useCallback((approval: PendingApproval, outcome: ApprovalOutcome) => {
+    auditStore.prepend(approvalToAuditEntry(approval, outcome));
+    pendingStore.remove(approval.id);
+  }, []);
 
-  const handleHandled = (
-    id: string,
-    outcome: "approved" | "allowed" | "rejected",
-  ) => {
+  const handleHandled = (id: string, outcome: ApprovalOutcome) => {
     const approval = pendingStore.getAll().find((a) => a.id === id);
     if (!approval) return;
-    // Close the loop: every user decision lands in the audit log.
-    auditStore.prepend(approvalToAuditEntry(approval, outcome));
-    pendingStore.remove(id);
+    resolveApproval(approval, outcome);
   };
 
-  const handleCounter = (original: PendingApproval) => {
-    if (pendingCounters.current.has(original.id)) return;
-    pendingCounters.current.add(original.id);
+  const handleAdjustCurrent = useCallback(() => {
+    if (!current) return;
+    toast.success(t("approval.toast.adjusted.title"), {
+      description: t("approval.toast.adjusted.desc", {
+        merchant: current.merchant[locale],
+      }),
+    });
+  }, [current, locale, t]);
 
-    setTimeout(() => {
-      const next = buildCounterApproval(original);
-      if (!next) return;
-      pendingStore.add(next);
-      toast.info(t("approval.toast.counterArrived.title", { agent: t(`agent.${original.agent}.name`) }), {
-        description: t("approval.toast.counterArrived.desc", {
-          merchant: next.merchant[locale],
-          amount: next.amount.toFixed(2),
-        }),
-      });
-      pendingCounters.current.delete(original.id);
-    }, COUNTER_DELAY_MS);
+  const handleBulkApprove = () => {
+    const snapshot = pendingStore.getAll();
+    snapshot.forEach((approval) => {
+      auditStore.prepend(approvalToAuditEntry(approval, "approved"));
+    });
+    pendingStore.setAll([]);
+    setBulkOpen(false);
+    toast.success(t("approval.toast.bulk.title", { count: snapshot.length }), {
+      description: t("approval.toast.bulk.desc"),
+    });
   };
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (
+        target?.closest("input, textarea, select, button, [role='dialog']")
+      ) {
+        return;
+      }
+      if (event.key === "j") {
+        event.preventDefault();
+        goNext();
+      }
+      if (event.key === "k") {
+        event.preventDefault();
+        goPrev();
+      }
+      if (event.key === "Enter" && current) {
+        event.preventDefault();
+        resolveApproval(current, "approved");
+      }
+      if (event.key.toLowerCase() === "r") {
+        event.preventDefault();
+        handleAdjustCurrent();
+      }
+      if (event.key === "Escape" && current) {
+        event.preventDefault();
+        resolveApproval(current, "rejected");
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [current, goNext, goPrev, handleAdjustCurrent, resolveApproval]);
 
   return (
-    <div className="px-5 md:px-8 py-8 max-w-[820px] mx-auto">
+    <div className="px-5 md:px-8 py-8 max-w-[1180px] mx-auto">
       <PageHeader
         eyebrow={t("approvals.eyebrow")}
         title={t("approvals.title")}
@@ -118,48 +143,132 @@ export default function ApprovalsPage() {
         }
       />
 
-      {total > 0 ? (
+      {total > 0 && current ? (
         <>
-          <div className="mt-8 flex items-center justify-between gap-3">
-            <Button
-              size="sm"
-              variant="outline"
-              className="gap-1.5"
-              onClick={goNext}
-              disabled={total <= 1}
-            >
-              {t("approvals.next")}
-              <ChevronRight className="h-3.5 w-3.5" />
-            </Button>
-            <div className="flex items-center gap-1.5">
-              {approvals.map((a, i) => (
-                <button
-                  key={a.id}
-                  onClick={() => setIndex(i)}
-                  aria-label={`${t("approvals.next")} ${i + 1}`}
-                  className={
-                    "h-1.5 rounded-full transition-all " +
-                    (i === index
-                      ? "w-6 bg-accent"
-                      : "w-1.5 bg-border hover:bg-muted-foreground/40") +
-                    (a.isCounterOffer ? " ring-1 ring-primary/40" : "")
-                  }
-                />
-              ))}
-              <span className="ml-2 text-[12px] text-muted-foreground tabular-nums">
-                {index + 1} / {total}
-              </span>
+          <div className="mt-8 grid gap-5 lg:grid-cols-[320px_minmax(0,720px)] lg:items-start lg:justify-center">
+            <aside className="rounded-lg border border-border/70 bg-card p-3">
+              <div className="mb-3 flex items-center justify-between px-1">
+                <h2 className="text-[13px] font-semibold">
+                  {t("approvals.list.title")}
+                </h2>
+                <span className="font-mono text-[12px] text-muted-foreground">
+                  {activeIndex + 1} / {total}
+                </span>
+              </div>
+
+              <div className="space-y-2">
+                {approvals.map((approval, i) => {
+                  const active = i === activeIndex;
+                  const agentName = t(`agent.${approval.agent}.name`);
+                  return (
+                    <button
+                      key={approval.id}
+                      type="button"
+                      aria-pressed={active}
+                      onClick={() => setIndex(i)}
+                      className={cn(
+                        "w-full rounded-lg border p-3 text-left transition-colors",
+                        active
+                          ? "border-primary/45 bg-primary/10"
+                          : "border-border/60 bg-background hover:bg-muted/40",
+                      )}
+                    >
+                      <div className="flex items-start gap-3">
+                        <AgentIcon agent={approval.agent} size="sm" />
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="truncate text-[13px] font-medium">
+                              {approval.merchant[locale]}
+                            </span>
+                            <span className="font-mono text-[12px] text-muted-foreground">
+                              {approval.amount.toFixed(0)} {approval.currency}
+                            </span>
+                          </div>
+                          <p className="mt-1 line-clamp-2 text-[12px] leading-relaxed text-muted-foreground">
+                            {decisionLine(approval, locale, agentName)}
+                          </p>
+                          {approval.risks?.[0] && (
+                            <div className="mt-2 text-[11px] text-muted-foreground">
+                              {approval.risks[0].label[locale]}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </aside>
+
+            <div>
+              <ApprovalCard
+                key={current.id}
+                approval={current}
+                onHandled={handleHandled}
+              />
             </div>
           </div>
 
-          <div className="mt-4">
-            <ApprovalCard
-              key={current.id}
-              approval={current}
-              onCounter={handleCounter}
-              onHandled={handleHandled}
-            />
-          </div>
+          {total >= 3 && (
+            <div className="sticky bottom-3 z-20 mt-5 flex justify-center">
+              <div className="flex w-full max-w-[720px] items-center justify-between gap-3 rounded-lg border border-border bg-popover px-4 py-3 shadow-lg">
+                <span className="text-[13px] text-muted-foreground">
+                  {t("approvals.bulk.hint", { count: total })}
+                </span>
+                <Button
+                  size="sm"
+                  className="gap-1.5"
+                  onClick={() => setBulkOpen(true)}
+                >
+                  <Check className="h-3.5 w-3.5" />
+                  {t("approvals.bulk.button", { count: total })}
+                </Button>
+              </div>
+            </div>
+          )}
+
+          <Dialog open={bulkOpen} onOpenChange={setBulkOpen}>
+            <DialogContent className="sm:max-w-[620px]">
+              <DialogHeader>
+                <DialogTitle>
+                  {t("approvals.bulk.title", { count: total })}
+                </DialogTitle>
+                <DialogDescription>
+                  {t("approvals.bulk.desc")}
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="max-h-[360px] space-y-2 overflow-auto pr-1">
+                {approvals.map((approval) => {
+                  const agentName = t(`agent.${approval.agent}.name`);
+                  return (
+                    <div
+                      key={approval.id}
+                      className="rounded-lg border border-border/70 bg-muted/25 p-3"
+                    >
+                      <div className="text-[13px] font-medium">
+                        {approval.merchant[locale]} ·{" "}
+                        {approval.amount.toFixed(2)} {approval.currency}
+                      </div>
+                      <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
+                        {decisionLine(approval, locale, agentName)}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <DialogFooter>
+                <DialogClose render={<Button variant="outline" />}>
+                  {t("approvals.bulk.cancel")}
+                </DialogClose>
+                <Button className="gap-1.5" onClick={handleBulkApprove}>
+                  <Check className="h-4 w-4" />
+                  {t("approvals.bulk.confirm", { count: total })}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </>
       ) : (
         // Empty state — queue cleared. Brief, mirrors the dashboard's
