@@ -47,6 +47,17 @@ export type FeedItem = {
 
 export type MerchantTrust = "allowlisted" | "blocklisted" | "review" | "first-time";
 
+/** Risk chip surfaced beneath the decision summary on the approval card.
+ *  Severity colors are tokens not literals — see globals.css for mapping.
+ *  - sage:  contextual confidence-builder (e.g. "2 週內出發")
+ *  - amber: caution, requires attention but not blocking
+ *  - coral: hard breach, would block under stricter rules */
+export type RiskSeverity = "sage" | "amber" | "coral";
+export type Risk = {
+  label: Bilingual;
+  severity: RiskSeverity;
+};
+
 export type PendingApproval = {
   id: string;
   agent: string;
@@ -65,6 +76,27 @@ export type PendingApproval = {
   };
   triggeredRule: Bilingual;
   severity: "info" | "warning" | "danger";
+  /** Decision summary paragraph — three-line structure per MASTER §14.1.
+   *  what = active-voice first line; why = user-language second line;
+   *  context = optional third surfacing of calendar / prior-conversation
+   *  signal. Optional so simulator-generated synthetic pendings stay valid;
+   *  ApprovalCard falls back to `why` when this is missing. */
+  reasoning?: {
+    what: Bilingual;
+    why: Bilingual;
+    context?: Bilingual;
+  };
+  /** Risk chips — pre-computed array, no live computation in UI.
+   *  Optional for the same reason as `reasoning`. Cap at 6 in the UI. */
+  risks?: Risk[];
+  /** Outcome preview lines beneath each action button per MASTER §14.3.
+   *  Each list element is one fact line, 2-4 for onApprove, 2-3 for the
+   *  others. Optional with the same fallback rule. */
+  outcomes?: {
+    onApprove: Bilingual[];
+    onAdjust: Bilingual[];
+    onReject: Bilingual[];
+  };
   isCounterOffer?: boolean;
   counterOffer?: {
     merchant: Bilingual;
@@ -501,6 +533,43 @@ export const pendingApprovals: PendingApproval[] = [
       "Exceeds $100 per-tx cap (physical purchases)",
     ),
     severity: "warning",
+    reasoning: {
+      what: b(
+        "旅行助理想預訂 Booking.com 的京都和風旅館，4 月 25–28 日共 3 晚 184 USDC。",
+        "Travel wants to book a ryokan on Booking.com, 3 nights Apr 25–28 for 184 USDC.",
+      ),
+      why: b(
+        "為你的「京都賞櫻」行程訂房，評分 9.2、距離花見路徑 8 分鐘步行，現在是最後一間空房，免費取消。",
+        "For your Kyoto cherry-blossom trip. Rated 9.2, 8-min walk to the hanami path, last room available, free cancellation.",
+      ),
+      context: b(
+        "你 4/23 的日曆已標記為「京都賞櫻 4 天」，4/25 出發。",
+        "Your calendar on Apr 23 has \"Kyoto cherry blossom · 4 days\" — departing Apr 25.",
+      ),
+    },
+    risks: [
+      { label: b("首次跨國付款", "First cross-border payment"), severity: "amber" },
+      { label: b("超出單筆限額", "Over per-tx cap"), severity: "amber" },
+      { label: b("2 週內出發", "Trip in <2 weeks"), severity: "sage" },
+    ],
+    outcomes: {
+      onApprove: [
+        b("立即扣款 184 USDC", "Charge 184 USDC immediately"),
+        b("Booking.com 確認信寄到你的 email", "Confirmation email sent to your inbox"),
+        b("行程加入你的行事曆 4/25–28", "Added to your calendar Apr 25–28"),
+        b("旅行助理會接著訂機票與接駁", "Travel will book flights and transfer next"),
+      ],
+      onAdjust: [
+        b("暫停這筆，打開規則編輯器", "Pause this and open the rule editor"),
+        b("建議規則：將實體購買單筆限額提升至 200 USDC", "Suggested rule: raise physical purchase cap to 200 USDC"),
+        b("修改後可選擇對這筆套用新規則或仍進審核", "After editing, apply to this charge or keep it pending"),
+      ],
+      onReject: [
+        b("訂房不會發生", "The booking will not happen"),
+        b("旅行助理會詢問是否要看備案 APA Hotel 119 USDC", "Travel will offer the APA Hotel alternative at 119 USDC"),
+        b("你的京都住宿仍待安排", "Your Kyoto stay remains unbooked"),
+      ],
+    },
     counterOffer: {
       merchant: b("APA Hotel 京都站前", "APA Hotel Kyoto Station"),
       amount: 119.0,
@@ -536,6 +605,43 @@ export const pendingApprovals: PendingApproval[] = [
       "Subscription merchant · first charge · recurring-payment alert",
     ),
     severity: "info",
+    reasoning: {
+      what: b(
+        "研究助理想訂閱 Nature 期刊一年 35 USDC，為 Cardano 擴展性研究使用。",
+        "Research wants to subscribe to Nature Journal for 35 USDC/year for the Cardano scalability project.",
+      ),
+      why: b(
+        "本期刊最新一期有 3 篇直接相關文章。整本訂閱比一篇一篇買省 54 USDC。",
+        "The latest issue has 3 articles directly relevant to your topic. A subscription saves 54 USDC vs. buying them individually.",
+      ),
+      context: b(
+        "你的 Cardano 研究任務本月已花 18.4 USDC，預算還剩 31.6。下次月費將在 5/23 自動扣款。",
+        "Your Cardano task has spent 18.4 USDC this month with 31.6 left. Next monthly charge would auto-renew on May 23.",
+      ),
+    },
+    risks: [
+      { label: b("訂閱類首次扣款", "First subscription charge"), severity: "amber" },
+      { label: b("重複扣款警示", "Recurring-payment alert"), severity: "amber" },
+      { label: b("本月研究預算 92% 已用", "Research budget 92% spent"), severity: "amber" },
+    ],
+    outcomes: {
+      onApprove: [
+        b("立即扣款 35 USDC", "Charge 35 USDC immediately"),
+        b("Nature 期刊一年訂閱開通", "Nature subscription activated for one year"),
+        b("3 篇相關文章自動存到你的研究資料夾", "3 relevant articles saved to your research folder"),
+        b("下次自動扣款 35 USDC 在 5/23", "Next auto-renew of 35 USDC on May 23"),
+      ],
+      onAdjust: [
+        b("暫停這筆，打開規則編輯器", "Pause this and open the rule editor"),
+        b("建議規則：訂閱類扣款前一律先通知你", "Suggested rule: always notify before subscription charges"),
+        b("修改後可選擇對這筆套用新規則或仍進審核", "After editing, apply to this charge or keep it pending"),
+      ],
+      onReject: [
+        b("訂閱不會發生", "The subscription will not happen"),
+        b("研究助理會改用 JSTOR 單篇購買 18 USDC（備案已準備）", "Research will switch to JSTOR per-article at 18 USDC (alternative ready)"),
+        b("本月研究預算還剩 31.6 USDC 給其他來源", "31.6 USDC of research budget left for other sources this month"),
+      ],
+    },
     counterOffer: {
       merchant: b("JSTOR 單篇購買 × 3", "JSTOR × 3 single-article purchases"),
       amount: 18.0,
@@ -574,6 +680,42 @@ export const pendingApprovals: PendingApproval[] = [
       "Stored-value purchase requires manual review (prevents fund-transfer abuse)",
     ),
     severity: "danger",
+    reasoning: {
+      what: b(
+        "採購助理想購買 30 USDC Amazon 禮物卡作為媽媽生日禮物。",
+        "Shopping wants to buy a 30 USDC Amazon gift card as a birthday present for your mom.",
+      ),
+      why: b(
+        "媽媽生日 4/26，她常在 Amazon 買園藝用品；金額跟你去年送的禮物卡一樣。",
+        "Mom's birthday is Apr 26. She regularly shops gardening supplies on Amazon; amount matches last year's gift card.",
+      ),
+      context: b(
+        "你的「家人生日禮物清單」任務本月還沒花過。媽媽今天還沒收到任何禮物。",
+        "Your \"family birthday gift list\" task hasn't spent anything this month yet. Mom hasn't received a gift today.",
+      ),
+    },
+    risks: [
+      { label: b("可儲值類型", "Stored-value type"), severity: "coral" },
+      { label: b("資金可轉移風險", "Funds can be re-transferred"), severity: "coral" },
+      { label: b("首次此商家", "First purchase from this merchant"), severity: "amber" },
+    ],
+    outcomes: {
+      onApprove: [
+        b("立即扣款 30 USDC", "Charge 30 USDC immediately"),
+        b("Amazon 禮物卡券碼寄到媽媽 email", "Gift card code sent to mom's email"),
+        b("採購助理會把交易紀錄送到 Audit", "Shopping will record the transaction in Audit"),
+      ],
+      onAdjust: [
+        b("暫停這筆，打開規則編輯器", "Pause this and open the rule editor"),
+        b("建議規則：可儲值類別永久設為人工審核", "Suggested rule: always require manual review for stored-value purchases"),
+        b("修改後可選擇對這筆套用新規則或仍進審核", "After editing, apply to this charge or keep it pending"),
+      ],
+      onReject: [
+        b("禮物卡不會發生", "The gift card will not be purchased"),
+        b("採購助理會改寄實體花束 28 USDC（備案已準備）", "Shopping will send a real bouquet for 28 USDC instead (alternative ready)"),
+        b("媽媽生日禮物還待確認", "Mom's birthday gift remains unconfirmed"),
+      ],
+    },
     counterOffer: {
       merchant: b("Flower Shop JP", "Flower Shop JP"),
       amount: 28.0,
