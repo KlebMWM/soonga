@@ -80,7 +80,6 @@ export default function ApprovalsPage() {
   const handleAdjustCurrent = useCallback(() => {
     if (!current) return;
     const params = new URLSearchParams({
-      approval: current.id,
       merchant: current.merchant.en,
       source: "approvals",
     });
