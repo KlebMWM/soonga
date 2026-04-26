@@ -6,8 +6,15 @@
 AI agent 支付控制層的互動產品原型．2026 Q2 portfolio 作品．
 Interactive product prototype for an AI agent payment control layer．Portfolio piece, Q2 2026.
 
+**🔗 Live demo → [soonga.vercel.app](https://soonga.vercel.app)**
+
 > 🔸 **這是互動式產品原型**．核心商業邏輯都是 mock，不會真的付錢、不會上鏈．
 > 🔸 **This is an interactive prototype**．Core business logic is mocked．No real payments, no on-chain transactions.
+
+<!-- Hero screenshot — drag-drop a PNG into GitHub's web README editor here,
+     or save as docs/hero.png and commit. Recommended: 1200×675 of /dashboard
+     in light mode with at least one pending item visible. -->
+<!-- ![soon-ga.agent control hub dashboard](docs/hero.png) -->
 
 ---
 
