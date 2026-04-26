@@ -83,8 +83,10 @@ export default function RulesPage({
   const { locale } = useLocale();
   const query = use(searchParams ?? EMPTY_SEARCH_PARAMS);
   const approvalMerchant = firstParam(query.merchant)?.trim().slice(0, 80) ?? "";
+  const hasApprovalSource = firstParam(query.source) === "approvals";
   const openFromApproval =
-    firstParam(query.source) === "approvals" && approvalMerchant.length > 0;
+    hasApprovalSource && approvalMerchant.length > 0;
+  const missingApprovalMerchant = hasApprovalSource && !approvalMerchant;
   // Categories now live in a module-level store (lib/stores) so edits
   // survive route navigation. The page component subscribes; mutations
   // go through the store API.
@@ -185,6 +187,17 @@ export default function RulesPage({
           />
         }
       />
+
+      {missingApprovalMerchant && (
+        <div className="mt-6 rounded-lg border border-accent/25 bg-accent/5 p-4">
+          <div className="text-sm font-semibold text-foreground">
+            {t("rules.deeplink.missing.title")}
+          </div>
+          <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">
+            {t("rules.deeplink.missing.desc")}
+          </p>
+        </div>
+      )}
 
       <section className="mt-8">
         <div className="flex items-center justify-between pb-4">

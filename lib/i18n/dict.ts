@@ -350,6 +350,9 @@ export const dict: Dict = {
     zh: "目前沒有待審請求。AI 會照規則處理小額支付，有需要你判斷時再提醒你。",
     en: "When everything's handled, this page goes calm. Agents work within the rules. You don't have to do anything.",
   },
+  "approvals.empty.title": { zh: "待審佇列已清空", en: "Approval queue is clear" },
+  "approvals.empty.audit": { zh: "查看審計軌跡", en: "View audit trail" },
+  "approvals.empty.rules": { zh: "調整規則", en: "Adjust rules" },
   "approvals.list.title": { zh: "待審佇列", en: "Pending queue" },
   "approvals.bulk.hint": {
     zh: "目前有 {count} 筆待審，可以一次核准。",
@@ -513,6 +516,14 @@ export const dict: Dict = {
   "rules.trust.category": { zh: "類別", en: "Category" },
   "rules.trust.addedAt": { zh: "加入日期", en: "Added" },
   "rules.trust.since": { zh: "開始觀察", en: "First seen" },
+  "rules.deeplink.missing.title": {
+    zh: "無法自動帶入付款對象",
+    en: "Could not prefill the merchant",
+  },
+  "rules.deeplink.missing.desc": {
+    zh: "這個連結缺少付款對象參數。你仍然可以用「新增規則」手動建立信任網站、封鎖網站或類別預算。",
+    en: "This link is missing a merchant parameter. You can still use New rule to create an allowlist, blocklist, or category budget manually.",
+  },
 
   "rules.card.monthTotal": { zh: "/ 月", en: "/ mo" },
   "rules.card.singleLimit": { zh: "單筆上限", en: "Per-transaction cap" },
@@ -587,7 +598,16 @@ export const dict: Dict = {
   "audit.copyCsv": { zh: "複製 CSV", en: "Copy CSV" },
   "audit.copied.title": { zh: "已複製 CSV", en: "CSV copied" },
   "audit.copied.desc": { zh: "共 {n} 筆資料", en: "{n} rows" },
-  "audit.empty": { zh: "沒有符合條件的紀錄", en: "No records match those filters" },
+  "audit.empty": {
+    zh: "目前還沒有審計紀錄。核准或拒絕待審請求後，決策會出現在這裡。",
+    en: "No audit records yet. Approve or reject a pending request and the decision will appear here.",
+  },
+  "audit.empty.title": { zh: "沒有可顯示的紀錄", en: "No records to show" },
+  "audit.empty.filtered": {
+    zh: "目前篩選條件沒有符合的紀錄。清除篩選後可以回到完整審計軌跡。",
+    en: "No records match the current filters. Reset filters to return to the full audit trail.",
+  },
+  "audit.empty.reset": { zh: "清除篩選", en: "Reset filters" },
 
   "audit.decision.approved": { zh: "核准", en: "Approved" },
   "audit.decision.rejected": { zh: "拒絕", en: "Rejected" },

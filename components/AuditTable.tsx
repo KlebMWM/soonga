@@ -51,6 +51,12 @@ export function AuditTable() {
       return true;
     });
   }, [auditLog, filter, agentFilter]);
+  const hasActiveFilters = filter !== "all" || agentFilter !== "all";
+
+  const resetFilters = () => {
+    setFilter("all");
+    setAgentFilter("all");
+  };
 
   const handleCopy = () => {
     const header = "timestamp,agent,merchant,amount,decision,approved_by,gas_fee,tx_hash\n";
@@ -99,7 +105,28 @@ export function AuditTable() {
 
       <ul className="divide-y divide-border">
         {filtered.length === 0 && (
-          <li className="p-8 text-center text-sm text-muted-foreground">{t("audit.empty")}</li>
+          <li className="p-8 text-center">
+            <div className="mx-auto max-w-sm">
+              <div className="text-sm font-semibold text-foreground">
+                {t("audit.empty.title")}
+              </div>
+              <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">
+                {hasActiveFilters
+                  ? t("audit.empty.filtered")
+                  : t("audit.empty")}
+              </p>
+              {hasActiveFilters && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="mt-4"
+                  onClick={resetFilters}
+                >
+                  {t("audit.empty.reset")}
+                </Button>
+              )}
+            </div>
+          </li>
         )}
         {filtered.map((entry) => {
           const meta = DECISION_META[entry.decision];

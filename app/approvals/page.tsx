@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Check, Clock } from "lucide-react";
+import Link from "next/link";
+import { Check, Clock, FileText, SlidersHorizontal } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/PageHeader";
 import { ApprovalCard } from "@/components/ApprovalCard";
@@ -283,8 +284,36 @@ export default function ApprovalsPage() {
       ) : (
         // Empty state — queue cleared. Brief, mirrors the dashboard's
         // "all clear" tone without the late-night editorial flourish.
-        <div className="mt-10 rounded-lg border border-dashed border-border bg-muted/30 p-10 text-center text-[14px] text-muted-foreground">
-          {t("approvals.empty")}
+        <div className="mt-10 rounded-lg border border-dashed border-border bg-muted/30 p-8 text-center">
+          <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-lg border border-success/25 bg-success/10 text-success">
+            <Check className="h-5 w-5" />
+          </div>
+          <h2 className="mt-4 text-base font-semibold text-foreground">
+            {t("approvals.empty.title")}
+          </h2>
+          <p className="mx-auto mt-2 max-w-md text-[14px] leading-relaxed text-muted-foreground">
+            {t("approvals.empty")}
+          </p>
+          <div className="mt-5 flex flex-col items-center justify-center gap-2 sm:flex-row">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5"
+              render={<Link href="/audit" />}
+            >
+              <FileText className="h-3.5 w-3.5" />
+              {t("approvals.empty.audit")}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-1.5"
+              render={<Link href="/rules" />}
+            >
+              <SlidersHorizontal className="h-3.5 w-3.5" />
+              {t("approvals.empty.rules")}
+            </Button>
+          </div>
         </div>
       )}
     </div>
