@@ -56,6 +56,10 @@ export function CategoryRuleCard({
   const displaySingle = category.singleLimit;
   const pct = Math.min(100, Math.round((category.spent / displayMonthly) * 100));
   const remaining = Math.max(0, displayMonthly - category.spent);
+  const merchants = category.sampleMerchants?.map((merchant) => merchant[locale]) ?? [];
+  const merchantText = merchants.length > 0
+    ? `${t("rules.recentMerchants")} ${merchants.join(locale === "zh" ? "、" : ", ")}`
+    : t("rules.noRecentMerchants");
 
   const handleOpenChange = (next: boolean) => {
     // Re-sync staging from prop on each open so the user always sees the
@@ -169,6 +173,9 @@ export function CategoryRuleCard({
           </span>
         </div>
         <Progress value={pct} className="h-1.5" />
+        <div className="pt-2 text-[11px] italic leading-relaxed text-muted-foreground">
+          {merchantText}
+        </div>
       </div>
 
       <dl className="mt-4 grid grid-cols-2 gap-3 pt-4 border-t border-border/70">

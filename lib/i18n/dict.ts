@@ -536,6 +536,8 @@ export const dict: Dict = {
   },
 
   "rules.card.monthTotal": { zh: "/ 月", en: "/ mo" },
+  "rules.recentMerchants": { zh: "最近付款對象", en: "Recent payments to" },
+  "rules.noRecentMerchants": { zh: "還沒有付款紀錄", en: "No payment history yet" },
   "rules.card.singleLimit": { zh: "單筆上限", en: "Per-transaction cap" },
   "rules.card.remaining": { zh: "剩餘額度", en: "Remaining" },
   "rules.card.adjust": { zh: "調整", en: "Edit" },

@@ -24,6 +24,7 @@ export type Category = {
   monthlyLimit: number;
   singleLimit: number;
   spent: number;
+  sampleMerchants?: Bilingual[];
   /** True for the four seeded categories that ship with the prototype.
    *  System categories cannot be deleted from the UI (no trash button).
    *  User-created categories (via natural-language parser or the chooser
@@ -174,6 +175,7 @@ export const categories: Category[] = [
     singleLimit: 5,
     spent: 34.2,
     isSystem: true,
+    sampleMerchants: [b("ChatGPT", "ChatGPT"), b("Anthropic", "Anthropic"), b("Cursor", "Cursor")],
   },
   {
     id: "subscription",
@@ -183,6 +185,7 @@ export const categories: Category[] = [
     singleLimit: 50,
     spent: 147.0,
     isSystem: true,
+    sampleMerchants: [b("Spotify", "Spotify"), b("Netflix", "Netflix"), b("Notion", "Notion")],
   },
   {
     id: "physical",
@@ -192,6 +195,7 @@ export const categories: Category[] = [
     singleLimit: 100,
     spent: 38.3,
     isSystem: true,
+    sampleMerchants: [b("Booking.com", "Booking.com"), b("Uniqlo JP", "Uniqlo JP"), b("Amazon", "Amazon")],
   },
   {
     id: "transfer",
@@ -201,6 +205,7 @@ export const categories: Category[] = [
     singleLimit: 20,
     spent: 0,
     isSystem: true,
+    sampleMerchants: [b("USDC → JPY", "USDC → JPY"), b("ETH → USDC", "ETH → USDC"), b("PayPal → 銀行", "PayPal → bank")],
   },
 ];
 
