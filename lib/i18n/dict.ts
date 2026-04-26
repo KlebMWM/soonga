@@ -102,6 +102,16 @@ export const dict: Dict = {
     zh: "你制訂規則、行使最終決策，剩下的由 AI 代勞。",
     en: "You set the rules and make the final calls. Agents handle the rest.",
   },
+  "intro.headline": {
+    zh: "soon-ga.agent 幫你管 AI agent 替你做的付款",
+    en: "soon-ga.agent helps you control payments your AI agents make",
+  },
+  "intro.body": {
+    zh: "例如旅行助理幫你訂 Booking.com 之前會先停下來問你要不要批准。",
+    en: "For example, the travel assistant pauses before booking on Booking.com to ask for your approval.",
+  },
+  "intro.cta": { zh: "看看怎麼運作", en: "See how it works" },
+  "intro.dismiss": { zh: "收起說明", en: "Dismiss" },
   "dashboard.greeting.morning": {
     zh: "早安 Megan · {time}",
     en: "Good morning, Megan · {time}",

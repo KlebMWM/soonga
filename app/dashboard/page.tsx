@@ -5,6 +5,7 @@ import { AlertCircle, ChevronDown, Sparkles, TrendingUp } from "lucide-react";
 import { DashboardHero } from "@/components/DashboardHero";
 import { AgentFeed } from "@/components/AgentFeed";
 import { BurnRateChart } from "@/components/BurnRateChart";
+import { IntroCard } from "@/components/IntroCard";
 import {
   BudgetBar,
   DeltaPill,
@@ -198,6 +199,10 @@ export default function DashboardPage() {
             </span>
           </div>
         </div>
+      </div>
+
+      <div className="mt-6">
+        <IntroCard />
       </div>
 
       {/* Bento grid: pending hero (2x2) + 4 metrics (2x2) */}

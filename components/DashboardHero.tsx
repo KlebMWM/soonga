@@ -38,6 +38,7 @@ export function DashboardHero({ pendingCount }: { pendingCount?: number } = {}) 
   if (count === 0) {
     return (
       <HudCard
+        id="pending-hero"
         variant="hero"
         className="is-empty h-full flex flex-col justify-between gap-6 p-6 md:p-8"
       >
@@ -124,7 +125,11 @@ export function DashboardHero({ pendingCount }: { pendingCount?: number } = {}) 
   const totalAmount = pending.reduce((sum, p) => sum + p.amount, 0);
 
   return (
-    <HudCard variant="hero" className="h-full flex flex-col gap-5 p-6 md:p-7">
+    <HudCard
+      id="pending-hero"
+      variant="hero"
+      className="h-full flex flex-col gap-5 p-6 md:p-7"
+    >
       {/* Top row: "需要你核准" yellow pill + total amount mono readout */}
       <div className="flex items-start justify-between gap-3">
         <Badge
