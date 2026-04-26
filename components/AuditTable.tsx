@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { AgentIcon } from "@/components/AgentIcon";
 import { agents, type AuditEntry } from "@/lib/mockData";
 import { useAuditLog } from "@/lib/stores";
+import { useDisplayName } from "@/lib/useDisplayName";
 import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
 import { cn } from "@/lib/utils";
 
@@ -36,10 +37,64 @@ const DECISION_META: Record<
   },
 };
 
+function parseTimestamp(timestamp: string) {
+  const [date, time] = timestamp.split(" ");
+  if (!date || !time) return null;
+  const [year, month, day] = date.split("-").map(Number);
+  const [hour, minute] = time.split(":").map(Number);
+  if (!year || !month || !day || Number.isNaN(hour) || Number.isNaN(minute)) {
+    return null;
+  }
+  return new Date(year, month - 1, day, hour, minute);
+}
+
+function formatRelative(timestamp: string, locale: "zh" | "en", t: ReturnType<typeof useT>) {
+  const parsed = parseTimestamp(timestamp);
+  if (!parsed) return timestamp;
+
+  const diffMs = Math.max(0, Date.now() - parsed.getTime());
+  const minutes = Math.floor(diffMs / 60_000);
+  if (minutes < 1) return t("audit.relative.now");
+  if (minutes < 60) {
+    return t("audit.relative.minutes", { n: minutes });
+  }
+
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) {
+    return t("audit.relative.hours", { n: hours });
+  }
+
+  const days = Math.floor(hours / 24);
+  if (days < 7) {
+    return t("audit.relative.days", { n: days });
+  }
+
+  return new Intl.DateTimeFormat(locale === "zh" ? "zh-TW" : "en-US", {
+    month: "short",
+    day: "numeric",
+  }).format(parsed);
+}
+
+function decisionVerb(entry: AuditEntry, t: ReturnType<typeof useT>) {
+  if (entry.approvedBy === "system") {
+    return entry.decision === "rejected"
+      ? t("audit.verb.systemRejected")
+      : t("audit.verb.system");
+  }
+  return entry.decision === "rejected"
+    ? t("audit.verb.rejected")
+    : t("audit.verb.approved");
+}
+
+function trimTerminalPunctuation(value: string) {
+  return value.trim().replace(/[。.!?]+$/u, "");
+}
+
 export function AuditTable() {
   const t = useT();
   const { locale } = useLocale();
   const auditLog = useAuditLog();
+  const { name: displayName } = useDisplayName();
   const [filter, setFilter] = useState<Filter>("all");
   const [agentFilter, setAgentFilter] = useState<string>("all");
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -133,13 +188,29 @@ export function AuditTable() {
           const Icon = meta.icon;
           const isOpen = expanded === entry.id;
           const merchant = entry.merchant[locale];
+          const relativeTime = formatRelative(entry.timestamp, locale, t);
+          const verb = decisionVerb(entry, t);
+          const reason = trimTerminalPunctuation(entry.reasoning[locale]);
+          const narrative =
+            entry.approvedBy === "system"
+              ? t("audit.narrative.system", {
+                  time: relativeTime,
+                  verb,
+                  reason,
+                })
+              : t("audit.narrative.user", {
+                  name: displayName,
+                  time: relativeTime,
+                  verb,
+                  reason,
+                });
           return (
             <li key={entry.id}>
               <button
                 onClick={() => setExpanded(isOpen ? null : entry.id)}
-                className="w-full flex items-center gap-4 px-4 py-3 text-left hover:bg-muted/30 transition-colors"
+                className="w-full flex items-start gap-4 px-4 py-3 text-left hover:bg-muted/30 transition-colors"
               >
-                <AgentIcon agent={entry.agent} size="md" />
+                <AgentIcon agent={entry.agent} size="md" className="mt-0.5" />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-sans font-medium text-sm">{t(`agent.${entry.agent}.name`)}</span>
@@ -150,10 +221,13 @@ export function AuditTable() {
                     </span>
                   </div>
                   <div className="text-[12px] text-muted-foreground mt-0.5 font-mono">{entry.timestamp}</div>
+                  <div className="pt-1.5 text-[12px] italic leading-relaxed text-muted-foreground">
+                    {narrative}
+                  </div>
                 </div>
                 <div
                   className={cn(
-                    "flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[12px] font-medium",
+                    "mt-0.5 flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[12px] font-medium",
                     meta.tone,
                   )}
                 >
