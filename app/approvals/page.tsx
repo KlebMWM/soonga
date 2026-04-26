@@ -165,7 +165,13 @@ export default function ApprovalsPage() {
                       key={approval.id}
                       type="button"
                       aria-pressed={active}
-                      onClick={() => setIndex(i)}
+                      onClick={(e) => {
+                        setIndex(i);
+                        // Release focus so subsequent j/k/Enter/Escape go to
+                        // the body-level handler instead of being blocked by
+                        // the "skip when focus is on a button" guard.
+                        e.currentTarget.blur();
+                      }}
                       className={cn(
                         "w-full rounded-lg border p-3 text-left transition-colors",
                         active
