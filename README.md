@@ -46,6 +46,7 @@ Interactive product prototype for an AI agent payment control layer．Portfolio 
 | Audit log / 鏈上回執 | localStorage 顯示名稱個人化 |
 | AI 助理推理 / counter-offer | zh / en 切換 |
 | 錢包餘額 / x402 交易 | CSV 匯出 |
+| 後端持久化 / 多裝置同步 | 規則設定在單一瀏覽器工作階段跨路由保留 |
 | AI 規則解析（mock heuristics，非真實 LLM） | |
 
 ### 為什麼用 mock data 而不接真 API
@@ -106,6 +107,7 @@ A warm-light surface with structural cards—a payment control hub feel rather t
 | Audit log / on-chain receipts | localStorage display-name personalization |
 | Agent reasoning / counter-offers | zh / en locale switching |
 | Wallet balance / x402 transactions | CSV export |
+| Backend persistence / multi-device sync | Rule edits persist across routes in the same browser session |
 | AI rule parsing (mock heuristics, not a real LLM) | |
 
 ### Why mock data instead of real APIs

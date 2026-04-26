@@ -612,7 +612,7 @@ function AiDraftPreview({
         )}
       </div>
 
-      <ConsequencePreview parsed={parsed} locale={locale} t={t} />
+      <ConsequencePreview parsed={parsed} t={t} />
 
       <div
         className="px-3 py-2 text-[12px] leading-relaxed border-t"
@@ -638,11 +638,9 @@ type ParsedRuleNonUnknown = Exclude<
 
 function ConsequencePreview({
   parsed,
-  locale,
   t,
 }: {
   parsed: ParsedRuleNonUnknown;
-  locale: "zh" | "en";
   t: (key: string, params?: Record<string, string | number>) => string;
 }) {
   type Bullet = { tone: "auto" | "review" | "deny"; text: string };

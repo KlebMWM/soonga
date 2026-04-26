@@ -925,24 +925,24 @@ export const dict: Dict = {
     en: "When this rule applies",
   },
   "rules.ai.consequence.category.auto": {
-    zh: "單筆 ≤ ${single} 且月累計 ≤ ${monthly} 將自動核准",
-    en: "Payments ≤ ${single} per transaction and ≤ ${monthly} per month auto-approve",
+    zh: "單筆 ≤ ${single}、月累計 ≤ ${monthly} 自動核准",
+    en: "Auto-approve within ${single}/tx and ${monthly}/mo",
   },
   "rules.ai.consequence.category.review": {
-    zh: "超過上限的付款會進入待審核佇列",
-    en: "Anything over the cap joins the approval queue",
+    zh: "超過上限會進入待審核",
+    en: "Over cap goes to approvals",
   },
   "rules.ai.consequence.allow.auto": {
-    zh: "{merchant} 的付款受該類別上限自動核准",
-    en: "Payments to {merchant} auto-approve within the category cap",
+    zh: "{merchant} 在類別上限內自動核准",
+    en: "{merchant} auto-approves within cap",
   },
   "rules.ai.consequence.allow.review": {
-    zh: "超過該類別上限仍會進待審核",
-    en: "Amounts over the category cap still hit the approval queue",
+    zh: "超過類別上限仍進待審核",
+    en: "Over cap still goes to approvals",
   },
   "rules.ai.consequence.block.deny": {
-    zh: "{merchant} 的所有付款會直接拒絕，不進待審核",
-    en: "All payments to {merchant} are rejected outright — no approval queue",
+    zh: "{merchant} 的付款直接拒絕",
+    en: "{merchant} payments are rejected",
   },
   "rules.unified.chooser.category.title": { zh: "類別預算", en: "Category budget" },
   "rules.unified.chooser.category.desc": {
