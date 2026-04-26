@@ -240,7 +240,7 @@ export const dict: Dict = {
   "dashboard.hero.pending.line1": { zh: "筆待審核", en: "to-do" },
   "dashboard.hero.pending.line2": {
     zh: "需要你確認後才會付款",
-    en: "Will not pay until you confirm",
+    en: "No payment goes out until you confirm.",
   },
   "dashboard.hero.pending.total": {
     zh: "總金額 {amount} USDC",

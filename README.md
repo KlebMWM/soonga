@@ -53,10 +53,21 @@ Interactive product prototype for an AI agent payment control layer．Portfolio 
 
 ### 下一階段（Phase 2）
 
-- 接 Base Sepolia 的真實錢包（wagmi + RainbowKit）
-- x402 handshake 整合（mock merchant server → 實際 402 回應 → 簽 USDC 交易）
-- 規則引擎做成可 enforce：Session keys（ERC-4337）或鏈下 relayer 二選一
-- Approval decision 寫回鏈上作為可驗證 audit trail
+這個原型完成的是面向使用者的探索層。Phase 2 把設計變成真產品，整合下面的 Web3 stack。每一項都選有理由，不是 buzzword 蒐集。
+
+**wagmi + RainbowKit**
+消費者錢包連線需要熟悉的 UX 模板。RainbowKit 提供業界標準的連接體驗，wagmi 處理底層 React hooks。
+
+**ERC-4337 Account Abstraction**
+spending limit 在 wallet layer 強制比 application layer 可信。Session keys 讓規則引擎的限額在鏈上強制執行，不只靠前端 UI。
+
+**x402**
+HTTP-native 的 agent payment 是這層的標準。當 AI agent 遇到付費 API 時用 x402 自動支付，不需要人類介入或預先充值帳號。
+
+**On-chain audit trail**
+支付控制台的核心承諾就是可追溯。鏈上紀錄是無法竄改的存證，比資料庫紀錄更符合 audit 的本質。
+
+**注意**：以上整合在 Phase 2 完成之前不會 demo。這段是設計探索的後續路徑，不是已實現的功能。
 
 ### 技術選擇
 
@@ -102,10 +113,21 @@ This is a **product prototype**, not an MVP. Mock data lets the prototype focus 
 
 ### Phase 2
 
-- Real wallet on Base Sepolia (wagmi + RainbowKit)
-- x402 handshake integration (mock merchant server → real 402 responses → signed USDC transactions)
-- Enforceable rule engine: either ERC-4337 Session Keys or an off-chain relayer
-- Approval decisions written on-chain as verifiable audit trail
+This prototype is the user-facing exploration layer. Phase 2 turns the design into a real product by integrating the Web3 stack below. Each item is chosen for a specific reason, not buzzword bingo.
+
+**wagmi + RainbowKit**
+Consumer wallet connection needs familiar UX patterns. RainbowKit provides the industry-standard connection flow, wagmi handles React hooks underneath.
+
+**ERC-4337 Account Abstraction**
+Spending limits enforced at the wallet layer are more trustworthy than at the application layer. Session keys let the rule engine enforce caps on-chain, not just in UI.
+
+**x402**
+HTTP-native agent payments are emerging as the standard for this layer. When an AI agent hits a paywalled API, x402 lets it auto-pay without human intervention or pre-funded accounts.
+
+**On-chain audit trail**
+The core promise of any payment control hub is traceability. On-chain records are tamper-proof, more aligned with the nature of audit than database logs.
+
+**Note**: None of the above is demo-able until Phase 2 ships. Listed as forward roadmap, not current capability.
 
 ### Stack
 
