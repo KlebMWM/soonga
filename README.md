@@ -6,8 +6,8 @@
 AI agent 支付控制層的互動產品原型．2026 Q2 portfolio 作品．
 Interactive product prototype for an AI agent payment control layer．Portfolio piece, Q2 2026.
 
-> 🔸 **這是互動式產品原型**．所有資料都是 mock，不會真的付錢、不會上鏈．
-> 🔸 **This is an interactive prototype**．All data is mocked．No real payments, no on-chain transactions.
+> 🔸 **這是互動式產品原型**．核心商業邏輯都是 mock，不會真的付錢、不會上鏈．
+> 🔸 **This is an interactive prototype**．Core business logic is mocked．No real payments, no on-chain transactions.
 
 ---
 
@@ -19,10 +19,29 @@ Interactive product prototype for an AI agent payment control layer．Portfolio 
 
 ### 四個核心模組
 
-- **Command Center**（`/dashboard`）：一眼看完「我現在要不要決定什麼」。沒事就安靜，有事就亮橘色。
-- **Rule Engine**（`/rules`）：類別額度、單筆上限、白黑灰三層信任名單。超出邊界自動進入審核佇列。
-- **Contextual Approval**（`/approvals`）：把 agent 推理邏輯翻成白話．「為什麼花這筆錢」+「相關脈絡」+「觸發哪條規則」．支援「要求 agent 提備案」的完整迴圈（按下去 10 秒後會送新方案回來）。
+- **Command Center**（`/dashboard`）：一眼看完「我現在要不要決定什麼」。沒事就安靜，有事就亮琥珀色。
+- **Rule Engine**（`/rules`）：類別額度、單筆上限、信任名單三層管 AI 助理。超出邊界就會自動進入待審核等你確認。
+- **Contextual Approval**（`/approvals`）：把 AI 助理的推理翻成白話．「需要花這筆費用的理由」+「相關脈絡」+「觸發哪條規則」．支援「請 AI 找替代方案」的完整迴圈（按下去 10 秒後新方案會送回來）。
 - **Decision Audit**（`/audit`）：每一筆決策的鏈上回執、reasoning、你的覆核都可追溯．對應 EU AI Act Art. 14 的 human oversight 與 auditability 要求．可匯出 CSV。
+
+### 視覺語言
+
+淺暖底 + 結構性卡片的支付控制台調性．配色語意刻意分清楚：
+
+- **黃** = CTA / 品牌記號 / Hero 大數字（要你看的）
+- **琥珀** = 待審核 / 警告（需要你決定的）
+- **Sage 綠** = 自動核准 / 安全（已經處理掉的）
+- **IKEA 藍** = 系統訊號 / 互動 affordance（可以操作的）
+
+### 原型範圍：什麼是 mock，什麼是真的
+
+| 是 mock（為了講清楚產品規格） | 是真的（瀏覽器原生能力） |
+|---|---|
+| 待審核佇列 / 規則執行 | 瀏覽器桌面通知（Web Notification API） |
+| Audit log / 鏈上回執 | localStorage 顯示名稱個人化 |
+| AI 助理推理 / counter-offer | zh / en 切換 |
+| 錢包餘額 / x402 交易 | CSV 匯出 |
+| AI 規則解析（mock heuristics，非真實 LLM） | |
 
 ### 為什麼用 mock data 而不接真 API
 
@@ -49,10 +68,29 @@ By Q2 2026, 480,000+ AI agents have initiated $165M in transactions through Coin
 
 ### Four core modules
 
-- **Command Center** (`/dashboard`): At-a-glance answer to "do I need to decide anything right now?" Calm when nothing needs you; bright orange when something does.
-- **Rule Engine** (`/rules`): Category budgets, per-transaction caps, and a three-tier merchant trust list (allow / block / review). Anything out of bounds joins the approval queue.
-- **Contextual Approval** (`/approvals`): Translates agent reasoning into plain-spoken "why this purchase, given this task and this context, triggered this rule." Full counter-offer loop—ask the agent for an alternative and a new proposal lands in ~10 seconds.
+- **Command Center** (`/dashboard`): At-a-glance answer to "do I need to decide anything right now?" Calm when nothing needs you; amber alert when something does.
+- **Rule Engine** (`/rules`): Three layers govern your AI agent—category budgets, per-transaction caps, and merchant trust lists. Anything out of bounds joins the approval queue.
+- **Contextual Approval** (`/approvals`): Translates agent reasoning into plain language—why this purchase is needed, given this task and context, and which rule it tripped. Full counter-offer loop: ask the agent for an alternative and a new proposal lands in ~10 seconds.
 - **Decision Audit** (`/audit`): Every decision's on-chain receipt, agent reasoning, and your verdict—aligned with EU AI Act Article 14 requirements for human oversight and auditability. CSV export included.
+
+### Visual language
+
+A warm-light surface with structural cards—a payment control hub feel rather than a dark HUD. Colors carry strict semantic roles:
+
+- **Yellow** = CTA, brand marks, hero numerals (look here)
+- **Amber** = pending / warning (needs your call)
+- **Sage** = auto-approved / safe (already handled)
+- **IKEA blue** = system signal, interactive affordance (act here)
+
+### Prototype scope — what's mock vs real
+
+| Mocked (so the product spec stays the focus) | Actually working (native browser capabilities) |
+|---|---|
+| Pending queue / rule enforcement | Browser desktop notifications (Web Notification API) |
+| Audit log / on-chain receipts | localStorage display-name personalization |
+| Agent reasoning / counter-offers | zh / en locale switching |
+| Wallet balance / x402 transactions | CSV export |
+| AI rule parsing (mock heuristics, not a real LLM) | |
 
 ### Why mock data instead of real APIs
 
@@ -78,11 +116,20 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000)．
+
+第一次打開會看到 **Welcome Modal**，可以輸入希望 AI 助理怎麼稱呼你（保存在瀏覽器本機，不會上傳）．Dashboard hero 的問候會用這個名字．Sidebar 底部「原型說明」可以重新打開這個 modal．
+The first visit shows a **Welcome Modal** where you can set a display name (stored locally in your browser, never uploaded). The Dashboard greeting uses it. The "Prototype guide" entry at the bottom of the sidebar reopens the modal.
+
+訪問 [http://localhost:3000?demo=1](http://localhost:3000?demo=1) 或在 dev mode 下會看到右下角浮出 **Demo Controls** 面板：切換深淺模式、處理一筆待審核、切換空態 / 待審核態、重置 demo．
+Visit `?demo=1` (or run in dev mode) to surface a floating **Demo Controls** panel: toggle theme, resolve a pending item, swap empty / pending state, reset demo.
+
+zh / en 切換在右上角 TopBar．The locale switcher lives in the top-right TopBar.
 
 ## Deployment
 
-Deployed via Vercel．`npm run build` produces static pages for all four routes—no backend, no runtime dependencies beyond Node 20+.
+可部署至 Vercel．`npm run build` 為四個路由產出靜態頁面，沒有 backend、沒有 Node 20+ 之外的 runtime 依賴．
+Deployable to Vercel. `npm run build` produces static pages for all four routes—no backend, no runtime dependencies beyond Node 20+.
 
 ---
 
