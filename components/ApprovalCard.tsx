@@ -183,9 +183,11 @@ function OutcomeBlock({
 
 export function ApprovalCard({
   approval,
+  onAdjust,
   onHandled,
 }: {
   approval: PendingApproval;
+  onAdjust?: (approval: PendingApproval) => void;
   /** Fires after the user resolves the card via approve / reject so the
    *  parent can remove it from the queue. Adjust keeps the item pending. */
   onHandled?: (
@@ -217,6 +219,11 @@ export function ApprovalCard({
   );
 
   const act = (outcome: "approved" | "adjusted" | "rejected") => {
+    if (outcome === "adjusted") {
+      onAdjust?.(approval);
+      return;
+    }
+
     const toastParams = {
       agent: agentName,
       merchant,
@@ -226,11 +233,6 @@ export function ApprovalCard({
       approved: {
         title: t("approval.toast.approved.title", toastParams),
         desc: t("approval.toast.approved.desc", toastParams),
-        isDenied: false,
-      },
-      adjusted: {
-        title: t("approval.toast.adjusted.title", toastParams),
-        desc: t("approval.toast.adjusted.desc", toastParams),
         isDenied: false,
       },
       rejected: {
@@ -243,8 +245,6 @@ export function ApprovalCard({
     (message.isDenied ? toast.error : toast.success)(message.title, {
       description: message.desc,
     });
-
-    if (outcome === "adjusted") return;
     onHandled?.(approval.id, outcome);
   };
 

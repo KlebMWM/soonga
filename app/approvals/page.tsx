@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Check, Clock } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/PageHeader";
 import { ApprovalCard } from "@/components/ApprovalCard";
 import { Badge } from "@/components/ui/badge";
@@ -41,6 +42,7 @@ function decisionLine(
 }
 
 export default function ApprovalsPage() {
+  const router = useRouter();
   const t = useT();
   const { locale } = useLocale();
   const approvals = usePendingApprovals();
@@ -76,12 +78,13 @@ export default function ApprovalsPage() {
 
   const handleAdjustCurrent = useCallback(() => {
     if (!current) return;
-    toast.success(t("approval.toast.adjusted.title"), {
-      description: t("approval.toast.adjusted.desc", {
-        merchant: current.merchant[locale],
-      }),
+    const params = new URLSearchParams({
+      approval: current.id,
+      merchant: current.merchant.en,
+      source: "approvals",
     });
-  }, [current, locale, t]);
+    router.push(`/rules?${params.toString()}`);
+  }, [current, router]);
 
   const handleBulkApprove = () => {
     const snapshot = pendingStore.getAll();
@@ -210,6 +213,7 @@ export default function ApprovalsPage() {
               <ApprovalCard
                 key={current.id}
                 approval={current}
+                onAdjust={handleAdjustCurrent}
                 onHandled={handleHandled}
               />
             </div>

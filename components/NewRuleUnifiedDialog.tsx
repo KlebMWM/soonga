@@ -48,6 +48,9 @@ type Props = {
   onCreateCategory: (c: Category) => void;
   onAddAllow: (entry: AllowEntry) => void;
   onAddBlock: (entry: BlockEntry) => void;
+  initialOpen?: boolean;
+  initialMerchant?: string;
+  initialMode?: Extract<Mode, "allow" | "block">;
 };
 
 const LEVEL_META = {
@@ -68,11 +71,22 @@ const LEVEL_META = {
   },
 } as const;
 
-export function NewRuleUnifiedDialog({ categories, onCreateCategory, onAddAllow, onAddBlock }: Props) {
+export function NewRuleUnifiedDialog({
+  categories,
+  onCreateCategory,
+  onAddAllow,
+  onAddBlock,
+  initialOpen = false,
+  initialMerchant = "",
+  initialMode = "allow",
+}: Props) {
   const t = useT();
   const { locale } = useLocale();
-  const [open, setOpen] = useState(false);
-  const [mode, setMode] = useState<Mode>("first");
+  const hasInitialMerchant = Boolean(initialMerchant.trim());
+  const [open, setOpen] = useState(initialOpen && hasInitialMerchant);
+  const [mode, setMode] = useState<Mode>(
+    initialOpen && hasInitialMerchant ? initialMode : "first",
+  );
 
   // Category form state
   const [catName, setCatName] = useState("");
@@ -81,7 +95,7 @@ export function NewRuleUnifiedDialog({ categories, onCreateCategory, onAddAllow,
   const [catSingle, setCatSingle] = useState(20);
 
   // Allow / Block form shared state
-  const [merchant, setMerchant] = useState("");
+  const [merchant, setMerchant] = useState(initialMerchant);
   const [category, setCategory] = useState(categories[0]?.id ?? "api");
   const [reason, setReason] = useState("");
   const [checking, setChecking] = useState(false);

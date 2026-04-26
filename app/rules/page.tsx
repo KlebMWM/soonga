@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { use, useState } from "react";
 import { CheckCircle2, ShieldOff, AlertCircle, Trash2 } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { CategoryRuleCard } from "@/components/CategoryRuleCard";
@@ -23,6 +23,13 @@ import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
 import { toast } from "sonner";
 
 type ListKind = "allow" | "block" | "review";
+type RulesSearchParams = Record<string, string | string[] | undefined>;
+
+const EMPTY_SEARCH_PARAMS = Promise.resolve({} as RulesSearchParams);
+
+function firstParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
 
 function TrustRow({
   name,
@@ -67,9 +74,17 @@ function TrustRow({
   );
 }
 
-export default function RulesPage() {
+export default function RulesPage({
+  searchParams,
+}: {
+  searchParams?: Promise<RulesSearchParams>;
+}) {
   const t = useT();
   const { locale } = useLocale();
+  const query = use(searchParams ?? EMPTY_SEARCH_PARAMS);
+  const approvalMerchant = firstParam(query.merchant)?.trim().slice(0, 80) ?? "";
+  const openFromApproval =
+    firstParam(query.source) === "approvals" && approvalMerchant.length > 0;
   // Categories now live in a module-level store (lib/stores) so edits
   // survive route navigation. The page component subscribes; mutations
   // go through the store API.
@@ -164,6 +179,9 @@ export default function RulesPage() {
             onCreateCategory={handleCreateCategory}
             onAddAllow={handleAddAllow}
             onAddBlock={handleAddBlock}
+            initialOpen={openFromApproval}
+            initialMerchant={approvalMerchant}
+            initialMode="allow"
           />
         }
       />
