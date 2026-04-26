@@ -20,19 +20,47 @@ import type { Category } from "@/lib/mockData";
 import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
 import { toast } from "sonner";
 
-export function CategoryRuleCard({ category }: { category: Category }) {
+type CategoryRuleCardProps = {
+  category: Category;
+  /** Persist the slider edits back to the parent's categories array.
+   *  Card display always reads from prop; internal state is only the
+   *  dialog's slider staging. */
+  onUpdate: (
+    id: string,
+    patch: { monthlyLimit: number; singleLimit: number },
+  ) => void;
+};
+
+export function CategoryRuleCard({ category, onUpdate }: CategoryRuleCardProps) {
   const t = useT();
   const { locale } = useLocale();
   const [open, setOpen] = useState(false);
+  // Internal state is dialog-only staging — initial values are arbitrary
+  // because we re-sync from prop every time the dialog opens.
   const [monthly, setMonthly] = useState(category.monthlyLimit);
   const [single, setSingle] = useState(category.singleLimit);
 
   const name = category.name[locale];
   const desc = category.description[locale];
-  const pct = Math.min(100, Math.round((category.spent / monthly) * 100));
-  const remaining = Math.max(0, monthly - category.spent);
+  // Display always reads from prop (source of truth). Internal state only
+  // exists to drive the slider while the dialog is open.
+  const displayMonthly = category.monthlyLimit;
+  const displaySingle = category.singleLimit;
+  const pct = Math.min(100, Math.round((category.spent / displayMonthly) * 100));
+  const remaining = Math.max(0, displayMonthly - category.spent);
+
+  const handleOpenChange = (next: boolean) => {
+    // Re-sync staging from prop on each open so the user always sees the
+    // current persisted values, never stale state from a previous edit.
+    if (next) {
+      setMonthly(category.monthlyLimit);
+      setSingle(category.singleLimit);
+    }
+    setOpen(next);
+  };
 
   const handleSave = () => {
+    onUpdate(category.id, { monthlyLimit: monthly, singleLimit: single });
     toast.success(t("rules.dialog.savedTitle", { name }), {
       description: t("rules.dialog.savedDesc", { monthly, single }),
     });
@@ -46,7 +74,7 @@ export function CategoryRuleCard({ category }: { category: Category }) {
           <div className="text-sm font-semibold">{name}</div>
           <div className="mt-0.5 text-[12px] text-muted-foreground">{desc}</div>
         </div>
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
           <DialogTrigger
             render={
               <Button
@@ -115,7 +143,7 @@ export function CategoryRuleCard({ category }: { category: Category }) {
         <div className="flex items-end justify-between">
           <span className="text-2xl font-semibold tabular-nums">${category.spent.toFixed(2)}</span>
           <span className="text-[12px] text-muted-foreground tabular-nums">
-            {t("rules.card.monthTotal")} ${monthly}
+            {t("rules.card.monthTotal")} ${displayMonthly}
           </span>
         </div>
         <Progress value={pct} className="h-1.5" />
@@ -124,7 +152,7 @@ export function CategoryRuleCard({ category }: { category: Category }) {
       <dl className="mt-4 grid grid-cols-2 gap-3 pt-4 border-t border-border/70">
         <div>
           <dt className="text-[12px] text-muted-foreground">{t("rules.card.singleLimit")}</dt>
-          <dd className="text-sm font-medium tabular-nums mt-0.5">${single}</dd>
+          <dd className="text-sm font-medium tabular-nums mt-0.5">${displaySingle}</dd>
         </div>
         <div>
           <dt className="text-[12px] text-muted-foreground">{t("rules.card.remaining")}</dt>

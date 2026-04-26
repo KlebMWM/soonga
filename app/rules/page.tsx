@@ -14,11 +14,11 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import {
-  categories as initialCategories,
   trustList as initialTrustList,
   type Category,
   type TrustList,
 } from "@/lib/mockData";
+import { categoriesStore, useCategories } from "@/lib/stores";
 import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
 import { toast } from "sonner";
 
@@ -70,10 +70,17 @@ function TrustRow({
 export default function RulesPage() {
   const t = useT();
   const { locale } = useLocale();
-  const [categories, setCategories] = useState<Category[]>(initialCategories);
+  // Categories now live in a module-level store (lib/stores) so edits
+  // survive route navigation. The page component subscribes; mutations
+  // go through the store API.
+  const categories = useCategories();
   const [trust, setTrust] = useState<TrustList>(initialTrustList);
 
-  const handleCreateCategory = (c: Category) => setCategories((prev) => [...prev, c]);
+  const handleCreateCategory = (c: Category) => categoriesStore.add(c);
+  const handleUpdateCategory = (
+    id: string,
+    patch: { monthlyLimit: number; singleLimit: number },
+  ) => categoriesStore.update(id, patch);
   const handleAddAllow = (entry: AllowEntry) =>
     setTrust((prev) => ({ ...prev, allowlist: [entry, ...prev.allowlist] }));
   const handleAddBlock = (entry: BlockEntry) =>
@@ -151,7 +158,11 @@ export default function RulesPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {categories.map((c) => (
-            <CategoryRuleCard key={c.id} category={c} />
+            <CategoryRuleCard
+              key={c.id}
+              category={c}
+              onUpdate={handleUpdateCategory}
+            />
           ))}
         </div>
       </section>

@@ -3,8 +3,10 @@
 import { useSyncExternalStore } from "react";
 import {
   auditLog as initialAuditLog,
+  categories as initialCategories,
   pendingApprovals as initialPending,
   type AuditEntry,
+  type Category,
   type PendingApproval,
 } from "./mockData";
 
@@ -108,6 +110,60 @@ export function useAuditLog(): AuditEntry[] {
     auditStore.subscribe,
     auditStore.getSnapshot,
     () => initialAuditLog,
+  );
+}
+
+// ---------------- Categories ----------------
+//
+// Categories live in a module-level store so edits + adds + removes survive
+// route navigation. Without this, a per-page useState in /rules would
+// re-initialize every time the user leaves and comes back.
+
+let categoriesState: Category[] = [...initialCategories];
+const categoriesListeners = new Set<() => void>();
+
+function emitCategories() {
+  categoriesListeners.forEach((cb) => cb());
+}
+
+export const categoriesStore = {
+  getSnapshot: () => categoriesState,
+  subscribe: (cb: () => void) => {
+    categoriesListeners.add(cb);
+    return () => {
+      categoriesListeners.delete(cb);
+    };
+  },
+  getAll: () => categoriesState,
+  /** Append a new category (system or custom). */
+  add(category: Category) {
+    categoriesState = [...categoriesState, category];
+    emitCategories();
+  },
+  /** Patch monthly / single (and any future fields) on a single category. */
+  update(id: string, patch: Partial<Category>) {
+    categoriesState = categoriesState.map((c) =>
+      c.id === id ? { ...c, ...patch } : c,
+    );
+    emitCategories();
+  },
+  /** Remove by id — used by the trash action on custom categories. */
+  remove(id: string) {
+    const before = categoriesState.length;
+    categoriesState = categoriesState.filter((c) => c.id !== id);
+    if (categoriesState.length !== before) emitCategories();
+  },
+  reset() {
+    categoriesState = [...initialCategories];
+    emitCategories();
+  },
+};
+
+export function useCategories(): Category[] {
+  return useSyncExternalStore(
+    categoriesStore.subscribe,
+    categoriesStore.getSnapshot,
+    () => initialCategories,
   );
 }
 
