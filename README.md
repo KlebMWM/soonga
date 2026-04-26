@@ -7,6 +7,7 @@ AI agent 支付控制層的互動產品原型．2026 Q2 portfolio 作品．
 Interactive product prototype for an AI agent payment control layer．Portfolio piece, Q2 2026.
 
 **🔗 Live demo → [soonga.vercel.app](https://soonga.vercel.app)**
+**📄 Case study → [docs/case-study.md](docs/case-study.md)**
 
 > 🔸 **這是互動式產品原型**．核心商業邏輯都是 mock，不會真的付錢、不會上鏈．
 > 🔸 **This is an interactive prototype**．Core business logic is mocked．No real payments, no on-chain transactions.
@@ -67,7 +68,7 @@ HTTP-native 的 agent payment 是這層的標準。當 AI agent 遇到付費 API
 **On-chain audit trail**
 支付控制台的核心承諾就是可追溯。鏈上紀錄是無法竄改的存證，比資料庫紀錄更符合 audit 的本質。
 
-**注意**：以上整合在 Phase 2 完成之前不會 demo。這段是設計探索的後續路徑，不是已實現的功能。
+**注意：以上整合在 Phase 2 完成之前不會 demo。這段是設計探索的後續路徑，不是已實現的功能。**
 
 ### 技術選擇
 
@@ -127,7 +128,7 @@ HTTP-native agent payments are emerging as the standard for this layer. When an 
 **On-chain audit trail**
 The core promise of any payment control hub is traceability. On-chain records are tamper-proof, more aligned with the nature of audit than database logs.
 
-**Note**: None of the above is demo-able until Phase 2 ships. Listed as forward roadmap, not current capability.
+**Note: None of the above is demo-able until Phase 2 ships. Listed as forward roadmap, not current capability.**
 
 ### Stack
 

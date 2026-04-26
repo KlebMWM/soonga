@@ -13,6 +13,18 @@ Stack      Next.js 16, React 19, TypeScript, Tailwind, shadcn/ui
 
 ---
 
+## How to read this / 閱讀路徑
+
+If you only have 30 seconds: read the TL;DR below, then jump to section 4 What shipped.
+If you have 5 minutes: add section 1 Problem and section 3 Design decisions.
+If you're reading deeply: sections 2, 5, 6 carry the design narrative and reflection.
+
+如果你只有 30 秒：讀完下面的 TL;DR，看 section 4 What shipped。
+如果你有 5 分鐘：再加 section 1 Problem 跟 section 3 Design decisions。
+如果你想看完：section 2、5、6 是設計脈絡與 reflection，從上到下讀。
+
+---
+
 ## TL;DR / 一句話定位
 
 soon-ga.agent does not try to build another agent wallet or payment rail. It explores the missing user-facing control layer for agentic payments: rules, approval queues, plain-language explanations, and audit trails that help humans stay in charge.
@@ -25,9 +37,9 @@ soon-ga.agent 不主打做另一個 agent wallet 或支付軌道。它探索的�
 
 ### Why this exists
 
-2026 年的市場現狀。AI agent 已經可以代表使用者花錢。OpenAI 跟 Stripe 共同推出 ACP 協議並整合進 ChatGPT，Mastercard 發表 Agent Pay，Visa 推出 Intelligent Commerce，Coinbase 用 x402 串起 stablecoin 支付。整個產業的共識是 agentic commerce 會發生，但問題卡在三個地方。
+2026 年的市場現狀。AI agent 已經可以代表使用者花錢。OpenAI 跟 Stripe 共同推出 ACP 協議並整合進 ChatGPT，Mastercard 發表 Agent Pay，Visa 推出 Intelligent Commerce，Coinbase 用 x402 串起 stablecoin 支付。主流支付網路與 AI 平台都在推進 agentic commerce 基礎建設，但問題卡在三個地方。
 
-第一，現有方案多數是 B2B 或開發者導向的工具。Skyfire、Crossmint、Payman 都有 dashboard，但介面長得像工程師主控台，不是普通人晚上 11 點看的東西。
+第一，現有方案多數是 B2B 或開發者導向的工具。Skyfire、Crossmint、Payman 都有 dashboard，但目標客群偏向工程師與開發者，不是普通人晚上 11 點看的東西。
 
 第二，控制邏輯散在各層。卡組織給的是 spend limit，wallet infra 給的是 policy validation，AI 平台給的是 conversational checkout。沒有一個地方讓使用者在單一介面裡管理「我的四個 AI 助理今天花了什麼、哪些需要我審核、哪些是被自動規則放行」。
 
@@ -202,7 +214,7 @@ on-chain audit trail      支付控制台的核心承諾就是可追溯，鏈上
 
 Phase 2 之前不會 demo 上述整合。這是設計探索的後續路徑，不是已實現的功能。
 
-### 沒做但承認該做的
+### Out of scope for prototype / 留給 Phase 2 的範圍
 
 ```
 Onboarding 4 到 5 步引導   現在只有 Welcome Modal，缺後面的引導
@@ -226,7 +238,7 @@ mobile push 通知           只有瀏覽器桌面通知 demo
 
 **Mock 不丟人，假裝真實才丟人。** 第一次寫 README 時想把所有功能講得像真的 production。最後決定明列哪些是 mock 哪些是 real，反而更被人尊重。誠實是 PM 的競爭優勢。
 
-### 沒學到但想學的
+### Phase 2 learning roadmap / 下一階段的學習計畫
 
 - 真正接 Privy / RainbowKit 把錢包連線做出來
 - 真正接 OpenAI Agents SDK 或 Anthropic Computer Use 跑一個 agent
