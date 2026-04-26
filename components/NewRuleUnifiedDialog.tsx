@@ -145,6 +145,7 @@ export function NewRuleUnifiedDialog({ categories, onCreateCategory, onAddAllow,
       monthlyLimit: catMonthly,
       singleLimit: catSingle,
       spent: 0,
+      isSystem: false,
     });
     toast.success(t("rules.new.createdTitle", { name: trimmed }), {
       description: t("rules.new.createdDesc", { monthly: catMonthly, single: catSingle }),

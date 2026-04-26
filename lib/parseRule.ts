@@ -203,6 +203,7 @@ export function parseRuleRequest(
         monthlyLimit,
         singleLimit,
         spent: 0,
+        isSystem: false,
       },
       confidence,
       rationale: {

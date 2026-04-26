@@ -81,6 +81,26 @@ export default function RulesPage() {
     id: string,
     patch: { monthlyLimit: number; singleLimit: number },
   ) => categoriesStore.update(id, patch);
+  const handleDeleteCategory = (id: string) => {
+    // Snapshot before remove so the undo action restores the exact same
+    // shape (limits, spent, isSystem, …). The store mutates in place; if
+    // the snapshot ever diverges from the post-remove state it's because
+    // the user mutated something between delete and undo, which is fine —
+    // undo just re-adds whatever was visible at delete time.
+    const snapshot = categoriesStore.getAll().find((c) => c.id === id);
+    if (!snapshot) return;
+    categoriesStore.remove(id);
+    toast.success(
+      t("rules.card.deleted.title", { name: snapshot.name[locale] }),
+      {
+        description: t("rules.card.deleted.desc"),
+        action: {
+          label: t("rules.card.deleted.undo"),
+          onClick: () => categoriesStore.add(snapshot),
+        },
+      },
+    );
+  };
   const handleAddAllow = (entry: AllowEntry) =>
     setTrust((prev) => ({ ...prev, allowlist: [entry, ...prev.allowlist] }));
   const handleAddBlock = (entry: BlockEntry) =>
@@ -162,6 +182,7 @@ export default function RulesPage() {
               key={c.id}
               category={c}
               onUpdate={handleUpdateCategory}
+              onDelete={handleDeleteCategory}
             />
           ))}
         </div>

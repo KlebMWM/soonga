@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil, Check } from "lucide-react";
+import { Pencil, Check, Trash2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,9 +29,17 @@ type CategoryRuleCardProps = {
     id: string,
     patch: { monthlyLimit: number; singleLimit: number },
   ) => void;
+  /** Remove a custom (non-system) category. Trash button is hidden when
+   *  category.isSystem is true, so this is only invoked for user-created
+   *  categories. Toast undo lives in the parent. */
+  onDelete: (id: string) => void;
 };
 
-export function CategoryRuleCard({ category, onUpdate }: CategoryRuleCardProps) {
+export function CategoryRuleCard({
+  category,
+  onUpdate,
+  onDelete,
+}: CategoryRuleCardProps) {
   const t = useT();
   const { locale } = useLocale();
   const [open, setOpen] = useState(false);
@@ -74,6 +82,7 @@ export function CategoryRuleCard({ category, onUpdate }: CategoryRuleCardProps) 
           <div className="text-sm font-semibold">{name}</div>
           <div className="mt-0.5 text-[12px] text-muted-foreground">{desc}</div>
         </div>
+        <div className="flex items-center gap-1 shrink-0">
         <Dialog open={open} onOpenChange={handleOpenChange}>
           <DialogTrigger
             render={
@@ -137,6 +146,19 @@ export function CategoryRuleCard({ category, onUpdate }: CategoryRuleCardProps) 
             </DialogFooter>
           </DialogContent>
         </Dialog>
+        {!category.isSystem && (
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => onDelete(category.id)}
+            className="h-8 w-8 p-0 text-destructive/80 hover:text-destructive hover:bg-destructive/10"
+            title={t("rules.card.delete")}
+            aria-label={t("rules.card.delete")}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        )}
+        </div>
       </div>
 
       <div className="mt-5 space-y-1.5">

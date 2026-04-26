@@ -493,6 +493,13 @@ export const dict: Dict = {
   "rules.card.singleLimit": { zh: "單筆上限", en: "Per-transaction cap" },
   "rules.card.remaining": { zh: "剩餘額度", en: "Remaining" },
   "rules.card.adjust": { zh: "調整", en: "Edit" },
+  "rules.card.delete": { zh: "刪除", en: "Delete" },
+  "rules.card.deleted.title": {
+    zh: "已刪除「{name}」類別",
+    en: "Deleted category \"{name}\"",
+  },
+  "rules.card.deleted.desc": { zh: "可在五秒內復原", en: "Undo within 5 seconds" },
+  "rules.card.deleted.undo": { zh: "還原", en: "Undo" },
 
   "rules.dialog.edit.title": { zh: "調整「{name}」額度", en: "Edit \"{name}\" budget" },
   "rules.dialog.edit.desc": {

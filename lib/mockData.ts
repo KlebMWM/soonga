@@ -24,6 +24,11 @@ export type Category = {
   monthlyLimit: number;
   singleLimit: number;
   spent: number;
+  /** True for the four seeded categories that ship with the prototype.
+   *  System categories cannot be deleted from the UI (no trash button).
+   *  User-created categories (via natural-language parser or the chooser
+   *  cards) carry `isSystem: false` and surface a trash + undo flow. */
+  isSystem?: boolean;
 };
 
 export type FeedItem = {
@@ -136,6 +141,7 @@ export const categories: Category[] = [
     monthlyLimit: 80,
     singleLimit: 5,
     spent: 34.2,
+    isSystem: true,
   },
   {
     id: "subscription",
@@ -144,6 +150,7 @@ export const categories: Category[] = [
     monthlyLimit: 200,
     singleLimit: 50,
     spent: 147.0,
+    isSystem: true,
   },
   {
     id: "physical",
@@ -152,6 +159,7 @@ export const categories: Category[] = [
     monthlyLimit: 300,
     singleLimit: 100,
     spent: 38.3,
+    isSystem: true,
   },
   {
     id: "transfer",
@@ -160,6 +168,7 @@ export const categories: Category[] = [
     monthlyLimit: 100,
     singleLimit: 20,
     spent: 0,
+    isSystem: true,
   },
 ];
 
