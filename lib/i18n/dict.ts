@@ -913,6 +913,10 @@ export const dict: Dict = {
     zh: "手動調整",
     en: "Manual adjust",
   },
+  "rules.ai.reviewAndApply": {
+    zh: "檢查並套用",
+    en: "Review and apply",
+  },
   "rules.unified.chooser.category.title": { zh: "類別預算", en: "Category budget" },
   "rules.unified.chooser.category.desc": {
     zh: "給某類支出設月度上限與單筆限額",

@@ -150,9 +150,14 @@ export function parseRuleRequest(
   }
 
   if (matchedMerchant) {
-    // No explicit intent → default to allow only when allow intent OR no
-    // signal in either direction. The explicit allowIntent boosts confidence;
-    // a bare merchant mention falls back to medium.
+    // Bare merchant mention without intent keyword falls to LOW confidence
+    // (not medium), and the rationale explicitly asks for direction.
+    // Reason: a payment-control product must not auto-suggest "trust this
+    // merchant" just because the user typed the name — the user might have
+    // meant the opposite or might just be looking the merchant up.
+    // The UI gates LOW confidence behind "Review and apply" → manual form,
+    // so even if the user clicks past the rationale they cannot one-click
+    // an unintended allowlist entry.
     return {
       kind: "allow",
       allow: {
@@ -160,14 +165,14 @@ export function parseRuleRequest(
         category: availableCategoryIds[0] ?? "api",
         addedAt: today,
       },
-      confidence: allowIntent ? "high" : "medium",
+      confidence: allowIntent ? "high" : "low",
       rationale: {
         zh: allowIntent
           ? `偵測到你想將「${matchedMerchant}」加入白名單。`
-          : `偵測到網站「${matchedMerchant}」，預設建議加入白名單；如果其實想封鎖，請補上「封鎖」之類的字眼再試。`,
+          : `偵測到網站「${matchedMerchant}」，但無法判斷你是想加入信任名單還是封鎖名單。請使用「手動調整」確認。`,
         en: allowIntent
           ? `Detected intent to allowlist "${matchedMerchant}".`
-          : `Detected merchant "${matchedMerchant}". Defaulting to allowlist; add words like "block" if you meant the opposite.`,
+          : `Detected merchant "${matchedMerchant}", but couldn't tell if you mean trust or block. Use "Manual adjust" to confirm.`,
       },
     };
   }

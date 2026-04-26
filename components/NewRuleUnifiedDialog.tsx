@@ -467,6 +467,24 @@ function FirstScreen({
               <Button variant="outline" size="sm" onClick={handleReset}>
                 {t("rules.ai.tryAgain")}
               </Button>
+            ) : parsed.confidence === "low" ? (
+              // LOW-confidence drafts (e.g. bare merchant with no intent
+              // keyword) drop the one-click apply and force the user
+              // through the manual form. "Review and apply" is the only
+              // path that creates the rule, so we cannot accidentally
+              // trust or block a merchant the user just typed to look up.
+              <div className="flex flex-wrap items-center gap-2">
+                <Button
+                  onClick={handleManualAdjust}
+                  size="sm"
+                  className="gap-1.5"
+                >
+                  {t("rules.ai.reviewAndApply")}
+                </Button>
+                <Button variant="ghost" size="sm" onClick={handleReset}>
+                  {t("rules.ai.tryAgain")}
+                </Button>
+              </div>
             ) : (
               <div className="flex flex-wrap items-center gap-2">
                 <Button onClick={handleCreate} size="sm" className="gap-1.5">
