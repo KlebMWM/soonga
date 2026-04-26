@@ -121,6 +121,9 @@ export type AuditEntry = {
   userAction?: Bilingual;
   txHash: string;
   gasFee: number;
+  /** Set only on system auto-approved entries; drives the audit
+   *  reverse-link to the governing CategoryRuleCard. */
+  sourceCategoryId?: string;
 };
 
 export const agents: Agent[] = [
@@ -787,6 +790,7 @@ export const auditLog: AuditEntry[] = [
     ),
     txHash: "0xdef2a8...3c91",
     gasFee: 0.0018,
+    sourceCategoryId: "ai",
   },
   {
     id: "tx_039",
@@ -803,6 +807,7 @@ export const auditLog: AuditEntry[] = [
     ),
     txHash: "0x882ef1...4b12",
     gasFee: 0.0021,
+    sourceCategoryId: "subscription",
   },
   {
     id: "tx_038",
@@ -853,6 +858,7 @@ export const auditLog: AuditEntry[] = [
     ),
     txHash: "0x7712da...8801",
     gasFee: 0.0017,
+    sourceCategoryId: "ai",
   },
   {
     id: "tx_035",
@@ -869,6 +875,7 @@ export const auditLog: AuditEntry[] = [
     ),
     txHash: "0x21abb3...0055",
     gasFee: 0.0014,
+    sourceCategoryId: "ai",
   },
   {
     id: "tx_034",
@@ -885,6 +892,7 @@ export const auditLog: AuditEntry[] = [
     ),
     txHash: "0x998ec1...2344",
     gasFee: 0.0019,
+    sourceCategoryId: "subscription",
   },
   {
     id: "tx_033",
@@ -901,6 +909,7 @@ export const auditLog: AuditEntry[] = [
     ),
     txHash: "0x4421fe...aa1d",
     gasFee: 0.0031,
+    sourceCategoryId: "physical",
   },
   {
     id: "tx_032",
@@ -931,6 +940,7 @@ export const auditLog: AuditEntry[] = [
     reasoning: b("信任名單網站、使用量正常。", "Allowlisted merchant · usage within normal range."),
     txHash: "0x77aacd...9911",
     gasFee: 0.0013,
+    sourceCategoryId: "ai",
   },
   {
     id: "tx_030",
@@ -944,6 +954,7 @@ export const auditLog: AuditEntry[] = [
     reasoning: b("信任名單網站、月付。", "Allowlisted merchant · monthly subscription."),
     txHash: "0x556fde...1e02",
     gasFee: 0.0022,
+    sourceCategoryId: "subscription",
   },
   {
     id: "tx_029",
@@ -960,6 +971,7 @@ export const auditLog: AuditEntry[] = [
     ),
     txHash: "0x99eedd...2203",
     gasFee: 0.0011,
+    sourceCategoryId: "subscription",
   },
   {
     id: "tx_028",
@@ -976,6 +988,7 @@ export const auditLog: AuditEntry[] = [
     ),
     txHash: "0x3c0ab1...7788",
     gasFee: 0.0016,
+    sourceCategoryId: "physical",
   },
 ];
 

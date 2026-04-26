@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Pencil, Check, Trash2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import type { Category } from "@/lib/mockData";
 import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 type CategoryRuleCardProps = {
@@ -33,12 +34,17 @@ type CategoryRuleCardProps = {
    *  category.isSystem is true, so this is only invoked for user-created
    *  categories. Toast undo lives in the parent. */
   onDelete: (id: string) => void;
+  /** When true, show a transient amber ring and scroll the card into
+   *  view. Driven by /rules?source=audit&categoryId=... reverse-link;
+   *  parent clears it after a few seconds. */
+  highlighted?: boolean;
 };
 
 export function CategoryRuleCard({
   category,
   onUpdate,
   onDelete,
+  highlighted = false,
 }: CategoryRuleCardProps) {
   const t = useT();
   const { locale } = useLocale();
@@ -47,6 +53,13 @@ export function CategoryRuleCard({
   // because we re-sync from prop every time the dialog opens.
   const [monthly, setMonthly] = useState(category.monthlyLimit);
   const [single, setSingle] = useState(category.singleLimit);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (highlighted) {
+      cardRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [highlighted]);
 
   const name = category.name[locale];
   const desc = category.description[locale];
@@ -80,7 +93,14 @@ export function CategoryRuleCard({
   };
 
   return (
-    <Card className="p-5">
+    <Card
+      ref={cardRef}
+      className={cn(
+        "p-5 transition-all duration-300",
+        highlighted &&
+          "ring-2 ring-[color-mix(in_oklab,var(--amber)_40%,transparent)] shadow-lg",
+      )}
+    >
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="text-sm font-semibold">{name}</div>

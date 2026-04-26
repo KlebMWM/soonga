@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { CheckCircle2, ChevronDown, ShieldOff, Sparkles, Copy } from "lucide-react";
+import Link from "next/link";
+import { ArrowUpRight, CheckCircle2, ChevronDown, ShieldOff, Sparkles, Copy } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -204,8 +205,36 @@ export function AuditTable() {
                   verb,
                   reason,
                 });
+          // Reverse-link target by entry kind: user-decided → merchant
+          // dialog (reuses round 12 path); system auto-approved → category
+          // card highlight; system rejected → blocklist tab + row highlight.
+          const viewRuleHref = (() => {
+            if (entry.approvedBy === "user") {
+              const params = new URLSearchParams({
+                source: "audit",
+                merchant: entry.merchant.en,
+              });
+              return `/rules?${params.toString()}`;
+            }
+            if (entry.approvedBy === "system" && entry.sourceCategoryId) {
+              const params = new URLSearchParams({
+                source: "audit",
+                categoryId: entry.sourceCategoryId,
+              });
+              return `/rules?${params.toString()}`;
+            }
+            if (entry.approvedBy === "system" && entry.decision === "rejected") {
+              const params = new URLSearchParams({
+                source: "audit",
+                trustTab: "block",
+                merchant: entry.merchant.en,
+              });
+              return `/rules?${params.toString()}`;
+            }
+            return null;
+          })();
           return (
-            <li key={entry.id}>
+            <li key={entry.id} className="group relative">
               <button
                 onClick={() => setExpanded(isOpen ? null : entry.id)}
                 className="w-full flex items-start gap-4 px-4 py-3 text-left hover:bg-muted/30 transition-colors"
@@ -241,6 +270,16 @@ export function AuditTable() {
                   )}
                 />
               </button>
+
+              {viewRuleHref && (
+                <Link
+                  href={viewRuleHref}
+                  className="absolute bottom-3 right-12 z-10 flex items-center gap-1 rounded-md border border-border/60 bg-card px-2 py-1 text-[11px] text-muted-foreground opacity-0 pointer-events-none transition-opacity duration-200 hover:text-foreground group-hover:opacity-100 group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:pointer-events-auto"
+                >
+                  {t("audit.viewRule")}
+                  <ArrowUpRight className="h-3 w-3" />
+                </Link>
+              )}
 
               {isOpen && (
                 <div className="px-4 pb-5 pt-1">

@@ -649,6 +649,7 @@ export const dict: Dict = {
   "audit.approvedBy.user": { zh: "Megan（你）", en: "Megan (you)" },
   "audit.approvedBy.system": { zh: "系統花費規則", en: "System rule engine" },
   "audit.eu": { zh: "EU AI Act · Art. 14 合規可追溯", en: "EU AI Act · Art. 14 traceable" },
+  "audit.viewRule": { zh: "→ 看規則", en: "→ View rule" },
 
   // ==================== Welcome modal ====================
   "welcome.badge": { zh: "Interactive Prototype", en: "Interactive Prototype" },

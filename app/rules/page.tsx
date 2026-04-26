@@ -1,7 +1,8 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { CheckCircle2, ShieldOff, AlertCircle, Trash2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/PageHeader";
 import { CategoryRuleCard } from "@/components/CategoryRuleCard";
 import {
@@ -37,12 +38,14 @@ function TrustRow({
   tone,
   onRemove,
   removeLabel,
+  highlighted = false,
 }: {
   name: string;
   meta: string;
   tone: "success" | "destructive" | "accent";
   onRemove: () => void;
   removeLabel: string;
+  highlighted?: boolean;
 }) {
   const toneMap = {
     success: "text-success bg-success/10",
@@ -50,8 +53,21 @@ function TrustRow({
     accent: "text-accent bg-accent/10",
   };
   const Icon = tone === "success" ? CheckCircle2 : tone === "destructive" ? ShieldOff : AlertCircle;
+  const rowRef = useRef<HTMLLIElement>(null);
+  useEffect(() => {
+    if (highlighted) {
+      rowRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [highlighted]);
   return (
-    <li className="group flex items-center gap-3 px-4 py-3 border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors">
+    <li
+      ref={rowRef}
+      className={cn(
+        "group flex items-center gap-3 px-4 py-3 border-b border-border last:border-b-0 hover:bg-muted/30 transition-all",
+        highlighted &&
+          "ring-2 ring-[color-mix(in_oklab,var(--amber)_40%,transparent)] ring-inset bg-[color-mix(in_oklab,var(--amber)_8%,transparent)]",
+      )}
+    >
       <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${toneMap[tone]}`}>
         <Icon className="h-4 w-4" />
       </div>
@@ -82,16 +98,54 @@ export default function RulesPage({
   const t = useT();
   const { locale } = useLocale();
   const query = use(searchParams ?? EMPTY_SEARCH_PARAMS);
-  const approvalMerchant = firstParam(query.merchant)?.trim().slice(0, 80) ?? "";
-  const hasApprovalSource = firstParam(query.source) === "approvals";
-  const openFromApproval =
-    hasApprovalSource && approvalMerchant.length > 0;
-  const missingApprovalMerchant = hasApprovalSource && !approvalMerchant;
+  const sourceParam = firstParam(query.source);
+  const merchantParam = firstParam(query.merchant)?.trim().slice(0, 80) ?? "";
+  const hasApprovalSource = sourceParam === "approvals";
+  const fromAudit = sourceParam === "audit";
+  const trustTabRaw = fromAudit ? firstParam(query.trustTab) : undefined;
+  const auditTrustTab: ListKind | null =
+    trustTabRaw === "allow" || trustTabRaw === "block" || trustTabRaw === "review"
+      ? trustTabRaw
+      : null;
+  // categoryId variant only fires when the URL has neither merchant nor
+  // trustTab — those branches own the navigation otherwise.
+  const auditCategoryId =
+    fromAudit && !auditTrustTab && merchantParam.length === 0
+      ? firstParam(query.categoryId)?.trim().slice(0, 40) ?? ""
+      : "";
+  // Dialog opens for source=approvals with merchant, or source=audit
+  // with merchant when no trustTab is specified (trustTab branch routes
+  // to the trust list, not the dialog).
+  const openFromDeepLink =
+    (hasApprovalSource && merchantParam.length > 0) ||
+    (fromAudit && merchantParam.length > 0 && !auditTrustTab);
+  const missingApprovalMerchant = hasApprovalSource && !merchantParam;
   // Categories now live in a module-level store (lib/stores) so edits
   // survive route navigation. The page component subscribes; mutations
   // go through the store API.
   const categories = useCategories();
   const [trust, setTrust] = useState<TrustList>(initialTrustList);
+  const [trustTab, setTrustTab] = useState<ListKind>(auditTrustTab ?? "allow");
+  // Transient highlights: seed from URL once, clear after 3s. Using
+  // useEffect with the URL value as dep means a fresh navigation with
+  // the same id re-triggers the highlight (page re-mounts).
+  const [highlightId, setHighlightId] = useState("");
+  const [highlightedTrustMerchant, setHighlightedTrustMerchant] = useState("");
+  useEffect(() => {
+    if (auditCategoryId) {
+      setHighlightId(auditCategoryId);
+      const timer = setTimeout(() => setHighlightId(""), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [auditCategoryId]);
+  useEffect(() => {
+    if (auditTrustTab && merchantParam) {
+      setTrustTab(auditTrustTab);
+      setHighlightedTrustMerchant(merchantParam);
+      const timer = setTimeout(() => setHighlightedTrustMerchant(""), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [auditTrustTab, merchantParam]);
 
   const handleCreateCategory = (c: Category) => categoriesStore.add(c);
   const handleUpdateCategory = (
@@ -181,8 +235,8 @@ export default function RulesPage({
             onCreateCategory={handleCreateCategory}
             onAddAllow={handleAddAllow}
             onAddBlock={handleAddBlock}
-            initialOpen={openFromApproval}
-            initialMerchant={approvalMerchant}
+            initialOpen={openFromDeepLink}
+            initialMerchant={merchantParam}
             initialMode="allow"
           />
         }
@@ -214,6 +268,7 @@ export default function RulesPage({
               category={c}
               onUpdate={handleUpdateCategory}
               onDelete={handleDeleteCategory}
+              highlighted={c.id === highlightId}
             />
           ))}
         </div>
@@ -228,7 +283,11 @@ export default function RulesPage({
         </div>
 
         <Card className="p-0 overflow-hidden">
-          <Tabs defaultValue="allow" className="w-full">
+          <Tabs
+            value={trustTab}
+            onValueChange={(v) => setTrustTab(v as ListKind)}
+            className="w-full"
+          >
             <div className="border-b border-border bg-muted/30 px-4 pt-3">
               <TabsList className="bg-transparent h-auto p-0 gap-1">
                 <TabsTrigger value="allow" className="gap-1.5 data-[state=active]:bg-card">
@@ -261,6 +320,9 @@ export default function RulesPage({
                     tone="success"
                     onRemove={() => handleRemove("allow", item.merchant)}
                     removeLabel={removeLabel}
+                    highlighted={
+                      trustTab === "allow" && item.merchant === highlightedTrustMerchant
+                    }
                   />
                 ))}
               </ul>
@@ -275,6 +337,9 @@ export default function RulesPage({
                     tone="destructive"
                     onRemove={() => handleRemove("block", item.merchant)}
                     removeLabel={removeLabel}
+                    highlighted={
+                      trustTab === "block" && item.merchant === highlightedTrustMerchant
+                    }
                   />
                 ))}
               </ul>
@@ -289,6 +354,9 @@ export default function RulesPage({
                     tone="accent"
                     onRemove={() => handleRemove("review", item.merchant)}
                     removeLabel={removeLabel}
+                    highlighted={
+                      trustTab === "review" && item.merchant === highlightedTrustMerchant
+                    }
                   />
                 ))}
               </ul>
