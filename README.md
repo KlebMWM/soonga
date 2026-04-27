@@ -26,7 +26,11 @@ Interactive product prototype for an AI agent payment control layer．Portfolio 
 - **Command Center**（`/dashboard`）：一眼看完「我現在要不要決定什麼」。沒事就安靜，有事就亮琥珀色。
 - **Rule Engine**（`/rules`）：類別額度、單筆上限、信任名單三層管 AI 助理。超出邊界就會自動進入待審核等你確認。
 - **Contextual Approval**（`/approvals`）：把 AI 助理的推理翻成白話．「需要花這筆費用的理由」+「相關脈絡」+「觸發哪條規則」．支援「請 AI 找替代方案」的完整迴圈（按下去 10 秒後新方案會送回來）。
-- **Decision Audit**（`/audit`）：每一筆決策的鏈上回執、reasoning、你的覆核都可追溯．對應 EU AI Act Art. 14 的 human oversight 與 auditability 要求．可匯出 CSV。
+- **Decision Audit**（`/audit`）：每一筆決策的來源平台、鏈上回執、reasoning、你的覆核都可追溯．對應 EU AI Act Art. 14 的 human oversight 與 auditability 要求．可匯出 CSV。
+
+### 跨 AI 平台定位
+
+soon-ga.agent 是 **provider-agnostic governance layer**：不取代 ChatGPT、Claude、Gemini 或自訂 agent，也不做模型路由。原型用 mock 標籤呈現不同 AI 來源如何進同一個付款治理層，讓使用者用一套規則、審核、審計流程管理跨平台 agent 行為。
 
 ### 視覺語言
 
@@ -46,6 +50,7 @@ Interactive product prototype for an AI agent payment control layer．Portfolio 
 | AI 助理推理 / counter-offer | zh / en 切換 |
 | 錢包餘額 / x402 交易 | CSV 匯出 |
 | 後端持久化 / 多裝置同步 | 規則設定在單一瀏覽器工作階段跨路由保留 |
+| 真實 ChatGPT / Claude / Gemini API 串接 | 跨 AI 平台來源標籤與篩選（mock） |
 | AI 規則解析（mock heuristics，非真實 LLM） | |
 
 ### 為什麼用 mock data 而不接真 API
@@ -87,7 +92,11 @@ By Q2 2026, 480,000+ AI agents have initiated $165M in transactions through Coin
 - **Command Center** (`/dashboard`): At-a-glance answer to "do I need to decide anything right now?" Calm when nothing needs you; amber alert when something does.
 - **Rule Engine** (`/rules`): Three layers govern your AI agent—category budgets, per-transaction caps, and merchant trust lists. Anything out of bounds joins the approval queue.
 - **Contextual Approval** (`/approvals`): Translates agent reasoning into plain language—why this purchase is needed, given this task and context, and which rule it tripped. Full counter-offer loop: ask the agent for an alternative and a new proposal lands in ~10 seconds.
-- **Decision Audit** (`/audit`): Every decision's on-chain receipt, agent reasoning, and your verdict—aligned with EU AI Act Article 14 requirements for human oversight and auditability. CSV export included.
+- **Decision Audit** (`/audit`): Every decision's source platform, on-chain receipt, agent reasoning, and your verdict—aligned with EU AI Act Article 14 requirements for human oversight and auditability. CSV export included.
+
+### Cross-AI platform framing
+
+soon-ga.agent is a **provider-agnostic governance layer**: it does not replace ChatGPT, Claude, Gemini, or custom agents, and it is not a model router. The prototype uses mock source labels to show how different AI origins can land in one payment-governance layer, where users manage cross-platform agent behavior through the same rules, approvals, and audit trail.
 
 ### Visual language
 
@@ -107,6 +116,7 @@ A warm-light surface with structural cards—a payment control hub feel rather t
 | Agent reasoning / counter-offers | zh / en locale switching |
 | Wallet balance / x402 transactions | CSV export |
 | Backend persistence / multi-device sync | Rule edits persist across routes in the same browser session |
+| Real ChatGPT / Claude / Gemini API integrations | Cross-AI source labels and filters (mock) |
 | AI rule parsing (mock heuristics, not a real LLM) | |
 
 ### Why mock data instead of real APIs

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AgentIcon } from "@/components/AgentIcon";
 import { DEMO_EVENTS } from "@/components/DemoControls";
-import { liveFeed, stats, type FeedItem } from "@/lib/mockData";
+import { getAgentPlatform, liveFeed, stats, type FeedItem } from "@/lib/mockData";
 import { simulateAgentAction } from "@/lib/simulateAgent";
 import { pendingStore } from "@/lib/stores";
 import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
@@ -272,10 +272,12 @@ export function AgentFeed({
                     </span>
                   </div>
                   <div
-                    className="text-[11px] font-mono tabular-nums"
+                    className="flex flex-wrap items-center gap-1.5 text-[11px] font-mono tabular-nums"
                     style={{ color: "var(--text-dim)" }}
                   >
-                    {item.time} · {relative}
+                    <span>{item.time} · {relative}</span>
+                    <span aria-hidden>·</span>
+                    <span>{getAgentPlatform(item.agent)}</span>
                   </div>
                 </div>
 

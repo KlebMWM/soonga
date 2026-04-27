@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { AgentIcon } from "@/components/AgentIcon";
-import { agents, type AuditEntry } from "@/lib/mockData";
+import { agents, getAgentPlatform, type AuditEntry } from "@/lib/mockData";
 import { useAuditLog } from "@/lib/stores";
 import { useDisplayName } from "@/lib/useDisplayName";
 import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
@@ -98,27 +98,50 @@ export function AuditTable() {
   const { name: displayName } = useDisplayName();
   const [filter, setFilter] = useState<Filter>("all");
   const [agentFilter, setAgentFilter] = useState<string>("all");
+  const [platformFilter, setPlatformFilter] = useState<string>("all");
   const [expanded, setExpanded] = useState<string | null>(null);
+  const platforms = useMemo(
+    () => Array.from(new Set(agents.map((agent) => agent.platform))),
+    [],
+  );
 
   const filtered = useMemo(() => {
     return auditLog.filter((entry) => {
       if (filter !== "all" && entry.decision !== filter) return false;
       if (agentFilter !== "all" && entry.agent !== agentFilter) return false;
+      if (
+        platformFilter !== "all" &&
+        getAgentPlatform(entry.agent) !== platformFilter
+      ) {
+        return false;
+      }
       return true;
     });
-  }, [auditLog, filter, agentFilter]);
-  const hasActiveFilters = filter !== "all" || agentFilter !== "all";
+  }, [auditLog, filter, agentFilter, platformFilter]);
+  const hasActiveFilters =
+    filter !== "all" || agentFilter !== "all" || platformFilter !== "all";
 
   const resetFilters = () => {
     setFilter("all");
     setAgentFilter("all");
+    setPlatformFilter("all");
   };
 
   const handleCopy = () => {
-    const header = "timestamp,agent,merchant,amount,decision,approved_by,gas_fee,tx_hash\n";
+    const header = "timestamp,agent,platform,merchant,amount,decision,approved_by,gas_fee,tx_hash\n";
     const rows = filtered
       .map((e) =>
-        [e.timestamp, e.agent, e.merchant[locale], e.amount, e.decision, e.approvedBy, e.gasFee, e.txHash].join(","),
+        [
+          e.timestamp,
+          e.agent,
+          getAgentPlatform(e.agent),
+          e.merchant[locale],
+          e.amount,
+          e.decision,
+          e.approvedBy,
+          e.gasFee,
+          e.txHash,
+        ].join(","),
       )
       .join("\n");
     navigator.clipboard.writeText(header + rows).catch(() => {});
@@ -149,6 +172,18 @@ export function AuditTable() {
             {agents.map((a) => (
               <option key={a.id} value={a.name}>
                 {t(`agent.${a.name}.name`)}
+              </option>
+            ))}
+          </select>
+          <select
+            value={platformFilter}
+            onChange={(e) => setPlatformFilter(e.target.value)}
+            className="h-9 rounded-md border border-border bg-card px-3 text-sm"
+          >
+            <option value="all">{t("audit.filter.allPlatforms")}</option>
+            {platforms.map((platform) => (
+              <option key={platform} value={platform}>
+                {platform}
               </option>
             ))}
           </select>
@@ -189,6 +224,7 @@ export function AuditTable() {
           const Icon = meta.icon;
           const isOpen = expanded === entry.id;
           const merchant = entry.merchant[locale];
+          const platform = getAgentPlatform(entry.agent);
           const relativeTime = formatRelative(entry.timestamp, locale, t);
           const verb = decisionVerb(entry, t);
           const reason = trimTerminalPunctuation(entry.reasoning[locale]);
@@ -243,6 +279,9 @@ export function AuditTable() {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-sans font-medium text-sm">{t(`agent.${entry.agent}.name`)}</span>
+                    <span className="rounded-md border border-border bg-muted/30 px-1.5 py-0.5 text-[11px] font-mono text-muted-foreground">
+                      {platform}
+                    </span>
                     <span className="text-muted-foreground text-sm">→</span>
                     <span className="font-sans text-sm">{merchant}</span>
                     <span className="text-sm font-mono tabular-nums text-muted-foreground">
@@ -304,6 +343,7 @@ export function AuditTable() {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-3 border-t border-border/70">
                       <Field label={t("audit.field.tx")} value={entry.txHash} mono />
                       <Field label={t("audit.field.gas")} value={`${entry.gasFee} USDC`} />
+                      <Field label={t("audit.field.platform")} value={platform} />
                       <Field
                         label={t("audit.field.approvedBy")}
                         value={entry.approvedBy === "user" ? t("audit.approvedBy.user") : t("audit.approvedBy.system")}

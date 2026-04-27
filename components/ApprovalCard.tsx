@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
-import type { PendingApproval } from "@/lib/mockData";
+import { getAgentPlatform, type PendingApproval } from "@/lib/mockData";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -198,6 +198,7 @@ export function ApprovalCard({
   const t = useT();
   const { locale } = useLocale();
   const agentName = t(`agent.${approval.agent}.name`);
+  const platform = getAgentPlatform(approval.agent);
   const merchant = approval.merchant[locale];
   const summary = approval.reasoning
     ? {
@@ -256,6 +257,9 @@ export function ApprovalCard({
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-baseline gap-2">
               <span className="text-base font-semibold">{agentName}</span>
+              <span className="rounded-md border border-border bg-muted/30 px-1.5 py-0.5 text-[11px] font-mono text-muted-foreground">
+                {platform}
+              </span>
               <span className="text-sm text-muted-foreground">▸</span>
               <span className="text-sm font-medium">{merchant}</span>
               {approval.isCounterOffer && (

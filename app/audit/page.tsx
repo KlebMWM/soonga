@@ -4,6 +4,7 @@ import { Download } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { AuditTable } from "@/components/AuditTable";
 import { Button } from "@/components/ui/button";
+import { getAgentPlatform } from "@/lib/mockData";
 import { useAuditLog } from "@/lib/stores";
 import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
 import { toast } from "sonner";
@@ -25,6 +26,7 @@ export default function AuditPage() {
     const headers = [
       "timestamp",
       "agent",
+      "platform",
       "merchant",
       "amount",
       "decision",
@@ -38,6 +40,7 @@ export default function AuditPage() {
       [
         e.timestamp,
         e.agent,
+        getAgentPlatform(e.agent),
         e.merchant[locale],
         e.amount,
         e.decision,

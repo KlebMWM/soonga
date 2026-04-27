@@ -11,6 +11,9 @@ export type Agent = {
    *  this field is the static fallback. */
   displayName: string;
   avatar: string;
+  /** Mock source platform. This is product-facing provider awareness only:
+   *  the prototype does not connect to these APIs. */
+  platform: string;
   role: Bilingual;
   status: "active" | "paused";
   monthlySpent: number;
@@ -132,6 +135,7 @@ export const agents: Agent[] = [
     name: "research",
     displayName: "研究助理",
     avatar: "🧠",
+    platform: "Claude",
     role: b("學術研究助理", "Academic research assistant"),
     status: "active",
     monthlySpent: 23.4,
@@ -142,6 +146,7 @@ export const agents: Agent[] = [
     name: "travel",
     displayName: "旅行助理",
     avatar: "✈️",
+    platform: "Gemini",
     role: b("差旅規劃", "Travel planner"),
     status: "active",
     monthlySpent: 187.2,
@@ -152,6 +157,7 @@ export const agents: Agent[] = [
     name: "shopping",
     displayName: "採購助理",
     avatar: "🛒",
+    platform: "ChatGPT",
     role: b("日用採購", "Daily shopping"),
     status: "paused",
     monthlySpent: 8.9,
@@ -162,12 +168,17 @@ export const agents: Agent[] = [
     name: "newsletter",
     displayName: "內容彙整",
     avatar: "📰",
+    platform: "Custom agent",
     role: b("電子報訂閱管理", "Newsletter subscriptions"),
     status: "active",
     monthlySpent: 42.0,
     monthlyBudget: 80,
   },
 ];
+
+export function getAgentPlatform(agentName: string): string {
+  return agents.find((agent) => agent.name === agentName)?.platform ?? "Custom agent";
+}
 
 export const categories: Category[] = [
   {
