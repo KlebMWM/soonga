@@ -201,6 +201,10 @@ export default function ApprovalsPage() {
                               {approval.risks[0].label[locale]}
                             </div>
                           )}
+                          <div className="mt-1 text-[11px] text-muted-foreground">
+                            {t("approval.reason.label")}:{" "}
+                            {approval.approvalReason[locale]}
+                          </div>
                         </div>
                       </div>
                     </button>
@@ -262,6 +266,10 @@ export default function ApprovalsPage() {
                       </div>
                       <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
                         {decisionLine(approval, locale, agentName)}
+                      </p>
+                      <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
+                        {t("approval.reason.label")}:{" "}
+                        {approval.approvalReason[locale]}
                       </p>
                     </div>
                   );

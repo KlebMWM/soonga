@@ -45,14 +45,17 @@ export function simulateAgentAction(): FeedItem {
 
   let status: FeedItem["status"] = "auto-approved";
   let reason = b("信任名單網站．低於單筆規則", "Allowlisted merchant · under per-tx cap");
+  let approvalReason: FeedItem["approvalReason"];
 
   if (!merchant.whitelist) {
     if (merchant.name === "Booking.com" || amount > 100) {
       status = "pending";
       reason = b("超過單筆 100 USDC 限額", "Exceeds $100 per-tx cap");
+      approvalReason = b("超過單筆付款上限", "Amount exceeds single-payment limit");
     } else if (merchant.name === "Amazon Gift Card") {
       status = "pending";
       reason = b("可儲值類型需人工審核", "Stored-value purchase — needs review");
+      approvalReason = b("受限類別需要人工核准", "Restricted category requires manual approval");
     } else {
       status = "auto-approved";
       reason = b("低於實體購買單筆限額", "Under physical-purchase per-tx cap");
@@ -68,5 +71,6 @@ export function simulateAgentAction(): FeedItem {
     amount,
     status,
     reason,
+    approvalReason,
   };
 }

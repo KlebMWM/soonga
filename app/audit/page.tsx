@@ -31,7 +31,7 @@ export default function AuditPage() {
       "amount",
       "decision",
       "approved_by",
-      "reasoning",
+      "rule_based_explanation",
       "user_action",
       "gas_fee",
       "tx_hash",

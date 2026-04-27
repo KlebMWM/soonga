@@ -303,6 +303,15 @@ export function ApprovalCard({
           </div>
         )}
 
+        <div className="rounded-lg border border-border/70 bg-muted/25 p-3">
+          <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+            {t("approval.reason.label")}
+          </div>
+          <p className="mt-1 text-[13px] leading-relaxed text-foreground">
+            {approval.approvalReason[locale]}
+          </p>
+        </div>
+
         <Separator />
 
         <div className="grid grid-cols-1 gap-3 md:grid-cols-3">

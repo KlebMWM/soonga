@@ -352,7 +352,7 @@ export const dict: Dict = {
   "approvals.title": { zh: "待審核", en: "Waiting on you" },
   "approvals.desc": {
     zh: "這裡會列出超出規則的 AI 支付請求。每張卡片都會說明需要花這筆費用、風險在哪，以及每個決定接下來會發生什麼。",
-    en: "Agent requests that fell outside your rules. Each card explains the reasoning, risk, and what each decision will do next.",
+    en: "Agent requests that fell outside your rules. Each card explains the approval reason, risk, and what each decision will do next.",
   },
   "approvals.badge": { zh: "筆待審核", en: "need your decision" },
   "approvals.next": { zh: "下一筆待審核", en: "Next approval" },
@@ -420,6 +420,7 @@ export const dict: Dict = {
   "approval.context.similarUnit": { zh: "筆", en: "" },
   "approval.triggered": { zh: "觸發規則：", en: "Triggered rule: " },
   "approval.risks.more": { zh: "項", en: "more" },
+  "approval.reason.label": { zh: "需要審核原因", en: "Approval reason" },
 
   "approval.trust.allowlisted": { zh: "信任名單網站", en: "Allowlisted merchant" },
   "approval.trust.blocklisted": { zh: "封鎖名單網站", en: "Blocklisted merchant" },
@@ -593,8 +594,8 @@ export const dict: Dict = {
   "audit.eyebrow": { zh: "Audit Trail", en: "Audit Trail" },
   "audit.title": { zh: "決策日誌", en: "Decision log" },
   "audit.desc": {
-    zh: "每一筆 AI 助理支付、來源平台、你的決定、AI 助理的推理都在這裡。可以依 AI 助理、平台或決策類型篩選，展開看完整脈絡，一鍵匯出 CSV 給會計或合規用。",
-    en: "Every agent payment, source platform, your decision, and the reasoning behind it. Filter by agent, platform, or decision type, expand for full context, and export CSV for finance or compliance.",
+    zh: "每一筆 AI 助理支付、來源平台、你的決定、規則說明都在這裡。可以依 AI 助理、平台或決策類型篩選，展開看完整脈絡，一鍵匯出 CSV 作為個人財務紀錄。",
+    en: "Every agent payment, source platform, your decision, and the rule-based explanation behind it. Filter by agent, platform, or decision type, expand for full context, and export CSV for personal finance records.",
   },
   "audit.export": { zh: "匯出完整日誌", en: "Export full log" },
   "audit.exported.title": { zh: "已匯出完整日誌", en: "Full audit log exported" },
@@ -641,7 +642,7 @@ export const dict: Dict = {
     zh: "這筆在 {time} {verb}，因為 {reason}。",
     en: "This {verb} {time}, because {reason}.",
   },
-  "audit.expand.reasoning": { zh: "AI 判斷理由", en: "Agent reasoning" },
+  "audit.expand.reasoning": { zh: "規則說明", en: "Rule-based explanation" },
   "audit.expand.userAction": { zh: "你的決定", en: "Your decision" },
   "audit.field.tx": { zh: "鏈上回執", en: "On-chain receipt" },
   "audit.field.gas": { zh: "Gas 費用", en: "Gas fee" },
@@ -650,7 +651,7 @@ export const dict: Dict = {
   "audit.field.time": { zh: "時間戳", en: "Timestamp" },
   "audit.approvedBy.user": { zh: "Megan（你）", en: "Megan (you)" },
   "audit.approvedBy.system": { zh: "系統花費規則", en: "System rule engine" },
-  "audit.eu": { zh: "EU AI Act · Art. 14 合規可追溯", en: "EU AI Act · Art. 14 traceable" },
+  "audit.eu": { zh: "User-facing product history", en: "User-facing product history" },
   "audit.viewRule": { zh: "→ 看規則", en: "→ View rule" },
 
   // ==================== Welcome modal ====================
@@ -768,13 +769,13 @@ export const dict: Dict = {
   },
   "welcome.module.approvals.title": { zh: "待審核（Approvals）", en: "Approvals" },
   "welcome.module.approvals.desc": {
-    zh: "AI 判斷理由翻成人話．30 秒內決定核准、拒絕，或請 AI 找替代方案。",
-    en: "Agent reasoning in plain language. Decide in 30 seconds: approve, reject, or ask for a counter-offer.",
+    zh: "規則命中與事件脈絡翻成人話．30 秒內決定核准、拒絕，或請 AI 找替代方案。",
+    en: "Rule matches and event context in plain language. Decide in 30 seconds: approve, reject, or ask for a counter-offer.",
   },
   "welcome.module.audit.title": { zh: "決策日誌（Audit Trail）", en: "Audit Trail" },
   "welcome.module.audit.desc": {
-    zh: "每一筆 AI 助理決定都可追溯．一鍵匯出 CSV 給會計或合規。",
-    en: "Every agent decision is traceable. Export CSV for finance or compliance in one click.",
+    zh: "每一筆 AI 助理決定都可追溯．一鍵匯出 CSV 作為個人財務紀錄。",
+    en: "Every agent decision is traceable. Export CSV for personal finance records in one click.",
   },
 
   // Guide — Phase 2 roadmap

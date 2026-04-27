@@ -44,6 +44,7 @@ export type FeedItem = {
   amount: number;
   status: "auto-approved" | "pending" | "rejected" | "approved";
   reason: Bilingual;
+  approvalReason?: Bilingual;
   /** Human-readable relative time ("剛剛", "2 分鐘前"). Optional — simulated
       items skip it and fall back to the default "just now" label in the UI. */
   relative?: Bilingual;
@@ -79,6 +80,7 @@ export type PendingApproval = {
     similarPastTransactions: number;
   };
   triggeredRule: Bilingual;
+  approvalReason: Bilingual;
   severity: "info" | "warning" | "danger";
   /** Decision summary paragraph — three-line structure per MASTER §14.1.
    *  what = active-voice first line; why = user-language second line;
@@ -299,6 +301,7 @@ export const liveFeed: FeedItem[] = [
     amount: 132.73,
     status: "pending",
     reason: b("超過單筆 100 USDC 限額", "Exceeds $100 per-tx cap"),
+    approvalReason: b("超過單筆付款上限", "Amount exceeds single-payment limit"),
     relative: b("2 分鐘前", "2 min ago"),
   },
   {
@@ -331,6 +334,7 @@ export const liveFeed: FeedItem[] = [
     amount: 30.0,
     status: "pending",
     reason: b("可儲值類型要審核", "Stored-value purchase — needs review"),
+    approvalReason: b("受限類別需要人工核准", "Restricted category requires manual approval"),
   },
   {
     id: "f8",
@@ -551,6 +555,7 @@ export const pendingApprovals: PendingApproval[] = [
       "超過單筆 100 USDC 限額（實體購買）",
       "Exceeds $100 per-tx cap (physical purchases)",
     ),
+    approvalReason: b("超過單筆付款上限", "Amount exceeds single-payment limit"),
     severity: "warning",
     reasoning: {
       what: b(
@@ -623,6 +628,7 @@ export const pendingApprovals: PendingApproval[] = [
       "訂閱類網站首次扣款．重複扣款警示",
       "Subscription merchant · first charge · recurring-payment alert",
     ),
+    approvalReason: b("偵測到新的訂閱扣款", "New subscription detected"),
     severity: "info",
     reasoning: {
       what: b(
@@ -698,6 +704,7 @@ export const pendingApprovals: PendingApproval[] = [
       "可儲值類型需人工審核（防止資金轉移濫用）",
       "Stored-value purchase requires manual review (prevents fund-transfer abuse)",
     ),
+    approvalReason: b("受限類別需要人工核准", "Restricted category requires manual approval"),
     severity: "danger",
     reasoning: {
       what: b(

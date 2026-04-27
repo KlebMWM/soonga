@@ -88,6 +88,12 @@ export function AgentFeed({
           },
           triggeredRule: next.reason,
           severity: "warning",
+          approvalReason:
+            next.approvalReason ??
+            {
+              zh: "超出規則邊界，需要人工核准",
+              en: "Outside the rule boundary; manual approval required",
+            },
         });
 
         const agentName = t(`agent.${next.agent}.name`);
@@ -279,6 +285,15 @@ export function AgentFeed({
                     <span aria-hidden>·</span>
                     <span>{getAgentPlatform(item.agent)}</span>
                   </div>
+                  {isPending && item.approvalReason && (
+                    <div
+                      className="text-[11px] leading-relaxed"
+                      style={{ color: "var(--text-mid)" }}
+                    >
+                      {t("approval.reason.label")}:{" "}
+                      {item.approvalReason[locale]}
+                    </div>
+                  )}
                 </div>
 
                 {/* Rule pill */}
