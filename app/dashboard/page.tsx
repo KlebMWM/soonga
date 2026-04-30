@@ -34,6 +34,55 @@ function tagKey(hour: number): string {
   return "dashboard.greeting.tag.lateNight";
 }
 
+function yesterdayISO(now: Date): string {
+  const y = new Date(now);
+  y.setDate(y.getDate() - 1);
+  const m = String(y.getMonth() + 1).padStart(2, "0");
+  const d = String(y.getDate()).padStart(2, "0");
+  return `${y.getFullYear()}-${m}-${d}`;
+}
+
+// Deterministic PRNG seeded by a string. Same date → same numbers, so
+// reloading shows stable values for the day; tomorrow shifts everything.
+function seededRand(seed: string): () => number {
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i++) {
+    h = Math.imul(h ^ seed.charCodeAt(i), 16777619);
+  }
+  let a = h >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function daysLeftInMonth(dateISO: string): number {
+  const [y, m, d] = dateISO.split("-").map(Number);
+  // new Date(year, month, 0) → last day of `month` (1-indexed input).
+  const lastDay = new Date(y, m, 0).getDate();
+  return Math.max(0, lastDay - d);
+}
+
+function briefingDataFor(dateISO: string) {
+  const rand = seededRand(dateISO);
+  const between = (lo: number, hi: number) =>
+    lo + Math.floor(rand() * (hi - lo + 1));
+  const autoCount = between(28, 52);
+  const autoAmount = (6 + rand() * 14).toFixed(2);
+  const youHandled = between(3, 8);
+  const approved = Math.max(1, Math.round(youHandled * (0.55 + rand() * 0.25)));
+  const rest = youHandled - approved;
+  const rejected = rest === 0 ? 0 : between(0, rest);
+  const counter = rest - rejected;
+  const edgeCount = between(4, 10);
+  const budgetDays = daysLeftInMonth(dateISO);
+  return { autoCount, autoAmount, youHandled, approved, rejected, counter, edgeCount, budgetDays };
+}
+
+const BRIEFING_FALLBACK_DATE = "2026-04-24";
+
 export default function DashboardPage() {
   const t = useT();
   const { locale } = useLocale();
@@ -63,6 +112,12 @@ export default function DashboardPage() {
   // SSR + first hydration render with hour=23 so server and client agree; the
   // effect then refreshes to the real hour once mounted.
   const hour = now?.getHours() ?? 23;
+
+  // Yesterday's briefing date + numbers. Both null-fallback to a fixed seed
+  // so SSR matches first hydration; the mount effect then ticks `now` and
+  // the briefing rolls to the real yesterday with deterministic numbers.
+  const briefingDate = now ? yesterdayISO(now) : BRIEFING_FALLBACK_DATE;
+  const briefing = briefingDataFor(briefingDate);
 
   // Outer max-width + padding is handled by the layout's main wrapper now;
   // this page just contains its own sections.
@@ -307,7 +362,9 @@ export default function DashboardPage() {
       </div>
 
       {/* Yesterday's briefing — fulfills the empty-state hero's
-          "明早 08:00 會有一份報表" promise. Mock data, hardcoded date. */}
+          "明早 08:00 會有一份報表" promise. Date tracks `now`; the four stat
+          tiles are deterministic from the date string (same date → same
+          numbers, refresh-stable; rolls over at midnight). */}
       <details className="group mt-6 rounded-lg border border-border bg-card overflow-hidden">
         <summary className="list-none cursor-pointer px-5 py-4 flex items-center justify-between gap-4 select-none hover:bg-muted/30 transition-colors">
           <div>
@@ -319,7 +376,7 @@ export default function DashboardPage() {
               {t("dashboard.briefing.title")}
             </div>
             <div className="text-[12px] text-muted-foreground mt-0.5">
-              {t("dashboard.briefing.sub", { date: "2026-04-24" })}
+              {t("dashboard.briefing.sub", { date: briefingDate })}
             </div>
           </div>
           <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 transition-transform group-open:rotate-180" />
@@ -336,7 +393,10 @@ export default function DashboardPage() {
                 {t("dashboard.briefing.stat.auto.label")}
               </div>
               <div className="mt-1 text-[15px] font-semibold tabular-nums" style={{ color: "var(--headline)" }}>
-                {t("dashboard.briefing.stat.auto.value", { count: 38, amount: "12.40" })}
+                {t("dashboard.briefing.stat.auto.value", {
+                  count: briefing.autoCount,
+                  amount: briefing.autoAmount,
+                })}
               </div>
             </div>
             <div
@@ -347,13 +407,13 @@ export default function DashboardPage() {
                 {t("dashboard.briefing.stat.you.label")}
               </div>
               <div className="mt-1 text-[15px] font-semibold tabular-nums" style={{ color: "var(--headline)" }}>
-                {t("dashboard.briefing.stat.you.value", { n: 5 })}
+                {t("dashboard.briefing.stat.you.value", { n: briefing.youHandled })}
               </div>
               <div className="text-[11px] mt-0.5" style={{ color: "var(--text-mid)" }}>
                 {t("dashboard.briefing.stat.you.breakdown", {
-                  approved: 3,
-                  rejected: 1,
-                  counter: 1,
+                  approved: briefing.approved,
+                  rejected: briefing.rejected,
+                  counter: briefing.counter,
                 })}
               </div>
             </div>
@@ -365,7 +425,7 @@ export default function DashboardPage() {
                 {t("dashboard.briefing.stat.edge.label")}
               </div>
               <div className="mt-1 text-[15px] font-semibold tabular-nums" style={{ color: "var(--headline)" }}>
-                {t("dashboard.briefing.stat.edge.value", { n: 7 })}
+                {t("dashboard.briefing.stat.edge.value", { n: briefing.edgeCount })}
               </div>
               <div className="text-[11px] mt-0.5" style={{ color: "var(--text-mid)" }}>
                 {t("dashboard.briefing.stat.edge.sub")}
@@ -382,7 +442,7 @@ export default function DashboardPage() {
                 {burnPercent}%
               </div>
               <div className="text-[11px] mt-0.5" style={{ color: "var(--text-mid)" }}>
-                {t("dashboard.briefing.stat.budget.sub", { days: 9 })}
+                {t("dashboard.briefing.stat.budget.sub", { days: briefing.budgetDays })}
               </div>
             </div>
           </div>
