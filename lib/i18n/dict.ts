@@ -60,7 +60,6 @@ export const dict: Dict = {
   "wallet.connect": { zh: "連結錢包", en: "Link wallet" },
   "wallet.connectSub": { zh: "連上鏈上錢包，agent 可以付款給合作方錢包、訂閱服務、外部地址提領", en: "Link your on-chain wallet so agents can pay vendors, subscriptions, and external addresses" },
   "wallet.row.exchange": { zh: "Exchange", en: "Exchange" },
-  "wallet.row.exchange.value": { zh: "megan@trader", en: "megan@trader" },
   "wallet.row.onchain": { zh: "On-chain wallet", en: "On-chain wallet" },
   "wallet.row.onchain.notLinked": { zh: "未連結", en: "Not linked" },
   "wallet.row.linkCta": { zh: "連結錢包 ↗", en: "LINK WALLET ↗" },

@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useT } from "@/lib/i18n/LocaleProvider";
+import { useDisplayName } from "@/lib/useDisplayName";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -69,6 +70,8 @@ const providerById = (id: string | null): ProviderDef | null =>
 
 export function WalletPill({ variant = "sidebar" }: { variant?: "sidebar" | "mobile" }) {
   const t = useT();
+  const { name: displayName } = useDisplayName();
+  const exchangeAccountId = `${displayName.toLowerCase()}@trader`;
   const [connected, setConnected] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -218,7 +221,7 @@ export function WalletPill({ variant = "sidebar" }: { variant?: "sidebar" | "mob
             </span>
             <span className="font-mono font-semibold text-[10px] flex items-center gap-1">
               <span style={{ color: "var(--sage)" }}>●</span>
-              {t("wallet.row.exchange.value")}
+              {exchangeAccountId}
             </span>
           </div>
           <div

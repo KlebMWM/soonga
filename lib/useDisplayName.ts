@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 const STORAGE_KEY = "soon-display-name";
+const STORAGE_EVENT = "soon-display-name-change";
 const DEFAULT_NAME = "Megan";
 
 /**
@@ -40,6 +41,15 @@ export function useDisplayName(): {
     } catch {
       /* localStorage unavailable — stick with default */
     }
+
+    // Cross-instance live update: another useDisplayName instance
+    // dispatched a name change. Sync our local state to match.
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<string>).detail;
+      if (typeof detail === "string") setNameState(detail);
+    };
+    window.addEventListener(STORAGE_EVENT, handler);
+    return () => window.removeEventListener(STORAGE_EVENT, handler);
   }, []);
 
   const setName = (next: string) => {
@@ -51,6 +61,13 @@ export function useDisplayName(): {
         /* ignore */
       }
       setNameState(DEFAULT_NAME);
+      try {
+        window.dispatchEvent(
+          new CustomEvent<string>(STORAGE_EVENT, { detail: DEFAULT_NAME }),
+        );
+      } catch {
+        /* ignore — broadcast is best-effort */
+      }
       return;
     }
     try {
@@ -59,6 +76,13 @@ export function useDisplayName(): {
       /* ignore — still update in-memory state for this session */
     }
     setNameState(trimmed);
+    try {
+      window.dispatchEvent(
+        new CustomEvent<string>(STORAGE_EVENT, { detail: trimmed }),
+      );
+    } catch {
+      /* ignore — broadcast is best-effort */
+    }
   };
 
   return { name, setName, mounted };
