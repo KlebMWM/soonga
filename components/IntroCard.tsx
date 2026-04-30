@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { ArrowDown, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
 
 const STORAGE_KEY = "intro_card_dismissed_v1";
@@ -40,6 +41,18 @@ export function IntroCard() {
       .getElementById("pending-hero")
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
+  const useCases = [
+    {
+      title: t("web3.wallet.title"),
+      badge: t("web3.wallet.badge"),
+      body: t("web3.wallet.body"),
+    },
+    {
+      title: t("web3.exchange.title"),
+      badge: t("web3.exchange.badge"),
+      body: t("web3.exchange.body"),
+    },
+  ];
 
   return (
     <section
@@ -60,7 +73,7 @@ export function IntroCard() {
         <X className="h-3 w-3" />
       </button>
 
-      <div className="max-w-3xl pr-8">
+      <div className="pr-8">
         <h2
           className="text-[18px] leading-snug"
           style={{
@@ -77,6 +90,29 @@ export function IntroCard() {
         <p className="mt-1.5 text-[14px] leading-relaxed text-muted-foreground">
           {t("intro.body")}
         </p>
+        <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
+          {useCases.map((useCase) => (
+            <article
+              key={useCase.title}
+              className="rounded-md border border-border/80 bg-card/65 p-3"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <h3 className="text-[13px] font-semibold text-foreground">
+                  {useCase.title}
+                </h3>
+                <Badge
+                  variant="outline"
+                  className="shrink-0 text-[10px] font-medium"
+                >
+                  {useCase.badge}
+                </Badge>
+              </div>
+              <p className="mt-2 text-[12px] leading-relaxed text-muted-foreground">
+                {useCase.body}
+              </p>
+            </article>
+          ))}
+        </div>
         <Button
           type="button"
           variant="hud"

@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { AgentIcon } from "@/components/AgentIcon";
-import { agents, getAgentPlatform, type AuditEntry } from "@/lib/mockData";
+import { agents, getAgentPlatform, getAgentPlatformLabel, type AuditEntry } from "@/lib/mockData";
 import { useAuditLog } from "@/lib/stores";
 import { useDisplayName } from "@/lib/useDisplayName";
 import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
@@ -100,10 +100,18 @@ export function AuditTable() {
   const [agentFilter, setAgentFilter] = useState<string>("all");
   const [platformFilter, setPlatformFilter] = useState<string>("all");
   const [expanded, setExpanded] = useState<string | null>(null);
-  const platforms = useMemo(
-    () => Array.from(new Set(agents.map((agent) => agent.platform))),
-    [],
-  );
+  const platforms = useMemo(() => {
+    const seen = new Map<string, string>();
+    agents.forEach((agent) => {
+      if (!seen.has(agent.platform)) {
+        seen.set(agent.platform, agent.name);
+      }
+    });
+    return Array.from(seen.entries()).map(([raw, agentName]) => ({
+      raw,
+      label: getAgentPlatformLabel(agentName, locale),
+    }));
+  }, [locale]);
 
   const filtered = useMemo(() => {
     return auditLog.filter((entry) => {
@@ -181,9 +189,9 @@ export function AuditTable() {
             className="h-9 rounded-md border border-border bg-card px-3 text-sm"
           >
             <option value="all">{t("audit.filter.allPlatforms")}</option>
-            {platforms.map((platform) => (
-              <option key={platform} value={platform}>
-                {platform}
+            {platforms.map((p) => (
+              <option key={p.raw} value={p.raw}>
+                {p.label}
               </option>
             ))}
           </select>
@@ -224,7 +232,7 @@ export function AuditTable() {
           const Icon = meta.icon;
           const isOpen = expanded === entry.id;
           const merchant = entry.merchant[locale];
-          const platform = getAgentPlatform(entry.agent);
+          const platform = getAgentPlatformLabel(entry.agent, locale);
           const relativeTime = formatRelative(entry.timestamp, locale, t);
           const verb = decisionVerb(entry, t);
           const reason = trimTerminalPunctuation(entry.reasoning[locale]);

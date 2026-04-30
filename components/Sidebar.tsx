@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  Bot,
   ChevronRight,
   FileText,
   HelpCircle,
@@ -122,6 +123,24 @@ export function Sidebar() {
         >
           {t("nav.section.navigate")}
         </span>
+      </div>
+
+      <div style={{ padding: "0 10px 14px" }}>
+        <div className="rounded-md border border-[var(--border-blue)] bg-[var(--bg-accent)] px-3 py-2">
+          <div
+            className="flex items-center gap-2 text-[12px] font-semibold"
+            style={{ color: "var(--ikea-blue-darker)" }}
+          >
+            <Bot className="h-3.5 w-3.5 shrink-0" strokeWidth={1.8} />
+            <span>{t("nav.exchange.contextTitle")}</span>
+          </div>
+          <div
+            className="mt-1 text-[11px] leading-snug"
+            style={{ color: "var(--text-mid)" }}
+          >
+            {t("nav.exchange.contextBody")}
+          </div>
+        </div>
       </div>
 
       {/* Nav items */}

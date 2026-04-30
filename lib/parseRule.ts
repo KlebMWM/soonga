@@ -56,52 +56,46 @@ export type ParsedRule =
 // merchant pool so any merchant the Dashboard already shows in activity will
 // parse correctly here.
 const KNOWN_MERCHANTS = [
-  "NYT",
-  "JSTOR",
-  "OpenAI API",
+  "Notion",
+  "TradingView Pro",
+  "TradingView",
   "Anthropic API",
-  "Perplexity Pro",
-  "Substack",
-  "Stratechery",
-  "Uber Japan",
-  "Klook Tokyo",
-  "Booking.com",
-  "Amazon Gift Card",
-  "Uniqlo JP",
+  "Anthropic",
+  "OpenAI API",
+  "OpenAI",
+  "Stripe",
+  "Coinbase Commerce",
+  "GitHub Copilot",
+  "Acme 供應商錢包",
+  "Acme",
+  "Base 營運錢包",
+  "財務冷錢包",
+  "fast-cash-loan.io",
+  "meme-nft-drop.xyz",
 ];
 
 // Topic → category name, checked in order (first match wins). Keeps category
 // names short so they fit in the rule card's title row.
 const TOPIC_MAP: Array<{ regex: RegExp; zh: string; en: string }> = [
   {
-    regex: /學術|論文|期刊|paper|academic|journal|research/i,
-    zh: "學術資料",
-    en: "Academic papers",
+    regex: /訂閱|月費|年費|subscription|saas|monthly|annual/i,
+    zh: "訂閱與服務費",
+    en: "Subscriptions & service fees",
   },
   {
-    regex: /訂閱|subscription|monthly service/i,
-    zh: "訂閱服務",
-    en: "Subscriptions",
+    regex: /API|api 呼叫|服務費|service fee/i,
+    zh: "訂閱與服務費",
+    en: "Subscriptions & service fees",
   },
   {
-    regex: /旅行|機票|住宿|差旅|travel|flight|hotel|trip/i,
-    zh: "差旅",
-    en: "Travel",
+    regex: /合作方|供應商|外包|自由工作者|vendor|contractor|freelancer/i,
+    zh: "合作方付款",
+    en: "Vendor payments",
   },
   {
-    regex: /購物|商品|衣服|服飾|shopping|clothing|physical|apparel/i,
-    zh: "實體購買",
-    en: "Physical purchases",
-  },
-  {
-    regex: /API|api key|api 呼叫/i,
-    zh: "API 呼叫",
-    en: "API calls",
-  },
-  {
-    regex: /禮物卡|gift card|儲值|prepaid/i,
-    zh: "可儲值商品",
-    en: "Stored-value goods",
+    regex: /提領|外部地址|冷錢包|withdraw|external address|cold wallet/i,
+    zh: "提領到新地址",
+    en: "Withdrawals to new addresses",
   },
 ];
 
@@ -162,7 +156,7 @@ export function parseRuleRequest(
       kind: "allow",
       allow: {
         merchant: matchedMerchant,
-        category: availableCategoryIds[0] ?? "api",
+        category: availableCategoryIds[0] ?? "subscription",
         addedAt: today,
       },
       confidence: allowIntent ? "high" : "low",
@@ -221,8 +215,8 @@ export function parseRuleRequest(
   return {
     kind: "unknown",
     rationale: {
-      zh: "無法推斷出具體規則。試試描述金額（例：「每月 50 USDC」）或指定網站名稱（例：「加 Booking.com 到白名單」）。",
-      en: 'Couldn\'t infer a specific rule. Try describing an amount ("$50/month") or a specific merchant ("allowlist Booking.com").',
+      zh: "無法推斷出具體規則。試試描述金額（例：「每月 500 USDC 在訂閱費」）或指定收款方（例：「加 Notion 到信任名單」）。",
+      en: 'Couldn\'t infer a specific rule. Try describing an amount ("$500/month for subscriptions") or a specific recipient ("allowlist Notion").',
     },
   };
 }

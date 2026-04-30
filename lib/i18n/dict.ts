@@ -6,10 +6,10 @@ export const dict: Dict = {
   // ==================== Agents ====================
   // Functional names (no human personas). Looked up via
   // `t(\`agent.${id}.name\`)` wherever the agent surfaces in UI text.
-  "agent.travel.name": { zh: "旅行助理", en: "Travel" },
-  "agent.research.name": { zh: "研究助理", en: "Research" },
-  "agent.shopping.name": { zh: "採購助理", en: "Shopping" },
-  "agent.newsletter.name": { zh: "內容彙整", en: "Curator" },
+  "agent.travel.name": { zh: "付款助理", en: "Payment" },
+  "agent.research.name": { zh: "訂閱助理", en: "Subscription" },
+  "agent.shopping.name": { zh: "安全助理", en: "Security" },
+  "agent.newsletter.name": { zh: "監控助理", en: "Monitor" },
 
   // ==================== Nav ====================
   "nav.dashboard.label": { zh: "指揮中心", en: "Command Center" },
@@ -29,6 +29,11 @@ export const dict: Dict = {
   "nav.mobile.audit": { zh: "日誌", en: "Audit" },
   "nav.mobile.guide": { zh: "說明", en: "Guide" },
   "nav.help.label": { zh: "原型說明", en: "Prototype guide" },
+  "nav.exchange.contextTitle": { zh: "Exchange Module · AI Agent", en: "Exchange Module · AI Agent" },
+  "nav.exchange.contextBody": {
+    zh: "可嵌在 Security Center → AI Agents",
+    en: "Fits in Security Center → AI Agents",
+  },
 
   "brand.tagline": { zh: "control hub", en: "control hub" },
   "brand.prototype": { zh: "PROTOTYPE", en: "PROTOTYPE" },
@@ -52,8 +57,13 @@ export const dict: Dict = {
   "topbar.section.commandCenter": { zh: "指揮中心", en: "COMMAND CENTER" },
 
   // ==================== Wallet ====================
-  "wallet.connect": { zh: "連接錢包", en: "Connect wallet" },
-  "wallet.connectSub": { zh: "啟用 AI 助理自動支付", en: "Enable agent payments" },
+  "wallet.connect": { zh: "連結錢包", en: "Link wallet" },
+  "wallet.connectSub": { zh: "連上鏈上錢包，agent 可以付款給合作方錢包、訂閱服務、外部地址提領", en: "Link your on-chain wallet so agents can pay vendors, subscriptions, and external addresses" },
+  "wallet.row.exchange": { zh: "Exchange", en: "Exchange" },
+  "wallet.row.exchange.value": { zh: "megan@trader", en: "megan@trader" },
+  "wallet.row.onchain": { zh: "On-chain wallet", en: "On-chain wallet" },
+  "wallet.row.onchain.notLinked": { zh: "未連結", en: "Not linked" },
+  "wallet.row.linkCta": { zh: "連結錢包 ↗", en: "LINK WALLET ↗" },
   "wallet.balance": { zh: "USDC 餘額", en: "USDC balance" },
   "wallet.copyAddress": { zh: "複製地址", en: "Copy address" },
   "wallet.disconnect": { zh: "斷開", en: "Disconnect" },
@@ -102,13 +112,21 @@ export const dict: Dict = {
     zh: "你制訂規則、行使最終決策，剩下的由 AI 代勞。",
     en: "You set the rules and make the final calls. Agents handle the rest.",
   },
+  "dashboard.exchange.title": {
+    zh: "soon-ga.agent",
+    en: "soon-ga.agent",
+  },
+  "dashboard.exchange.subtitle": {
+    zh: "為交易所與 Web3 設計的 AI agent 規則控制台",
+    en: "Rule console for AI agents on crypto exchanges and Web3",
+  },
   "intro.headline": {
-    zh: "soon-ga.agent 幫你管 AI agent 替你做的付款",
-    en: "soon-ga.agent helps you control payments your AI agents make",
+    zh: "Web3 場景下的 AI 助理規則控制台",
+    en: "AI agent rule console for Web3 product scenarios",
   },
   "intro.body": {
-    zh: "例如旅行助理幫你訂 Booking.com 之前會先停下來問你要不要批准。",
-    en: "For example, the travel assistant pauses before booking on Booking.com to ask for your approval.",
+    zh: "在錢包等 Web3 產品場景下，幫使用者設定 AI 助理可動用的預算和收款方，審核高風險請求，事後查看完整紀錄。",
+    en: "In Web3 product scenarios like wallets, set AI agent budgets and recipients, approve risky actions, and review what happened.",
   },
   "intro.cta": { zh: "看看怎麼運作", en: "See how it works" },
   "intro.dismiss": { zh: "收起說明", en: "Dismiss" },
@@ -169,21 +187,21 @@ export const dict: Dict = {
   },
   "dashboard.briefing.highlights": { zh: "幾件值得注意", en: "Worth noting" },
   "dashboard.briefing.highlight.newMerchant": {
-    zh: "新付款對象「Klook Tokyo」出現過 2 次，可考慮加進信任名單",
-    en: "New merchant Klook Tokyo appeared 2× — consider allowlisting",
+    zh: "新收款方「Notion 訂閱」出現過 2 次，可考慮加進信任名單",
+    en: "New recipient Notion subscription appeared 2× — consider allowlisting",
   },
   "dashboard.briefing.highlight.budgetWarning": {
-    zh: "研究助理本月已用 78%，月底前小心預算",
-    en: "Research assistant at 78% of monthly budget — watch the rest of the month",
+    zh: "訂閱助理本月已用 78% 訂閱類別額度，月底前小心預算",
+    en: "Subscription agent at 78% of monthly subscription budget — watch the rest of the month",
   },
   "dashboard.briefing.highlight.agentPaused": {
-    zh: "採購助理整天無交易（目前處於暫停狀態）",
-    en: "Shopping assistant had no transactions (currently paused)",
+    zh: "安全助理整天無提領請求（目前處於暫停狀態）",
+    en: "Security agent had no withdrawal requests (currently paused)",
   },
   "dashboard.briefing.suggestion.label": { zh: "AI 建議", en: "AI suggestion" },
   "dashboard.briefing.suggestion.text": {
-    zh: "研究助理本週用量比上週高 28%。要不要把月限額從 50 USDC 拉到 65？",
-    en: "Research assistant is 28% above last week. Bump the monthly cap from $50 to $65?",
+    zh: "訂閱助理本週付款量比上週高 28%。要不要把單筆訂閱付款上限從 100 USDC 拉到 125？",
+    en: "Subscription agent's weekly payment volume is 28% above last week. Bump the per-payment cap from 100 USDC to 125?",
   },
   "dashboard.briefing.suggestion.action": {
     zh: "去調整月限額",
@@ -205,8 +223,8 @@ export const dict: Dict = {
   /* Greeting sub-copy is split at <strong> boundaries so the numbers can be
      bold in JSX without a templated innerHTML pass. */
   "dashboard.greeting.sub.prefix": {
-    zh: "今天 AI 助理已幫你處理 ",
-    en: "Agents handled ",
+    zh: "今天 {agents} 個 AI 助理已處理 ",
+    en: "Your {agents} AI agents handled ",
   },
   "dashboard.greeting.sub.txnsBridge": {
     zh: " 筆交易，省下 ",
@@ -312,6 +330,19 @@ export const dict: Dict = {
   "dashboard.agent.paused": { zh: "已暫停", en: "Paused" },
   "dashboard.agents.usedThisMonth": { zh: "本月已用", en: "Used this month" },
   "dashboard.agents.monthlyBudget": { zh: "月度預算", en: "Monthly budget" },
+  "web3.title": { zh: "適用在 Web3 產品的哪些位置", en: "Where this fits in Web3 products" },
+  "web3.wallet.title": { zh: "鏈上錢包", en: "Web3 Wallet" },
+  "web3.wallet.badge": { zh: "主要場景", en: "Primary Use Case" },
+  "web3.wallet.body": {
+    zh: "作為 AI agent 權限中心，管理可互動的去中心化應用、代幣、鏈別、單筆與每日限額。",
+    en: "Works as an AI agent permission center for dApps, tokens, chains, per-action limits, and daily limits.",
+  },
+  "web3.exchange.title": { zh: "交易所", en: "Crypto Exchange" },
+  "web3.exchange.badge": { zh: "延伸場景", en: "Secondary Use Case" },
+  "web3.exchange.body": {
+    zh: "可嵌進交易所的安全中心或 API 管理頁面，讓 agent 在交易所帳戶下也走相同的權限與審核流程。",
+    en: "Can be embedded in Security or API Management on a crypto exchange, so agents go through the same permission and review flow on exchange accounts.",
+  },
 
   // ==================== Feed ====================
   "feed.title": { zh: "最近動態", en: "Recent activity" },
@@ -348,7 +379,7 @@ export const dict: Dict = {
   "chart.tooltip.transactions": { zh: "筆交易", en: "transactions" },
 
   // ==================== Approvals ====================
-  "approvals.eyebrow": { zh: "Approvals", en: "Approvals" },
+  "approvals.eyebrow": { zh: "待審核", en: "Approvals" },
   "approvals.title": { zh: "待審核", en: "Waiting on you" },
   "approvals.desc": {
     zh: "這裡會列出超出規則的 AI 支付請求。每張卡片都會說明需要花這筆費用、風險在哪，以及每個決定接下來會發生什麼。",
@@ -421,6 +452,14 @@ export const dict: Dict = {
   "approval.triggered": { zh: "觸發規則：", en: "Triggered rule: " },
   "approval.risks.more": { zh: "項", en: "more" },
   "approval.reason.label": { zh: "需要審核原因", en: "Approval reason" },
+  "approval.riskProfile.title": { zh: "風險條件", en: "Risk conditions" },
+  "approval.riskProfile.actionType": { zh: "操作類型", en: "Action Type" },
+  "approval.riskProfile.asset": { zh: "資產", en: "Asset" },
+  "approval.riskProfile.amount": { zh: "金額", en: "Amount" },
+  "approval.riskProfile.destination": { zh: "目的地", en: "Destination" },
+  "approval.riskProfile.triggeredRule": { zh: "觸發規則", en: "Triggered Rule" },
+  "approval.riskProfile.riskLevel": { zh: "風險等級", en: "Risk Level" },
+  "approval.riskProfile.userDecision": { zh: "使用者決策", en: "User Decision" },
 
   "approval.trust.allowlisted": { zh: "信任名單網站", en: "Allowlisted merchant" },
   "approval.trust.blocklisted": { zh: "封鎖名單網站", en: "Blocklisted merchant" },
@@ -491,14 +530,14 @@ export const dict: Dict = {
   "rules.eyebrow": { zh: "Rule Engine", en: "Rule Engine" },
   "rules.title": { zh: "額度與信任名單", en: "Budgets & trust lists" },
   "rules.desc": {
-    zh: "三層管 AI 助理：類別額度、單筆上限、信任名單。超出邊界就會自動進入待審核等你確認。",
+    zh: "三層管 AI 助理：類別額度、單筆上限、信任名單。超出範圍就會自動進入待審核等你確認。",
     en: "Three layers define agent autonomy: category budgets, per-transaction caps, and merchant trust lists. Anything over the line joins your approval queue.",
   },
   "rules.newRule": { zh: "新增規則", en: "New rule" },
   "rules.categories.title": { zh: "類別額度", en: "Category budgets" },
   "rules.categories.desc": {
-    zh: "四種預設類別大部分用得到，也可以自己加。每一類的月度額度和單筆上限都能獨立調整。",
-    en: "Four presets cover most agent use cases. You can add your own. Monthly budget and per-transaction cap are independent per category.",
+    zh: "三種預設類別涵蓋多數付款治理情境，也可以自己加。每一類的月度額度和單筆上限都能獨立調整。",
+    en: "Three presets cover most payment-governance use cases. You can add your own. Monthly budget and per-transaction cap are independent per category.",
   },
   "rules.trust.title": { zh: "網站信任名單", en: "Merchant trust lists" },
   "rules.trust.desc": {
@@ -604,9 +643,9 @@ export const dict: Dict = {
     en: "{n} rows saved as CSV",
   },
   "audit.filter.all": { zh: "全部", en: "All" },
-  "audit.filter.approved": { zh: "核准", en: "Approved" },
-  "audit.filter.rejected": { zh: "拒絕", en: "Rejected" },
-  "audit.filter.auto": { zh: "自動放行", en: "Auto" },
+  "audit.filter.approved": { zh: "已核准", en: "Approved" },
+  "audit.filter.rejected": { zh: "已拒絕", en: "Rejected" },
+  "audit.filter.auto": { zh: "自動", en: "Auto" },
   "audit.filter.allAgents": { zh: "所有 AI 助理", en: "All agents" },
   "audit.filter.allPlatforms": { zh: "所有 AI 平台", en: "All platforms" },
   "audit.copyCsv": { zh: "複製 CSV", en: "Copy CSV" },
@@ -623,9 +662,9 @@ export const dict: Dict = {
   },
   "audit.empty.reset": { zh: "清除篩選", en: "Reset filters" },
 
-  "audit.decision.approved": { zh: "核准", en: "Approved" },
-  "audit.decision.rejected": { zh: "拒絕", en: "Rejected" },
-  "audit.decision.auto": { zh: "自動放行", en: "Auto" },
+  "audit.decision.approved": { zh: "已核准", en: "Approved" },
+  "audit.decision.rejected": { zh: "已拒絕", en: "Rejected" },
+  "audit.decision.auto": { zh: "自動", en: "Auto" },
   "audit.relative.now": { zh: "剛剛", en: "just now" },
   "audit.relative.minutes": { zh: "{n} 分鐘前", en: "{n} minutes ago" },
   "audit.relative.hours": { zh: "{n} 小時前", en: "{n} hours ago" },
@@ -661,12 +700,12 @@ export const dict: Dict = {
      / limits / module-walkthrough copy stays in the dict as legacy keys but
      is no longer rendered. */
   "welcome.summary.line1": {
-    zh: "這是一個 AI 支付控制台。",
-    en: "An AI payment control hub.",
+    zh: "這是一個交易所 AI agent 權限與付款治理控制台。",
+    en: "An AI agent permission and payment governance module for crypto exchanges.",
   },
   "welcome.summary.line2": {
-    zh: "AI 可以在規則內自動花錢，超出邊界時會先問你。",
-    en: "AI spends within your rules and asks first when something goes outside the lines.",
+    zh: "AI 可以在規則內操作資產，超出範圍時會先問你。",
+    en: "AI can act within asset rules and asks first when something goes outside the lines.",
   },
   "welcome.summary.line3": {
     zh: "所有操作都是模擬資料，不會真的付款或上鏈。",
@@ -751,8 +790,8 @@ export const dict: Dict = {
   // Guide — what is it
   "welcome.what.title": { zh: "這個產品在做什麼？", en: "What does this do?" },
   "welcome.what.body": {
-    zh: "soon-ga.agent 是你 AI 助理的支付控制層。你制訂規則、行使最終決策，AI 在規則內自主運作，超出邊界時才需要你介入。",
-    en: "soon-ga.agent is the payment control layer for your AI agents. You set the rules and make the final calls; agents work autonomously within them. You only step in when something goes out of bounds.",
+    zh: "soon-ga.agent 是 Web3 場景下的 AI 助理規則控制台。當 agent 替使用者支付訂閱、付款給合作方、提領到外部地址時，使用者仍能設定限制、審核高風險請求、查看完整紀錄。",
+    en: "soon-ga.agent is an AI agent rule console for Web3 product scenarios. When agents pay subscriptions, send to vendors, or withdraw to external addresses, users can still set limits, review risky actions, and trace decisions.",
   },
 
   // Guide — four modules
@@ -864,8 +903,8 @@ export const dict: Dict = {
   },
   "trust.add.merchantLabel": { zh: "網站名稱或網址", en: "Merchant name or URL" },
   "trust.add.merchantPlaceholder": {
-    zh: "例：openai.com、Booking.com",
-    en: "e.g., openai.com, Booking.com",
+    zh: "例：Notion、Acme 供應商錢包、Base 營運錢包",
+    en: "e.g., Notion, Acme vendor wallet, Base ops wallet",
   },
   "trust.add.categoryLabel": { zh: "類別", en: "Category" },
   "trust.add.reasonLabel": { zh: "拒絕原因", en: "Reason" },
@@ -932,13 +971,13 @@ export const dict: Dict = {
     en: "Describe it in plain language; AI turns it into a concrete rule.",
   },
   "rules.unified.chooser.ai.example": {
-    zh: "例：「每月 50 USDC 買學術論文」、「Booking.com 加入信任名單」",
-    en: 'e.g. "$50/mo for academic papers", "allowlist Booking.com"',
+    zh: "例：「每月最多 500 USDC 在訂閱費」、「新地址提領永遠要我同意」",
+    en: 'e.g. "$500/mo for subscriptions", "always confirm withdrawals to new addresses"',
   },
   "rules.ai.inputLabel": { zh: "用自己的話描述規則", en: "Describe the rule" },
   "rules.ai.placeholder": {
-    zh: "例：讓研究助理每月最多花 50 USDC 在學術論文上",
-    en: "e.g. Let Research spend up to $50/month on academic papers",
+    zh: "例：讓訂閱助理每月最多支付 500 USDC 在 SaaS 訂閱費",
+    en: "e.g. Let Subscription agent spend up to $500/month on SaaS subscriptions",
   },
   "rules.ai.parseButton": { zh: "✨ 讓 AI 解析", en: "✨ Ask AI to parse" },
   "rules.ai.parsing": { zh: "解析中……", en: "Parsing…" },
@@ -1027,8 +1066,8 @@ export const dict: Dict = {
     en: "Set monthly cap and per-transaction limit for a spending category",
   },
   "rules.unified.chooser.category.example": {
-    zh: "例：AI 服務每月 $80、單筆上限 $5",
-    en: "e.g. AI services — $80/mo, $5 max per transaction",
+    zh: "例：訂閱每月 500 USDC、單筆上限 125 USDC",
+    en: "e.g. Subscriptions — 500 USDC/mo, 125 USDC max per payment",
   },
   "rules.unified.chooser.allow.title": { zh: "信任網站", en: "Allowlist merchant" },
   "rules.unified.chooser.allow.desc": {
@@ -1036,8 +1075,8 @@ export const dict: Dict = {
     en: "Trust this merchant — agents auto-approve every time",
   },
   "rules.unified.chooser.allow.example": {
-    zh: "例：OpenAI API、NYT",
-    en: "e.g. OpenAI API, NYT",
+    zh: "例：Notion、TradingView Pro、Acme 供應商錢包",
+    en: "e.g. Notion, TradingView Pro, Acme vendor wallet",
   },
   "rules.unified.chooser.block.title": { zh: "封鎖網站", en: "Blocklist merchant" },
   "rules.unified.chooser.block.desc": {
@@ -1045,8 +1084,8 @@ export const dict: Dict = {
     en: "Never allow payments here — agents get rejected outright",
   },
   "rules.unified.chooser.block.example": {
-    zh: "例：meme-nft-drop.xyz",
-    en: "e.g. meme-nft-drop.xyz",
+    zh: "例：fast-cash-loan.io、meme-nft-drop.xyz",
+    en: "e.g. fast-cash-loan.io, meme-nft-drop.xyz",
   },
   "rules.unified.back": { zh: "回到選擇", en: "Back" },
   "rules.unified.entryLabel": { zh: "新增規則", en: "New rule" },

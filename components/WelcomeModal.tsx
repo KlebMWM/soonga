@@ -20,6 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { trackProductEvent } from "@/lib/analytics";
 import { useT } from "@/lib/i18n/LocaleProvider";
 import { useDisplayName } from "@/lib/useDisplayName";
 
@@ -69,9 +70,15 @@ export function WelcomeModal() {
       window.localStorage.getItem(STORAGE_KEY) === "1";
     let timer: ReturnType<typeof setTimeout> | undefined;
     if (!seen) {
-      timer = setTimeout(() => setOpen(true), 400);
+      timer = setTimeout(() => {
+        trackProductEvent("welcome_modal_opened", { source: "first_visit" });
+        setOpen(true);
+      }, 400);
     }
-    const handler = () => setOpen(true);
+    const handler = () => {
+      trackProductEvent("welcome_modal_opened", { source: "manual" });
+      setOpen(true);
+    };
     window.addEventListener("soon-open-welcome", handler);
     return () => {
       if (timer) clearTimeout(timer);
@@ -86,6 +93,9 @@ export function WelcomeModal() {
   }, [open, storedName]);
 
   const handleClose = () => {
+    trackProductEvent("welcome_modal_closed", {
+      has_custom_name: Boolean(nameDraft.trim()),
+    });
     persistName(nameDraft);
     window.localStorage.setItem(STORAGE_KEY, "1");
     setOpen(false);
@@ -150,7 +160,13 @@ export function WelcomeModal() {
               <li key={a.href}>
                 <Link
                   href={a.href}
-                  onClick={handleClose}
+                  onClick={() => {
+                    trackProductEvent("welcome_quick_action_clicked", {
+                      destination: a.href,
+                      has_custom_name: Boolean(nameDraft.trim()),
+                    });
+                    handleClose();
+                  }}
                   className="group flex items-start gap-3 rounded-lg border border-border bg-card hover:bg-muted/40 hover:border-foreground/20 p-3 transition-colors"
                 >
                   <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
@@ -170,7 +186,15 @@ export function WelcomeModal() {
         </ul>
 
         <div className="mt-2 flex items-center justify-end pt-3 border-t border-border/60">
-          <Button onClick={handleClose} className="gap-1.5">
+          <Button
+            onClick={() => {
+              trackProductEvent("welcome_primary_cta_clicked", {
+                has_custom_name: Boolean(nameDraft.trim()),
+              });
+              handleClose();
+            }}
+            className="gap-1.5"
+          >
             {t("welcome.cta")}
             <ArrowRight className="h-4 w-4" />
           </Button>

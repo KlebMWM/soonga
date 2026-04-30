@@ -1,4 +1,4 @@
-import { Bot, Brain, LucideIcon, Newspaper, Plane, ShoppingBag } from "lucide-react";
+import { Activity, Bot, LucideIcon, Newspaper, Send, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type AgentMeta = {
@@ -22,36 +22,36 @@ type AgentMeta = {
 // / coral / plum); only the lookup key + displayName fallback changed.
 const AGENT_MAP: Record<string, AgentMeta> = {
   research: {
-    icon: Brain,
+    icon: Newspaper,
     color: "#a86a4f",
     gradient: "linear-gradient(135deg, #a86a4f, #8a4f3a)",
     glow: "0 0 14px rgba(168, 106, 79, 0.3)",
-    label: "RE",
-    displayName: "研究助理",
+    label: "SU",
+    displayName: "訂閱助理",
   },
   travel: {
-    icon: Plane,
+    icon: Send,
     color: "#7a8ba0",
     gradient: "linear-gradient(135deg, #7a8ba0, #5c6b82)",
     glow: "0 0 14px rgba(122, 139, 160, 0.3)",
-    label: "TR",
-    displayName: "旅行助理",
+    label: "PA",
+    displayName: "付款助理",
   },
   shopping: {
-    icon: ShoppingBag,
+    icon: Shield,
     color: "#e07856",
     gradient: "linear-gradient(135deg, #e07856, #c05f3f)",
     glow: "0 0 14px rgba(224, 120, 86, 0.3)",
-    label: "SH",
-    displayName: "採購助理",
+    label: "SE",
+    displayName: "安全助理",
   },
   newsletter: {
-    icon: Newspaper,
+    icon: Activity,
     color: "#a06a8f",
     gradient: "linear-gradient(135deg, #a06a8f, #854c76)",
     glow: "0 0 14px rgba(160, 106, 143, 0.3)",
-    label: "NW",
-    displayName: "內容彙整",
+    label: "MO",
+    displayName: "監控助理",
   },
 };
 

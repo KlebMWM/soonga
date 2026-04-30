@@ -11,6 +11,7 @@ import { Sidebar } from "@/components/Sidebar";
 import { MobileNav } from "@/components/MobileNav";
 import { TopBar } from "@/components/TopBar";
 import { WelcomeModal } from "@/components/WelcomeModal";
+import { AnalyticsProvider } from "@/components/AnalyticsProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { LocaleProvider } from "@/lib/i18n/LocaleProvider";
 
@@ -45,9 +46,9 @@ const notoSerifTC = Noto_Serif_TC({
 });
 
 export const metadata: Metadata = {
-  title: "soon-ga.agent control hub",
+  title: "soon-ga.agent: AI Agent Permission and Payment Governance for Crypto Exchanges",
   description:
-    "AI agent payment control layer · 讓你的 AI 擁有錢包，你擁有遙控器 · Give your AI a wallet, keep the remote in your hand.",
+    "AI agent permission and payment governance for crypto exchanges · Set limits, review risky actions, and audit what agents do with user assets.",
 };
 
 export default function RootLayout({
@@ -90,6 +91,7 @@ export default function RootLayout({
             </div>
           </div>
           <WelcomeModal />
+          <AnalyticsProvider />
           <Toaster position="top-right" richColors />
         </LocaleProvider>
       </body>

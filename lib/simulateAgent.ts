@@ -2,7 +2,10 @@ import type { FeedItem } from "./mockData";
 import { b } from "./i18n/config";
 
 type MerchantDef = {
-  name: string;
+  name: {
+    zh: string;
+    en: string;
+  };
   agent: string;
   agentAvatar: string;
   range: [number, number];
@@ -10,18 +13,16 @@ type MerchantDef = {
 };
 
 const merchantsPool: MerchantDef[] = [
-  { name: "OpenAI API", agent: "research", agentAvatar: "🧠", range: [0.05, 0.9], whitelist: true },
-  { name: "Anthropic API", agent: "research", agentAvatar: "🧠", range: [0.1, 1.2], whitelist: true },
-  { name: "Perplexity Pro", agent: "research", agentAvatar: "🧠", range: [0.1, 0.4], whitelist: true },
-  { name: "NYT", agent: "research", agentAvatar: "🧠", range: [0.03, 0.08], whitelist: true },
-  { name: "Substack", agent: "newsletter", agentAvatar: "📰", range: [5, 20], whitelist: true },
-  { name: "Stratechery", agent: "newsletter", agentAvatar: "📰", range: [12, 12], whitelist: true },
-  { name: "Uber Japan", agent: "travel", agentAvatar: "✈️", range: [8, 30], whitelist: false },
-  { name: "Klook Tokyo", agent: "travel", agentAvatar: "✈️", range: [22, 65], whitelist: false },
-  { name: "Booking.com", agent: "travel", agentAvatar: "✈️", range: [120, 220], whitelist: false },
-  { name: "Amazon Gift Card", agent: "shopping", agentAvatar: "🛒", range: [20, 50], whitelist: false },
-  { name: "Uniqlo JP", agent: "shopping", agentAvatar: "🛒", range: [15, 45], whitelist: false },
-  { name: "JSTOR", agent: "research", agentAvatar: "🧠", range: [0.2, 0.4], whitelist: true },
+  { name: { zh: "Notion 訂閱續費", en: "Notion subscription renewal" }, agent: "research", agentAvatar: "📰", range: [80, 140], whitelist: false },
+  { name: { zh: "Anthropic API 服務費", en: "Anthropic API service fee" }, agent: "research", agentAvatar: "📰", range: [0.3, 1.5], whitelist: true },
+  { name: { zh: "OpenAI API 服務費", en: "OpenAI API service fee" }, agent: "research", agentAvatar: "📰", range: [0.2, 0.9], whitelist: true },
+  { name: { zh: "TradingView Pro 月費", en: "TradingView Pro monthly" }, agent: "research", agentAvatar: "📰", range: [40, 60], whitelist: true },
+  { name: { zh: "Stripe 月費", en: "Stripe monthly" }, agent: "research", agentAvatar: "📰", range: [20, 30], whitelist: true },
+  { name: { zh: "付款給 Acme 供應商錢包", en: "Pay Acme vendor wallet" }, agent: "travel", agentAvatar: "💸", range: [80, 250], whitelist: true },
+  { name: { zh: "付款給 Base 營運錢包", en: "Pay Base ops wallet" }, agent: "travel", agentAvatar: "💸", range: [25, 80], whitelist: true },
+  { name: { zh: "付款給自由工作者錢包", en: "Pay freelancer wallet" }, agent: "travel", agentAvatar: "💸", range: [120, 400], whitelist: false },
+  { name: { zh: "提領到財務冷錢包", en: "Withdraw to finance cold wallet" }, agent: "shopping", agentAvatar: "🛡️", range: [600, 1200], whitelist: false },
+  { name: { zh: "提領到已信任冷錢包", en: "Withdraw to allowlisted cold wallet" }, agent: "shopping", agentAvatar: "🛡️", range: [80, 250], whitelist: true },
 ];
 
 function randomAmount(min: number, max: number) {
@@ -44,21 +45,22 @@ export function simulateAgentAction(): FeedItem {
   feedCounter += 1;
 
   let status: FeedItem["status"] = "auto-approved";
-  let reason = b("信任名單網站．低於單筆規則", "Allowlisted merchant · under per-tx cap");
+  let reason = b("可信目的地．低於單筆規則", "Trusted destination · under per-action cap");
   let approvalReason: FeedItem["approvalReason"];
 
   if (!merchant.whitelist) {
-    if (merchant.name === "Booking.com" || amount > 100) {
+    if (merchant.agent === "shopping" || amount > 500) {
       status = "pending";
-      reason = b("超過單筆 100 USDC 限額", "Exceeds $100 per-tx cap");
-      approvalReason = b("超過單筆付款上限", "Amount exceeds single-payment limit");
-    } else if (merchant.name === "Amazon Gift Card") {
+      reason = b("新地址或大額提領需要審核", "New address or large withdrawal requires review");
+      approvalReason = b("新地址或大額提領需要人工核准", "Withdrawal to new address or large amount requires manual approval");
+    } else if (merchant.agent === "travel") {
       status = "pending";
-      reason = b("可儲值類型需人工審核", "Stored-value purchase — needs review");
-      approvalReason = b("受限類別需要人工核准", "Restricted category requires manual approval");
+      reason = b("首次合作方付款需要審核", "First-time vendor payment requires review");
+      approvalReason = b("首次合作方錢包付款需要人工確認", "First-time payment to vendor wallet requires manual confirmation");
     } else {
-      status = "auto-approved";
-      reason = b("低於實體購買單筆限額", "Under physical-purchase per-tx cap");
+      status = "pending";
+      reason = b("高於自動付款上限", "Above auto-payment cap");
+      approvalReason = b("金額高於單筆自動付款上限", "Amount is above the per-payment auto cap");
     }
   }
 
@@ -67,7 +69,7 @@ export function simulateAgentAction(): FeedItem {
     time: nowTime(),
     agent: merchant.agent,
     agentAvatar: merchant.agentAvatar,
-    merchant: b(merchant.name, merchant.name),
+    merchant: merchant.name,
     amount,
     status,
     reason,

@@ -32,6 +32,7 @@ import type { Category } from "@/lib/mockData";
 import { b } from "@/lib/i18n/config";
 import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
 import { checkMerchantSafety, type SafetyResult } from "@/lib/safetyCheck";
+import { trackProductEvent } from "@/lib/analytics";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -96,7 +97,7 @@ export function NewRuleUnifiedDialog({
 
   // Allow / Block form shared state
   const [merchant, setMerchant] = useState(initialMerchant);
-  const [category, setCategory] = useState(categories[0]?.id ?? "api");
+  const [category, setCategory] = useState(categories[0]?.id ?? "subscription");
   const [reason, setReason] = useState("");
   const [checking, setChecking] = useState(false);
   const [safety, setSafety] = useState<SafetyResult | null>(null);
@@ -108,7 +109,7 @@ export function NewRuleUnifiedDialog({
     setCatMonthly(100);
     setCatSingle(20);
     setMerchant("");
-    setCategory(categories[0]?.id ?? "api");
+    setCategory(categories[0]?.id ?? "subscription");
     setReason("");
     setChecking(false);
     setSafety(null);
@@ -161,6 +162,12 @@ export function NewRuleUnifiedDialog({
       spent: 0,
       isSystem: false,
     });
+    trackProductEvent("rule_created", {
+      rule_type: "category",
+      source: "manual_form",
+      monthly_limit: catMonthly,
+      single_limit: catSingle,
+    });
     toast.success(t("rules.new.createdTitle", { name: trimmed }), {
       description: t("rules.new.createdDesc", { monthly: catMonthly, single: catSingle }),
     });
@@ -177,6 +184,12 @@ export function NewRuleUnifiedDialog({
       merchant: trimmed,
       category,
       addedAt: new Date().toISOString().slice(0, 10),
+    });
+    trackProductEvent("rule_created", {
+      rule_type: "allow",
+      source: "manual_form",
+      category,
+      merchant_present: true,
     });
     toast.success(t("trust.add.toast.allow.title", { merchant: trimmed }), {
       description: t("trust.add.toast.allow.desc"),
@@ -198,6 +211,12 @@ export function NewRuleUnifiedDialog({
       merchant: trimmed,
       reason: reasonObj,
       addedAt: new Date().toISOString().slice(0, 10),
+    });
+    trackProductEvent("rule_created", {
+      rule_type: "block",
+      source: "manual_form",
+      merchant_present: true,
+      has_reason: Boolean(reasonObj[locale]),
     });
     toast.error(t("trust.add.toast.block.title", { merchant: trimmed }), {
       description: t("trust.add.toast.block.desc"),
@@ -224,6 +243,10 @@ export function NewRuleUnifiedDialog({
       open={open}
       onOpenChange={(v) => {
         setOpen(v);
+        trackProductEvent(v ? "rule_dialog_opened" : "rule_dialog_closed", {
+          source: hasInitialMerchant ? "deep_link" : "rules_page",
+          mode,
+        });
         if (!v) setTimeout(reset, 200);
       }}
     >
@@ -254,6 +277,12 @@ export function NewRuleUnifiedDialog({
             onPick={setMode}
             onApplyCategory={(c) => {
               onCreateCategory(c);
+              trackProductEvent("rule_created", {
+                rule_type: "category",
+                source: "ai_parse",
+                monthly_limit: c.monthlyLimit,
+                single_limit: c.singleLimit,
+              });
               toast.success(
                 t("rules.new.createdTitle", { name: c.name[locale] }),
                 {
@@ -267,6 +296,12 @@ export function NewRuleUnifiedDialog({
             }}
             onApplyAllow={(a) => {
               onAddAllow(a);
+              trackProductEvent("rule_created", {
+                rule_type: "allow",
+                source: "ai_parse",
+                category: a.category,
+                merchant_present: true,
+              });
               toast.success(
                 t("trust.add.toast.allow.title", { merchant: a.merchant }),
                 { description: t("trust.add.toast.allow.desc") },
@@ -275,6 +310,12 @@ export function NewRuleUnifiedDialog({
             }}
             onApplyBlock={(blk) => {
               onAddBlock(blk);
+              trackProductEvent("rule_created", {
+                rule_type: "block",
+                source: "ai_parse",
+                merchant_present: true,
+                has_reason: Boolean(blk.reason[locale]),
+              });
               toast.error(
                 t("trust.add.toast.block.title", { merchant: blk.merchant }),
                 { description: t("trust.add.toast.block.desc") },
@@ -282,6 +323,9 @@ export function NewRuleUnifiedDialog({
               closeAndReset();
             }}
             onAdjustCategory={(c) => {
+              trackProductEvent("ai_rule_manual_adjust_opened", {
+                rule_type: "category",
+              });
               setCatName(c.name[locale]);
               setCatDesc(c.description[locale]);
               setCatMonthly(c.monthlyLimit);
@@ -289,10 +333,19 @@ export function NewRuleUnifiedDialog({
               setMode("category");
             }}
             onAdjustAllow={(m) => {
+              trackProductEvent("ai_rule_manual_adjust_opened", {
+                rule_type: "allow",
+                merchant_present: Boolean(m),
+              });
               setMerchant(m);
               setMode("allow");
             }}
             onAdjustBlock={(m, parsedReason) => {
+              trackProductEvent("ai_rule_manual_adjust_opened", {
+                rule_type: "block",
+                merchant_present: Boolean(m),
+                has_reason: Boolean(parsedReason),
+              });
               setMerchant(m);
               setReason(parsedReason);
               setMode("block");
@@ -370,23 +423,38 @@ function FirstScreen({
 
   const handleParse = () => {
     if (!input.trim() || parsing) return;
+    trackProductEvent("ai_rule_parse_requested", {
+      input_length: input.trim().length,
+    });
     setParsing(true);
     setParsed(null);
     // Simulate model latency. Swap the timeout body for a real Claude call
     // when the API is wired up — the ParsedRule shape stays the same.
     setTimeout(() => {
-      setParsed(parseRuleRequest(input, categoryIds));
+      const result = parseRuleRequest(input, categoryIds);
+      setParsed(result);
+      trackProductEvent("ai_rule_parse_completed", {
+        result_kind: result.kind,
+        confidence: result.kind === "unknown" ? null : result.confidence,
+      });
       setParsing(false);
     }, 900);
   };
 
   const handleReset = () => {
+    trackProductEvent("ai_rule_draft_reset", {
+      had_draft: Boolean(parsed),
+    });
     setInput("");
     setParsed(null);
   };
 
   const handleCreate = () => {
     if (!parsed) return;
+    trackProductEvent("ai_rule_draft_applied", {
+      result_kind: parsed.kind,
+      confidence: parsed.kind === "unknown" ? null : parsed.confidence,
+    });
     if (parsed.kind === "category") onApplyCategory(parsed.category);
     else if (parsed.kind === "allow")
       onApplyAllow({
@@ -404,6 +472,10 @@ function FirstScreen({
 
   const handleManualAdjust = () => {
     if (!parsed) return;
+    trackProductEvent("ai_rule_draft_reviewed", {
+      result_kind: parsed.kind,
+      confidence: parsed.kind === "unknown" ? null : parsed.confidence,
+    });
     if (parsed.kind === "category") onAdjustCategory(parsed.category);
     else if (parsed.kind === "allow") onAdjustAllow(parsed.allow.merchant);
     else if (parsed.kind === "block")
@@ -430,7 +502,7 @@ function FirstScreen({
           />
           {t("rules.ai.inputLabel")}
           <span className="text-muted-foreground text-[12px] font-normal">
-            ({t("rules.new.descOptional")})
+            {t("rules.new.descOptional")}
           </span>
         </Label>
 
@@ -811,7 +883,12 @@ function Chooser({ onPick }: { onPick: (m: Exclude<Mode, "first">) => void }) {
         return (
           <button
             key={opt.mode}
-            onClick={() => onPick(opt.mode)}
+            onClick={() => {
+              trackProductEvent("rule_manual_path_selected", {
+                rule_type: opt.mode,
+              });
+              onPick(opt.mode);
+            }}
             className="group w-full text-left rounded-md border border-border bg-card hover:bg-muted/40 hover:border-foreground/20 p-4 flex items-start gap-3 transition-colors"
           >
             <div

@@ -204,10 +204,47 @@ export function WalletPill({ variant = "sidebar" }: { variant?: "sidebar" | "mob
         <button
           type="button"
           onClick={() => setPickerOpen(true)}
-          className="btn-wallet-cta"
+          className="block w-full text-left rounded-md p-2.5 transition-transform hover:-translate-y-0.5 active:translate-y-0"
+          style={{
+            background: "var(--yellow)",
+            border: "1.5px solid var(--ikea-blue-darker)",
+            color: "var(--ikea-blue-darker)",
+            boxShadow: "0 3px 0 var(--ikea-blue-darker)",
+          }}
         >
-          <Wallet className="h-4 w-4 shrink-0" strokeWidth={2.25} />
-          {t("wallet.connect")}
+          <div className="flex items-center justify-between gap-2 text-[11px]">
+            <span className="font-bold uppercase tracking-[0.06em] text-[9px]">
+              {t("wallet.row.exchange")}
+            </span>
+            <span className="font-mono font-semibold text-[10px] flex items-center gap-1">
+              <span style={{ color: "var(--sage)" }}>●</span>
+              {t("wallet.row.exchange.value")}
+            </span>
+          </div>
+          <div
+            className="flex items-center justify-between gap-2 text-[11px] mt-1 pt-1"
+            style={{ borderTop: "1px dashed rgba(31, 84, 160, 0.3)" }}
+          >
+            <span className="font-bold uppercase tracking-[0.06em] text-[9px]">
+              {t("wallet.row.onchain")}
+            </span>
+            <span className="font-mono font-semibold text-[10px] flex items-center gap-1 opacity-60">
+              <span>○</span>
+              {t("wallet.row.onchain.notLinked")}
+            </span>
+          </div>
+          <div
+            className="mt-1.5 text-center font-bold tracking-[0.04em] py-1 rounded-sm text-[11px]"
+            style={{
+              background: "var(--ikea-blue-darker)",
+              color: "var(--yellow)",
+            }}
+          >
+            {t("wallet.row.linkCta")}
+          </div>
+          <div className="mt-1.5 text-[10px] font-medium opacity-85 leading-snug">
+            {t("wallet.connectSub")}
+          </div>
         </button>
       ) : (
         <button

@@ -10,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { useTheme } from "@/components/ThemeToggle";
+import { trackProductEvent } from "@/lib/analytics";
 import { auditStore, pendingStore, usePendingApprovals } from "@/lib/stores";
 
 /**
@@ -92,7 +93,12 @@ export function DemoControls() {
         </span>
         <button
           type="button"
-          onClick={() => setCollapsed((c) => !c)}
+          onClick={() => {
+            trackProductEvent("demo_controls_toggled", {
+              next_state: collapsed ? "expanded" : "collapsed",
+            });
+            setCollapsed((c) => !c);
+          }}
           aria-label={collapsed ? "展開" : "收合"}
           className="inline-flex h-5 w-5 items-center justify-center transition-colors hover:bg-[rgba(80,132,208,0.08)]"
           style={{ color: "var(--text-mid)" }}
@@ -106,18 +112,37 @@ export function DemoControls() {
 
       {!collapsed && (
         <div className="flex flex-col py-1">
-          <DemoButton icon={ThemeIcon} label={themeLabel} onClick={toggleTheme} />
+          <DemoButton
+            icon={ThemeIcon}
+            label={themeLabel}
+            onClick={() => {
+              trackProductEvent("demo_control_used", {
+                action: "toggle_theme",
+              });
+              toggleTheme();
+            }}
+          />
           <DemoButton
             icon={Check}
             label="處理一筆待審核"
             disabled={!hasPending}
             disabledTitle="目前沒有待審核項目"
-            onClick={() => dispatchDemo(DEMO_EVENTS.resolvePending)}
+            onClick={() => {
+              trackProductEvent("demo_control_used", {
+                action: "resolve_pending",
+                pending_count: pending.length,
+              });
+              dispatchDemo(DEMO_EVENTS.resolvePending);
+            }}
           />
           <DemoButton
             icon={Inbox}
             label="切換空態 / 待審核態"
             onClick={() => {
+              trackProductEvent("demo_control_used", {
+                action: "toggle_pending_state",
+                pending_count: pending.length,
+              });
               if (pendingStore.getAll().length > 0) {
                 pendingStore.setAll([]);
               } else {
@@ -129,6 +154,10 @@ export function DemoControls() {
             icon={RotateCcw}
             label="重置 Demo"
             onClick={() => {
+              trackProductEvent("demo_control_used", {
+                action: "reset_demo",
+                pending_count: pending.length,
+              });
               pendingStore.reset();
               auditStore.reset();
               dispatchDemo(DEMO_EVENTS.reset);

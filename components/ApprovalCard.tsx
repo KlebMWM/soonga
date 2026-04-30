@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
-import { getAgentPlatform, type PendingApproval } from "@/lib/mockData";
+import { amountBucket, trackProductEvent } from "@/lib/analytics";
+import { getAgentPlatformLabel, type PendingApproval } from "@/lib/mockData";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -198,7 +199,7 @@ export function ApprovalCard({
   const t = useT();
   const { locale } = useLocale();
   const agentName = t(`agent.${approval.agent}.name`);
-  const platform = getAgentPlatform(approval.agent);
+  const platform = getAgentPlatformLabel(approval.agent, locale);
   const merchant = approval.merchant[locale];
   const summary = approval.reasoning
     ? {
@@ -220,6 +221,16 @@ export function ApprovalCard({
   );
 
   const act = (outcome: "approved" | "adjusted" | "rejected") => {
+    trackProductEvent("approval_decision_clicked", {
+      outcome,
+      agent: approval.agent,
+      platform,
+      amount_bucket: amountBucket(approval.amount),
+      currency: approval.currency,
+      risk_count: approval.risks?.length ?? 0,
+      is_counter_offer: Boolean(approval.isCounterOffer),
+    });
+
     if (outcome === "adjusted") {
       onAdjust?.(approval);
       return;
@@ -311,6 +322,51 @@ export function ApprovalCard({
             {approval.approvalReason[locale]}
           </p>
         </div>
+
+        {approval.riskProfile && (
+          <div className="rounded-lg border border-border/70 bg-background/60 p-3">
+            <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+              {t("approval.riskProfile.title")}
+            </div>
+            <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+              {[
+                {
+                  label: t("approval.riskProfile.actionType"),
+                  value: approval.riskProfile.actionType[locale],
+                },
+                {
+                  label: t("approval.riskProfile.asset"),
+                  value: approval.riskProfile.asset,
+                },
+                {
+                  label: t("approval.riskProfile.amount"),
+                  value: approval.riskProfile.amount,
+                },
+                {
+                  label: t("approval.riskProfile.destination"),
+                  value: approval.riskProfile.destination[locale],
+                },
+                {
+                  label: t("approval.riskProfile.triggeredRule"),
+                  value: approval.riskProfile.triggeredRule[locale],
+                },
+                {
+                  label: t("approval.riskProfile.riskLevel"),
+                  value: approval.riskProfile.riskLevel[locale],
+                },
+              ].map((field) => (
+                <div key={field.label} className="min-w-0 rounded-md bg-muted/30 p-2">
+                  <div className="text-[10px] font-mono uppercase tracking-wide text-muted-foreground">
+                    {field.label}
+                  </div>
+                  <div className="mt-0.5 truncate text-[12px] font-medium text-foreground">
+                    {field.value}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <Separator />
 

@@ -20,6 +20,7 @@ import {
   type TrustList,
 } from "@/lib/mockData";
 import { categoriesStore, useCategories } from "@/lib/stores";
+import { trackProductEvent } from "@/lib/analytics";
 import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
 import { toast } from "sonner";
 
@@ -161,6 +162,10 @@ export default function RulesPage({
     const snapshot = categoriesStore.getAll().find((c) => c.id === id);
     if (!snapshot) return;
     categoriesStore.remove(id);
+    trackProductEvent("rule_deleted", {
+      rule_type: "category",
+      is_system: snapshot.isSystem,
+    });
     toast.success(
       t("rules.card.deleted.title", { name: snapshot.name[locale] }),
       {
@@ -190,6 +195,10 @@ export default function RulesPage({
       blocklist: kind === "block" ? prev.blocklist.filter((i) => i.merchant !== merchant) : prev.blocklist,
       review: kind === "review" ? prev.review.filter((i) => i.merchant !== merchant) : prev.review,
     }));
+    trackProductEvent("rule_deleted", {
+      rule_type: kind,
+      merchant_present: true,
+    });
 
     const descKey =
       kind === "allow"
@@ -285,7 +294,10 @@ export default function RulesPage({
         <Card className="p-0 overflow-hidden">
           <Tabs
             value={trustTab}
-            onValueChange={(v) => setTrustTab(v as ListKind)}
+            onValueChange={(v) => {
+              trackProductEvent("trust_tab_changed", { tab: v });
+              setTrustTab(v as ListKind);
+            }}
             className="w-full"
           >
             <div className="border-b border-border bg-muted/30 px-4 pt-3">

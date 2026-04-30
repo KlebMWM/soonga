@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
+import { trackProductEvent } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 
 const STORAGE_KEY = "soon-theme";
@@ -54,6 +55,7 @@ export function useTheme() {
       /* localStorage unavailable */
     }
     window.dispatchEvent(new CustomEvent(SYNC_EVENT, { detail: next }));
+    trackProductEvent("theme_changed", { theme: next });
     setTheme(next);
   }, []);
 

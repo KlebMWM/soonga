@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AgentIcon } from "@/components/AgentIcon";
 import { DEMO_EVENTS } from "@/components/DemoControls";
-import { getAgentPlatform, liveFeed, stats, type FeedItem } from "@/lib/mockData";
+import { getAgentPlatformLabel, liveFeed, stats, type FeedItem } from "@/lib/mockData";
 import { simulateAgentAction } from "@/lib/simulateAgent";
 import { pendingStore } from "@/lib/stores";
 import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
@@ -20,7 +20,7 @@ const FILTERS: readonly FilterKind[] = ["all", "pending", "auto", "recent"];
  *  rule was triggered as a red flag ("exceeds", "stored-value", etc.) — every
  *  other reason reads as a pass (under cap, allowlisted, etc.). */
 function ruleTone(reason: string): "ok" | "warn" {
-  if (/超過|可儲值|警示|重複扣款|exceeds|stored-value|alert|recurring/i.test(reason)) {
+  if (/超過|高於|新地址|跨鏈|審核|確認|提領|可儲值|警示|重複扣款|exceeds|above|new address|bridge|review|withdrawal|alert|recurring/i.test(reason)) {
     return "warn";
   }
   return "ok";
@@ -76,7 +76,14 @@ export function AgentFeed({
           currency: "USDC",
           timestamp: new Date().toISOString().replace("T", " ").slice(0, 16),
           why: {
-            zh: `${t(`agent.${next.agent}.name`)} 想要支付 ${next.amount.toFixed(2)} USDC 給 ${next.merchant.zh}。`,
+            zh:
+              next.agent === "shopping"
+                ? `${t(`agent.${next.agent}.name`)} 收到提領到「${next.merchant.zh}」的請求，金額 ${next.amount.toFixed(2)} USDC。`
+                : next.agent === "travel"
+                  ? `${t(`agent.${next.agent}.name`)} 想把 ${next.amount.toFixed(2)} USDC 跨鏈轉到 ${next.merchant.zh}。`
+                  : next.agent === "research"
+                    ? `${t(`agent.${next.agent}.name`)} 想執行 ${next.merchant.zh}，金額 ${next.amount.toFixed(2)} USDC。`
+                    : `${t(`agent.${next.agent}.name`)} 想處理「${next.merchant.zh}」，金額 ${next.amount.toFixed(2)} USDC。`,
             en: `${next.agent} wants to spend ${next.amount.toFixed(2)} USDC at ${next.merchant.en}.`,
           },
           context: {
@@ -283,7 +290,7 @@ export function AgentFeed({
                   >
                     <span>{item.time} · {relative}</span>
                     <span aria-hidden>·</span>
-                    <span>{getAgentPlatform(item.agent)}</span>
+                    <span>{getAgentPlatformLabel(item.agent, locale)}</span>
                   </div>
                   {isPending && item.approvalReason && (
                     <div

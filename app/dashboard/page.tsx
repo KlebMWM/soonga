@@ -15,7 +15,7 @@ import {
 } from "@/components/MetricCard";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { agents, stats } from "@/lib/mockData";
+import { agents, getAgentPlatformLabel, stats } from "@/lib/mockData";
 import { usePendingApprovals } from "@/lib/stores";
 import { useDisplayName } from "@/lib/useDisplayName";
 import { useLocale, useT } from "@/lib/i18n/LocaleProvider";
@@ -46,9 +46,12 @@ export default function DashboardPage() {
   const { name: displayName } = useDisplayName();
 
   useEffect(() => {
-    setNow(new Date());
-    const interval = setInterval(() => setNow(new Date()), 60_000);
-    return () => clearInterval(interval);
+    const timeout = window.setTimeout(() => setNow(new Date()), 0);
+    const interval = window.setInterval(() => setNow(new Date()), 60_000);
+    return () => {
+      window.clearTimeout(timeout);
+      window.clearInterval(interval);
+    };
   }, []);
 
   const burnPercent = Math.round((stats.monthSpent / stats.monthBudget) * 100);
@@ -57,7 +60,6 @@ export default function DashboardPage() {
   const automationPct = Math.round((autoCount / stats.todayTransactions) * 100);
   const deltaDir: "up" | "down" = stats.yesterdayDeltaPct < 0 ? "down" : "up";
   const deltaAbs = Math.abs(stats.yesterdayDeltaPct);
-
   // SSR + first hydration render with hour=23 so server and client agree; the
   // effect then refreshes to the real hour once mounted.
   const hour = now?.getHours() ?? 23;
@@ -70,7 +72,22 @@ export default function DashboardPage() {
           with yellow highlighter) + sub copy on the left; mini-status 3 rows
           on the right (budget / auto / pending, colour-coded by semantics). */}
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 md:gap-10 pb-6 md:pb-8 border-b border-border">
-        <div className="flex-1 min-w-0 space-y-3">
+        <div className="flex-1 min-w-0 space-y-4">
+          <div className="max-w-3xl space-y-2">
+            <h1
+              className="text-[34px] md:text-[48px] font-semibold tracking-tight leading-[1.05]"
+              style={{ color: "var(--headline)" }}
+            >
+              {t("dashboard.exchange.title")}
+            </h1>
+            <p
+              className="text-[16px] md:text-[18px] leading-relaxed"
+              style={{ color: "var(--paragraph)" }}
+            >
+              {t("dashboard.exchange.subtitle")}
+            </p>
+          </div>
+
           {/* Tag */}
           <div
             className="inline-flex items-center gap-2.5 border px-4 py-2 text-[13px] font-semibold"
@@ -91,7 +108,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Headline */}
-          <h1
+          <div
             className="text-[40px] md:text-[52px] tracking-tight leading-[1.05]"
             style={{ color: "var(--headline)" }}
           >
@@ -110,14 +127,14 @@ export default function DashboardPage() {
             >
               {displayName}
             </span>
-          </h1>
+          </div>
 
           {/* Sub copy with bold numbers */}
           <p
             className="text-[16px] leading-relaxed max-w-xl"
             style={{ color: "var(--paragraph)" }}
           >
-            {t("dashboard.greeting.sub.prefix")}
+            {t("dashboard.greeting.sub.prefix", { agents: stats.activeAgents })}
             <strong
               className="font-semibold"
               style={{ color: "var(--headline)" }}
@@ -488,7 +505,7 @@ export default function DashboardPage() {
                     <div className="flex items-center gap-2 text-sm">
                       <span className="font-medium">{t(`agent.${agent.name}.name`)}</span>
                       <Badge variant="outline" className="h-5 text-[11px] font-mono font-medium text-muted-foreground">
-                        {agent.platform}
+                        {getAgentPlatformLabel(agent.name, locale)}
                       </Badge>
                       {isPaused && (
                         <Badge variant="outline" className="h-5 text-[11px] font-medium text-muted-foreground">

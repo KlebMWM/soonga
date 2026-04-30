@@ -2,6 +2,7 @@
 
 import { Languages } from "lucide-react";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
+import { trackProductEvent } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 
 export function LocaleToggle({ variant = "sidebar" }: { variant?: "sidebar" | "mobile" }) {
@@ -27,10 +28,24 @@ export function LocaleToggle({ variant = "sidebar" }: { variant?: "sidebar" | "m
           <Languages className="h-3 w-3" />
         </div>
       )}
-      <button onClick={() => setLocale("zh")} className={btn(locale === "zh")} aria-pressed={locale === "zh"}>
+      <button
+        onClick={() => {
+          trackProductEvent("locale_changed", { locale: "zh" });
+          setLocale("zh");
+        }}
+        className={btn(locale === "zh")}
+        aria-pressed={locale === "zh"}
+      >
         中
       </button>
-      <button onClick={() => setLocale("en")} className={btn(locale === "en")} aria-pressed={locale === "en"}>
+      <button
+        onClick={() => {
+          trackProductEvent("locale_changed", { locale: "en" });
+          setLocale("en");
+        }}
+        className={btn(locale === "en")}
+        aria-pressed={locale === "en"}
+      >
         EN
       </button>
     </div>
