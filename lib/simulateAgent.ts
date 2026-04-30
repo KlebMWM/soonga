@@ -7,22 +7,21 @@ type MerchantDef = {
     en: string;
   };
   agent: string;
-  agentAvatar: string;
   range: [number, number];
   whitelist: boolean;
 };
 
 const merchantsPool: MerchantDef[] = [
-  { name: { zh: "Notion 訂閱續費", en: "Notion subscription renewal" }, agent: "research", agentAvatar: "📰", range: [80, 140], whitelist: false },
-  { name: { zh: "Anthropic API 服務費", en: "Anthropic API service fee" }, agent: "research", agentAvatar: "📰", range: [0.3, 1.5], whitelist: true },
-  { name: { zh: "OpenAI API 服務費", en: "OpenAI API service fee" }, agent: "research", agentAvatar: "📰", range: [0.2, 0.9], whitelist: true },
-  { name: { zh: "TradingView Pro 月費", en: "TradingView Pro monthly" }, agent: "research", agentAvatar: "📰", range: [40, 60], whitelist: true },
-  { name: { zh: "Stripe 月費", en: "Stripe monthly" }, agent: "research", agentAvatar: "📰", range: [20, 30], whitelist: true },
-  { name: { zh: "付款給 Acme 供應商錢包", en: "Pay Acme vendor wallet" }, agent: "travel", agentAvatar: "💸", range: [80, 250], whitelist: true },
-  { name: { zh: "付款給 Base 營運錢包", en: "Pay Base ops wallet" }, agent: "travel", agentAvatar: "💸", range: [25, 80], whitelist: true },
-  { name: { zh: "付款給自由工作者錢包", en: "Pay freelancer wallet" }, agent: "travel", agentAvatar: "💸", range: [120, 400], whitelist: false },
-  { name: { zh: "提領到財務冷錢包", en: "Withdraw to finance cold wallet" }, agent: "shopping", agentAvatar: "🛡️", range: [600, 1200], whitelist: false },
-  { name: { zh: "提領到已信任冷錢包", en: "Withdraw to allowlisted cold wallet" }, agent: "shopping", agentAvatar: "🛡️", range: [80, 250], whitelist: true },
+  { name: { zh: "Notion 訂閱續費", en: "Notion subscription renewal" }, agent: "research", range: [80, 140], whitelist: false },
+  { name: { zh: "Anthropic API 服務費", en: "Anthropic API service fee" }, agent: "research", range: [0.3, 1.5], whitelist: true },
+  { name: { zh: "OpenAI API 服務費", en: "OpenAI API service fee" }, agent: "research", range: [0.2, 0.9], whitelist: true },
+  { name: { zh: "TradingView Pro 月費", en: "TradingView Pro monthly" }, agent: "research", range: [40, 60], whitelist: true },
+  { name: { zh: "Stripe 月費", en: "Stripe monthly" }, agent: "research", range: [20, 30], whitelist: true },
+  { name: { zh: "付款給 Acme 供應商錢包", en: "Pay Acme vendor wallet" }, agent: "travel", range: [80, 250], whitelist: true },
+  { name: { zh: "付款給 Base 營運錢包", en: "Pay Base ops wallet" }, agent: "travel", range: [25, 80], whitelist: true },
+  { name: { zh: "付款給自由工作者錢包", en: "Pay freelancer wallet" }, agent: "travel", range: [120, 400], whitelist: false },
+  { name: { zh: "提領到財務冷錢包", en: "Withdraw to finance cold wallet" }, agent: "shopping", range: [600, 1200], whitelist: false },
+  { name: { zh: "提領到已信任冷錢包", en: "Withdraw to allowlisted cold wallet" }, agent: "shopping", range: [80, 250], whitelist: true },
 ];
 
 function randomAmount(min: number, max: number) {
@@ -68,7 +67,6 @@ export function simulateAgentAction(): FeedItem {
     id: `f_sim_${feedCounter}`,
     time: nowTime(),
     agent: merchant.agent,
-    agentAvatar: merchant.agentAvatar,
     merchant: merchant.name,
     amount,
     status,

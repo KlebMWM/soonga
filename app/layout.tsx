@@ -46,9 +46,9 @@ const notoSerifTC = Noto_Serif_TC({
 });
 
 export const metadata: Metadata = {
-  title: "soon-ga.agent: AI Agent Permission and Payment Governance for Crypto Exchanges",
+  title: "soon-ga.agent: AI Agent Rule Console for Web3 Product Scenarios",
   description:
-    "AI agent permission and payment governance for crypto exchanges · Set limits, review risky actions, and audit what agents do with user assets.",
+    "AI agent rule console for Web3 product scenarios · Set agent budgets and recipients, approve risky actions, and review what happened.",
 };
 
 export default function RootLayout({

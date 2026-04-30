@@ -188,7 +188,6 @@ export function approvalToAuditEntry(
     id: `audit_${Date.now()}_${approval.id}`,
     timestamp: new Date().toISOString().replace("T", " ").slice(0, 16),
     agent: approval.agent,
-    agentAvatar: approval.agentAvatar,
     merchant: approval.merchant,
     amount: approval.amount,
     decision,

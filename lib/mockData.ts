@@ -10,7 +10,6 @@ export type Agent = {
    *  resolve via i18n — `t(\`agent.${name}.name\`)` — for locale awareness;
    *  this field is the static fallback. */
   displayName: string;
-  avatar: string;
   /** Mock source platform. This is product-facing provider awareness only:
    *  the prototype does not connect to these APIs. */
   platform: string;
@@ -39,7 +38,6 @@ export type FeedItem = {
   id: string;
   time: string;
   agent: string;
-  agentAvatar: string;
   merchant: Bilingual;
   amount: number;
   status: "auto-approved" | "pending" | "rejected" | "approved";
@@ -66,7 +64,6 @@ export type Risk = {
 export type PendingApproval = {
   id: string;
   agent: string;
-  agentAvatar: string;
   merchant: Bilingual;
   amount: number;
   currency: string;
@@ -126,7 +123,6 @@ export type AuditEntry = {
   id: string;
   timestamp: string;
   agent: string;
-  agentAvatar: string;
   merchant: Bilingual;
   amount: number;
   decision: "approved" | "rejected" | "auto-approved";
@@ -145,7 +141,6 @@ export const agents: Agent[] = [
     id: "a1",
     name: "research",
     displayName: "訂閱助理",
-    avatar: "📰",
     platform: "Subscription AI",
     role: b("SaaS 訂閱與服務費", "SaaS subscriptions and service fees"),
     status: "active",
@@ -156,7 +151,6 @@ export const agents: Agent[] = [
     id: "a2",
     name: "travel",
     displayName: "付款助理",
-    avatar: "💸",
     platform: "Payment AI",
     role: b("合作方錢包付款", "Vendor and contractor wallet payments"),
     status: "active",
@@ -167,7 +161,6 @@ export const agents: Agent[] = [
     id: "a3",
     name: "shopping",
     displayName: "安全助理",
-    avatar: "🛡️",
     platform: "Risk Agent",
     role: b("提領與新地址檢查", "Withdrawals and new-address checks"),
     status: "paused",
@@ -178,7 +171,6 @@ export const agents: Agent[] = [
     id: "a4",
     name: "newsletter",
     displayName: "監控助理",
-    avatar: "📊",
     platform: "Monitor Agent",
     role: b("預算監控與異常告警", "Budget monitoring and anomaly alerts"),
     status: "active",
@@ -273,7 +265,6 @@ export const liveFeed: FeedItem[] = [
     id: "f1",
     time: "23:19",
     agent: "shopping",
-    agentAvatar: "🛡️",
     merchant: b("提領到財務冷錢包", "Withdraw to finance cold wallet"),
     amount: 1000.0,
     status: "pending",
@@ -285,7 +276,6 @@ export const liveFeed: FeedItem[] = [
     id: "f2",
     time: "23:17",
     agent: "travel",
-    agentAvatar: "💸",
     merchant: b("付款給 Acme 供應商錢包", "Pay Acme vendor wallet"),
     amount: 200.0,
     status: "pending",
@@ -297,7 +287,6 @@ export const liveFeed: FeedItem[] = [
     id: "f3",
     time: "23:14",
     agent: "research",
-    agentAvatar: "📰",
     merchant: b("Notion 訂閱續費（漲價）", "Notion subscription renewal (price up)"),
     amount: 120.0,
     status: "pending",
@@ -309,7 +298,6 @@ export const liveFeed: FeedItem[] = [
     id: "f4",
     time: "23:12",
     agent: "research",
-    agentAvatar: "📰",
     merchant: b("TradingView Pro 年費", "TradingView Pro annual"),
     amount: 468.0,
     status: "pending",
@@ -321,7 +309,6 @@ export const liveFeed: FeedItem[] = [
     id: "f5",
     time: "23:10",
     agent: "shopping",
-    agentAvatar: "🛡️",
     merchant: b("Base 營運錢包加入信任名單", "Add Base ops wallet to allowlist"),
     amount: 0,
     status: "pending",
@@ -333,7 +320,6 @@ export const liveFeed: FeedItem[] = [
     id: "f6",
     time: "23:05",
     agent: "research",
-    agentAvatar: "📰",
     merchant: b("Anthropic API 服務費", "Anthropic API service fee"),
     amount: 0.87,
     status: "auto-approved",
@@ -409,7 +395,6 @@ export const pendingApprovals: PendingApproval[] = [
   {
     id: "ap_001",
     agent: "shopping",
-    agentAvatar: "🛡️",
     merchant: b("提領 1,000 USDC 到財務冷錢包", "Withdraw 1,000 USDC · Finance cold wallet"),
     amount: 1000,
     currency: "USDC",
@@ -475,7 +460,6 @@ export const pendingApprovals: PendingApproval[] = [
   {
     id: "ap_002",
     agent: "travel",
-    agentAvatar: "💸",
     merchant: b("付款 200 USDC 給 Acme 供應商錢包", "Pay 200 USDC to Acme vendor wallet"),
     amount: 200,
     currency: "USDC",
@@ -541,7 +525,6 @@ export const pendingApprovals: PendingApproval[] = [
   {
     id: "ap_003",
     agent: "research",
-    agentAvatar: "📰",
     merchant: b("Notion 訂閱續費（漲價）", "Notion subscription renewal (price up)"),
     amount: 120,
     currency: "USDC",
@@ -607,7 +590,6 @@ export const pendingApprovals: PendingApproval[] = [
   {
     id: "ap_004",
     agent: "research",
-    agentAvatar: "📰",
     merchant: b("TradingView Pro 年費", "TradingView Pro annual"),
     amount: 468,
     currency: "USDC",
@@ -673,7 +655,6 @@ export const pendingApprovals: PendingApproval[] = [
   {
     id: "ap_005",
     agent: "travel",
-    agentAvatar: "💸",
     merchant: b("付款 350 USDC 給自由工作者錢包", "Pay 350 USDC to freelancer wallet"),
     amount: 350,
     currency: "USDC",
@@ -743,7 +724,6 @@ export const auditLog: AuditEntry[] = [
     id: "tx_042",
     timestamp: "2026-04-22 14:33",
     agent: "research",
-    agentAvatar: "📰",
     merchant: b("Notion 訂閱續費", "Notion subscription renewal"),
     amount: 12.0,
     decision: "auto-approved",
@@ -760,7 +740,6 @@ export const auditLog: AuditEntry[] = [
     id: "tx_041",
     timestamp: "2026-04-22 11:08",
     agent: "shopping",
-    agentAvatar: "🛡️",
     merchant: b("提領 142 USDC 到 0x4f...c2a", "Withdraw 142 USDC to 0x4f...c2a"),
     amount: 142.0,
     decision: "rejected",
@@ -777,7 +756,6 @@ export const auditLog: AuditEntry[] = [
     id: "tx_040",
     timestamp: "2026-04-22 09:15",
     agent: "research",
-    agentAvatar: "📰",
     merchant: b("Anthropic API 服務費", "Anthropic API service fee"),
     amount: 0.42,
     decision: "auto-approved",
@@ -794,7 +772,6 @@ export const auditLog: AuditEntry[] = [
     id: "tx_039",
     timestamp: "2026-04-22 08:47",
     agent: "research",
-    agentAvatar: "📰",
     merchant: b("TradingView Pro 月費", "TradingView Pro monthly"),
     amount: 49.0,
     decision: "auto-approved",
@@ -811,7 +788,6 @@ export const auditLog: AuditEntry[] = [
     id: "tx_038",
     timestamp: "2026-04-21 22:14",
     agent: "shopping",
-    agentAvatar: "🛡️",
     merchant: b("封鎖 fast-cash-loan.io", "Block fast-cash-loan.io"),
     amount: 48.0,
     decision: "rejected",
@@ -828,7 +804,6 @@ export const auditLog: AuditEntry[] = [
     id: "tx_037",
     timestamp: "2026-04-21 18:02",
     agent: "travel",
-    agentAvatar: "💸",
     merchant: b("付款給 Acme 供應商錢包", "Pay Acme vendor wallet"),
     amount: 89.4,
     decision: "approved",
@@ -846,7 +821,6 @@ export const auditLog: AuditEntry[] = [
     id: "tx_036",
     timestamp: "2026-04-21 14:35",
     agent: "research",
-    agentAvatar: "📰",
     merchant: b("OpenAI API 服務費", "OpenAI API service fee"),
     amount: 0.87,
     decision: "auto-approved",
@@ -863,7 +837,6 @@ export const auditLog: AuditEntry[] = [
     id: "tx_035",
     timestamp: "2026-04-21 10:22",
     agent: "research",
-    agentAvatar: "📰",
     merchant: b("Stripe 月費", "Stripe monthly"),
     amount: 25.0,
     decision: "auto-approved",
@@ -880,7 +853,6 @@ export const auditLog: AuditEntry[] = [
     id: "tx_034",
     timestamp: "2026-04-21 09:00",
     agent: "shopping",
-    agentAvatar: "🛡️",
     merchant: b("提領 10 USDC 到財務冷錢包（測試）", "Test withdraw 10 USDC to finance cold wallet"),
     amount: 10.0,
     decision: "approved",
@@ -898,7 +870,6 @@ export const auditLog: AuditEntry[] = [
     id: "tx_033",
     timestamp: "2026-04-20 21:47",
     agent: "travel",
-    agentAvatar: "💸",
     merchant: b("付款給 Base 營運錢包", "Pay Base ops wallet"),
     amount: 28.0,
     decision: "auto-approved",
@@ -915,7 +886,6 @@ export const auditLog: AuditEntry[] = [
     id: "tx_032",
     timestamp: "2026-04-20 15:12",
     agent: "shopping",
-    agentAvatar: "🛡️",
     merchant: b("加 Base 營運錢包到信任名單", "Allowlist Base ops wallet"),
     amount: 0,
     decision: "approved",
@@ -932,7 +902,6 @@ export const auditLog: AuditEntry[] = [
     id: "tx_031",
     timestamp: "2026-04-20 11:33",
     agent: "research",
-    agentAvatar: "📰",
     merchant: b("OpenAI API 小額查詢", "OpenAI API small query"),
     amount: 0.2,
     decision: "auto-approved",
@@ -946,7 +915,6 @@ export const auditLog: AuditEntry[] = [
     id: "tx_030",
     timestamp: "2026-04-20 08:40",
     agent: "research",
-    agentAvatar: "📰",
     merchant: b("GitHub Copilot 月費", "GitHub Copilot monthly"),
     amount: 10.0,
     decision: "auto-approved",
@@ -960,7 +928,6 @@ export const auditLog: AuditEntry[] = [
     id: "tx_029",
     timestamp: "2026-04-19 19:15",
     agent: "research",
-    agentAvatar: "📰",
     merchant: b("Anthropic API 服務費", "Anthropic API service fee"),
     amount: 0.05,
     decision: "auto-approved",
@@ -977,7 +944,6 @@ export const auditLog: AuditEntry[] = [
     id: "tx_028",
     timestamp: "2026-04-19 14:02",
     agent: "travel",
-    agentAvatar: "💸",
     merchant: b("付款給自由工作者錢包 0xa3...b4f", "Pay freelancer wallet 0xa3...b4f"),
     amount: 175.0,
     decision: "auto-approved",

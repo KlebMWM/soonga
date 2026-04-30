@@ -70,7 +70,6 @@ export function AgentFeed({
         pendingStore.add({
           id: `synth_${next.id}`,
           agent: next.agent,
-          agentAvatar: next.agentAvatar,
           merchant: next.merchant,
           amount: next.amount,
           currency: "USDC",
