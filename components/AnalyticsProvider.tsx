@@ -11,7 +11,7 @@ import {
 
 export function AnalyticsProvider() {
   const pathname = usePathname();
-  const enteredAtRef = useRef(Date.now());
+  const enteredAtRef = useRef<number | null>(null);
   const previousPathRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export function AnalyticsProvider() {
     if (previousPath) {
       trackProductEvent("page_exited", {
         path: previousPath,
-        duration_ms: now - enteredAtRef.current,
+        duration_ms: now - (enteredAtRef.current ?? now),
       });
     }
 
@@ -38,9 +38,10 @@ export function AnalyticsProvider() {
     return () => {
       const previousPath = previousPathRef.current;
       if (!previousPath) return;
+      const now = Date.now();
       trackProductEvent("page_exited", {
         path: previousPath,
-        duration_ms: Date.now() - enteredAtRef.current,
+        duration_ms: now - (enteredAtRef.current ?? now),
       });
     };
   }, []);

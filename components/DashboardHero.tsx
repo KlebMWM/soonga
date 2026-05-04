@@ -27,10 +27,15 @@ export function DashboardHero({ pendingCount }: { pendingCount?: number } = {}) 
 
   useEffect(() => {
     if (count !== displayCount) {
-      setExitingCount(displayCount);
-      setDisplayCount(count);
-      const t = setTimeout(() => setExitingCount(null), 240);
-      return () => clearTimeout(t);
+      const startTimer = setTimeout(() => {
+        setExitingCount(displayCount);
+        setDisplayCount(count);
+      }, 0);
+      const clearTimer = setTimeout(() => setExitingCount(null), 240);
+      return () => {
+        clearTimeout(startTimer);
+        clearTimeout(clearTimer);
+      };
     }
   }, [count, displayCount]);
 

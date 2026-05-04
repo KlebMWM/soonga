@@ -19,16 +19,19 @@ export function useTheme() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
-    setMounted(true);
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === "dark" || stored === "light") {
-      setTheme(stored);
-    } else if (
-      typeof document !== "undefined" &&
-      document.documentElement.classList.contains("dark")
-    ) {
-      setTheme("dark");
-    }
+    const timer = setTimeout(() => {
+      setMounted(true);
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored === "dark" || stored === "light") {
+        setTheme(stored);
+      } else if (
+        typeof document !== "undefined" &&
+        document.documentElement.classList.contains("dark")
+      ) {
+        setTheme("dark");
+      }
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   // Listen for changes from other useTheme consumers in the same page.

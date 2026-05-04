@@ -89,7 +89,10 @@ export function WelcomeModal() {
   // Re-sync draft whenever modal opens (user may have typed but not saved
   // last time, or storedName changed via another tab).
   useEffect(() => {
-    if (open) setNameDraft(storedName);
+    if (open) {
+      const timer = setTimeout(() => setNameDraft(storedName), 0);
+      return () => clearTimeout(timer);
+    }
   }, [open, storedName]);
 
   const handleClose = () => {

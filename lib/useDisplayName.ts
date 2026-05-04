@@ -34,13 +34,15 @@ export function useDisplayName(): {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    try {
-      const stored = window.localStorage.getItem(STORAGE_KEY);
-      if (stored && stored.trim()) setNameState(stored);
-    } catch {
-      /* localStorage unavailable — stick with default */
-    }
+    const timer = setTimeout(() => {
+      setMounted(true);
+      try {
+        const stored = window.localStorage.getItem(STORAGE_KEY);
+        if (stored && stored.trim()) setNameState(stored);
+      } catch {
+        /* localStorage unavailable — stick with default */
+      }
+    }, 0);
 
     // Cross-instance live update: another useDisplayName instance
     // dispatched a name change. Sync our local state to match.
@@ -49,7 +51,10 @@ export function useDisplayName(): {
       if (typeof detail === "string") setNameState(detail);
     };
     window.addEventListener(STORAGE_EVENT, handler);
-    return () => window.removeEventListener(STORAGE_EVENT, handler);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener(STORAGE_EVENT, handler);
+    };
   }, []);
 
   const setName = (next: string) => {

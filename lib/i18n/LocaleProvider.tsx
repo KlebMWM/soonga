@@ -20,12 +20,15 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(DEFAULT_LOCALE);
 
   useEffect(() => {
-    try {
-      const stored = window.localStorage.getItem(STORAGE_KEY);
-      if (isLocale(stored)) setLocaleState(stored);
-    } catch {
-      /* ignore */
-    }
+    const timer = setTimeout(() => {
+      try {
+        const stored = window.localStorage.getItem(STORAGE_KEY);
+        if (isLocale(stored)) setLocaleState(stored);
+      } catch {
+        /* ignore */
+      }
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {

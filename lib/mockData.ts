@@ -445,7 +445,7 @@ export const pendingApprovals: PendingApproval[] = [
       onApprove: [
         b("送出 1,000 USDC 提領", "Submit the 1,000 USDC withdrawal"),
         b("新地址會被記錄為本次審核通過", "New address is recorded as reviewed for this action"),
-        b("提領結果寫入 Audit Trail", "Withdrawal result is written to Audit Trail"),
+        b("提領結果寫入活動紀錄", "Withdrawal result is written to activity history"),
       ],
       onAdjust: [
         b("暫停這筆，檢查地址白名單", "Pause this and review address allowlisting"),
@@ -510,7 +510,7 @@ export const pendingApprovals: PendingApproval[] = [
       onApprove: [
         b("立即支付 200 USDC", "Pay 200 USDC immediately"),
         b("Acme 供應商錢包收到資金", "Acme vendor wallet receives the funds"),
-        b("付款紀錄寫入 Audit Trail", "Payment is written to Audit Trail"),
+        b("付款紀錄寫入活動紀錄", "Payment is written to activity history"),
       ],
       onAdjust: [
         b("暫停這筆，把 Acme 加入信任名單", "Pause this and add Acme to allowlist"),
@@ -575,7 +575,7 @@ export const pendingApprovals: PendingApproval[] = [
       onApprove: [
         b("立即支付 120 USDC 給 Notion", "Pay 120 USDC to Notion immediately"),
         b("Notion 服務維持啟用", "Notion service remains active"),
-        b("付款紀錄寫入 Audit Trail", "Payment is written to Audit Trail"),
+        b("付款紀錄寫入活動紀錄", "Payment is written to activity history"),
       ],
       onAdjust: [
         b("暫停這筆，調高訂閱單筆上限", "Pause this and raise the subscription per-payment cap"),
@@ -640,7 +640,7 @@ export const pendingApprovals: PendingApproval[] = [
       onApprove: [
         b("立即支付 468 USDC 年費", "Pay 468 USDC for annual subscription"),
         b("TradingView Pro 服務維持一年", "TradingView Pro stays active for a year"),
-        b("付款紀錄寫入 Audit Trail", "Payment is written to Audit Trail"),
+        b("付款紀錄寫入活動紀錄", "Payment is written to activity history"),
       ],
       onAdjust: [
         b("暫停這筆，改回月付方案", "Pause this and switch back to monthly billing"),
@@ -705,7 +705,7 @@ export const pendingApprovals: PendingApproval[] = [
       onApprove: [
         b("立即支付 350 USDC", "Pay 350 USDC immediately"),
         b("自由工作者錢包收到資金", "Freelancer wallet receives the funds"),
-        b("付款紀錄寫入 Audit Trail", "Payment is written to Audit Trail"),
+        b("付款紀錄寫入活動紀錄", "Payment is written to activity history"),
       ],
       onAdjust: [
         b("暫停這筆，要求 agent 拆成兩次付款", "Pause this and ask agent to split into two payments"),

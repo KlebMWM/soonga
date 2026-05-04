@@ -8,11 +8,14 @@ export function useDesktopNotifications() {
   const [permission, setPermission] = useState<NotifPermission>("default");
 
   useEffect(() => {
-    if (typeof window === "undefined" || !("Notification" in window)) {
-      setPermission("unsupported");
-      return;
-    }
-    setPermission(Notification.permission);
+    const timer = setTimeout(() => {
+      if (typeof window === "undefined" || !("Notification" in window)) {
+        setPermission("unsupported");
+        return;
+      }
+      setPermission(Notification.permission);
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   const request = useCallback(async (): Promise<NotifPermission> => {

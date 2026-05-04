@@ -120,16 +120,21 @@ export function NewRuleUnifiedDialog({
     if (mode !== "allow" && mode !== "block") return;
     const input = merchant.trim();
     if (!input) {
-      setSafety(null);
-      setChecking(false);
-      return;
+      const timer = setTimeout(() => {
+        setSafety(null);
+        setChecking(false);
+      }, 0);
+      return () => clearTimeout(timer);
     }
-    setChecking(true);
+    const checkingTimer = setTimeout(() => setChecking(true), 0);
     const timer = setTimeout(() => {
       setSafety(checkMerchantSafety(input));
       setChecking(false);
     }, 700);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(checkingTimer);
+      clearTimeout(timer);
+    };
   }, [merchant, mode]);
 
   const warningKey = useMemo(() => {

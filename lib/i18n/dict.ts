@@ -18,15 +18,15 @@ export const dict: Dict = {
   "nav.rules.sub": { zh: "額度與信任名單", en: "Budgets & trust lists" },
   "nav.approvals.label": { zh: "待審核", en: "Approvals" },
   "nav.approvals.sub": { zh: "待審核", en: "Waiting on you" },
-  "nav.audit.label": { zh: "決策紀錄", en: "Audit Trail" },
-  "nav.audit.sub": { zh: "決策日誌", en: "Decision log" },
+  "nav.audit.label": { zh: "AI 助理活動紀錄", en: "Agent Activity History" },
+  "nav.audit.sub": { zh: "請求與決策", en: "Requests and decisions" },
   "nav.guide.label": { zh: "使用說明", en: "Guide" },
   "nav.guide.sub": { zh: "3 分鐘快速上手", en: "3-minute walkthrough" },
 
   "nav.mobile.dashboard": { zh: "總覽", en: "Home" },
   "nav.mobile.rules": { zh: "規則", en: "Rules" },
   "nav.mobile.approvals": { zh: "審核", en: "Approvals" },
-  "nav.mobile.audit": { zh: "日誌", en: "Audit" },
+  "nav.mobile.audit": { zh: "紀錄", en: "History" },
   "nav.mobile.guide": { zh: "說明", en: "Guide" },
   "nav.help.label": { zh: "原型說明", en: "Prototype guide" },
   "nav.exchange.contextTitle": { zh: "Exchange Module · AI Agent", en: "Exchange Module · AI Agent" },
@@ -116,8 +116,8 @@ export const dict: Dict = {
     en: "soon-ga.agent",
   },
   "dashboard.exchange.subtitle": {
-    zh: "為交易所與 Web3 設計的 AI agent 規則控制台",
-    en: "Rule console for AI agents on crypto exchanges and Web3",
+    zh: "為交易所與 Web3「錢包」設計的 AI agent 規則控制台",
+    en: "Rule console for AI agents on crypto exchanges and Web3 wallets",
   },
   "intro.headline": {
     zh: "Web3 場景下的 AI 助理規則控制台",
@@ -345,7 +345,7 @@ export const dict: Dict = {
 
   // ==================== Feed ====================
   "feed.title": { zh: "最近動態", en: "Recent activity" },
-  "feed.viewAll": { zh: "看完整日誌", en: "See full audit log" },
+  "feed.viewAll": { zh: "看完整紀錄", en: "See full activity history" },
   "feed.status.autoApproved": { zh: "自動核准", en: "Auto-approved" },
   "feed.status.pending": { zh: "等待審核", en: "Awaiting you" },
   "feed.status.approved": { zh: "已核准", en: "Approved" },
@@ -391,7 +391,7 @@ export const dict: Dict = {
     en: "When everything's handled, this page goes calm. Agents work within the rules. You don't have to do anything.",
   },
   "approvals.empty.title": { zh: "待審佇列已清空", en: "Approval queue is clear" },
-  "approvals.empty.audit": { zh: "查看審計軌跡", en: "View audit trail" },
+  "approvals.empty.audit": { zh: "查看活動紀錄", en: "View activity history" },
   "approvals.empty.rules": { zh: "調整規則", en: "Adjust rules" },
   "approvals.list.title": { zh: "待審佇列", en: "Pending queue" },
   "approvals.bulk.hint": {
@@ -401,8 +401,8 @@ export const dict: Dict = {
   "approvals.bulk.button": { zh: "全部核准（{count} 筆）", en: "Approve all ({count})" },
   "approvals.bulk.title": { zh: "全部核准 {count} 筆？", en: "Approve all {count}?" },
   "approvals.bulk.desc": {
-    zh: "這會把下列請求全部核准，並各自寫入審計軌跡。",
-    en: "This approves every request below and writes each decision to the audit trail.",
+    zh: "這會把下列請求全部核准，並各自寫入活動紀錄。",
+    en: "This approves every request below and writes each decision to your activity history.",
   },
   "approvals.bulk.cancel": { zh: "取消", en: "Cancel" },
   "approvals.bulk.confirm": { zh: "確認核准 {count} 筆", en: "Approve {count}" },
@@ -512,8 +512,8 @@ export const dict: Dict = {
   },
   "approval.toast.bulk.title": { zh: "已核准 {count} 筆待審", en: "Approved {count} requests" },
   "approval.toast.bulk.desc": {
-    zh: "每筆決策都已寫入審計軌跡",
-    en: "Each decision was written to Audit",
+    zh: "每筆決策都已寫入活動紀錄",
+    en: "Each decision was written to your activity history",
   },
 
   // ==================== Feed toasts ====================
@@ -629,14 +629,14 @@ export const dict: Dict = {
   "rules.new.defaultDesc": { zh: "自訂類別", en: "Custom category" },
 
   // ==================== Audit ====================
-  "audit.eyebrow": { zh: "Audit Trail", en: "Audit Trail" },
-  "audit.title": { zh: "決策日誌", en: "Decision log" },
+  "audit.eyebrow": { zh: "Agent Activity History", en: "Agent Activity History" },
+  "audit.title": { zh: "AI 助理活動紀錄", en: "Activity history" },
   "audit.desc": {
     zh: "每一筆 AI 助理支付、來源平台、你的決定、規則說明都在這裡。可以依 AI 助理、平台或決策類型篩選，展開看完整脈絡，一鍵匯出 CSV 作為個人財務紀錄。",
     en: "Every agent payment, source platform, your decision, and the rule-based explanation behind it. Filter by agent, platform, or decision type, expand for full context, and export CSV for personal finance records.",
   },
-  "audit.export": { zh: "匯出完整日誌", en: "Export full log" },
-  "audit.exported.title": { zh: "已匯出完整日誌", en: "Full audit log exported" },
+  "audit.export": { zh: "匯出完整紀錄", en: "Export full history" },
+  "audit.exported.title": { zh: "已匯出完整紀錄", en: "Activity history exported" },
   "audit.exported.desc": {
     zh: "{n} 筆紀錄已下載為 CSV",
     en: "{n} rows saved as CSV",
@@ -651,13 +651,13 @@ export const dict: Dict = {
   "audit.copied.title": { zh: "已複製 CSV", en: "CSV copied" },
   "audit.copied.desc": { zh: "共 {n} 筆資料", en: "{n} rows" },
   "audit.empty": {
-    zh: "目前還沒有審計紀錄。核准或拒絕待審請求後，決策會出現在這裡。",
+    zh: "目前還沒有活動紀錄。核准或拒絕待審請求後，決策會出現在這裡。",
     en: "No audit records yet. Approve or reject a pending request and the decision will appear here.",
   },
   "audit.empty.title": { zh: "沒有可顯示的紀錄", en: "No records to show" },
   "audit.empty.filtered": {
-    zh: "目前篩選條件沒有符合的紀錄。清除篩選後可以回到完整審計軌跡。",
-    en: "No records match the current filters. Reset filters to return to the full audit trail.",
+    zh: "目前篩選條件沒有符合的紀錄。清除篩選後可以回到完整活動紀錄。",
+    en: "No records match the current filters. Reset filters to return to the full activity history.",
   },
   "audit.empty.reset": { zh: "清除篩選", en: "Reset filters" },
 
@@ -810,7 +810,7 @@ export const dict: Dict = {
     zh: "規則命中與事件脈絡翻成人話．30 秒內決定核准、拒絕，或請 AI 找替代方案。",
     en: "Rule matches and event context in plain language. Decide in 30 seconds: approve, reject, or ask for a counter-offer.",
   },
-  "welcome.module.audit.title": { zh: "決策日誌（Audit Trail）", en: "Audit Trail" },
+  "welcome.module.audit.title": { zh: "AI 助理活動紀錄", en: "Agent Activity History" },
   "welcome.module.audit.desc": {
     zh: "每一筆 AI 助理決定都可追溯．一鍵匯出 CSV 作為個人財務紀錄。",
     en: "Every agent decision is traceable. Export CSV for personal finance records in one click.",

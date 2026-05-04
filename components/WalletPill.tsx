@@ -80,18 +80,21 @@ export function WalletPill({ variant = "sidebar" }: { variant?: "sidebar" | "mob
   const [provider, setProvider] = useState<ProviderId | null>(null);
 
   useEffect(() => {
-    setMounted(true);
-    const isConnected =
-      typeof window !== "undefined" && window.localStorage.getItem(CONNECTED_KEY) === "1";
-    setConnected(isConnected);
-    if (isConnected) {
-      const stored = window.localStorage.getItem(PROVIDER_KEY);
-      if (stored && PROVIDERS.some((p) => p.id === stored)) {
-        setProvider(stored as ProviderId);
-      } else {
-        setProvider("coinbase");
+    const timer = setTimeout(() => {
+      setMounted(true);
+      const isConnected =
+        typeof window !== "undefined" && window.localStorage.getItem(CONNECTED_KEY) === "1";
+      setConnected(isConnected);
+      if (isConnected) {
+        const stored = window.localStorage.getItem(PROVIDER_KEY);
+        if (stored && PROVIDERS.some((p) => p.id === stored)) {
+          setProvider(stored as ProviderId);
+        } else {
+          setProvider("coinbase");
+        }
       }
-    }
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   if (!mounted) {

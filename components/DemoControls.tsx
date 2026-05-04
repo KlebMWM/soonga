@@ -52,7 +52,8 @@ export function DemoControls() {
     const hasQuery =
       typeof window !== "undefined" &&
       new URLSearchParams(window.location.search).has("demo");
-    setVisible(isDev || hasQuery);
+    const timer = setTimeout(() => setVisible(isDev || hasQuery), 0);
+    return () => clearTimeout(timer);
   }, []);
 
   if (!visible) return null;

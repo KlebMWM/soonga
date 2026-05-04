@@ -134,17 +134,27 @@ export default function RulesPage({
   const [highlightedTrustMerchant, setHighlightedTrustMerchant] = useState("");
   useEffect(() => {
     if (auditCategoryId) {
-      setHighlightId(auditCategoryId);
-      const timer = setTimeout(() => setHighlightId(""), 3000);
-      return () => clearTimeout(timer);
+      const startTimer = setTimeout(() => {
+        setHighlightId(auditCategoryId);
+      }, 0);
+      const clearTimer = setTimeout(() => setHighlightId(""), 3000);
+      return () => {
+        clearTimeout(startTimer);
+        clearTimeout(clearTimer);
+      };
     }
   }, [auditCategoryId]);
   useEffect(() => {
     if (auditTrustTab && merchantParam) {
-      setTrustTab(auditTrustTab);
-      setHighlightedTrustMerchant(merchantParam);
-      const timer = setTimeout(() => setHighlightedTrustMerchant(""), 3000);
-      return () => clearTimeout(timer);
+      const startTimer = setTimeout(() => {
+        setTrustTab(auditTrustTab);
+        setHighlightedTrustMerchant(merchantParam);
+      }, 0);
+      const clearTimer = setTimeout(() => setHighlightedTrustMerchant(""), 3000);
+      return () => {
+        clearTimeout(startTimer);
+        clearTimeout(clearTimer);
+      };
     }
   }, [auditTrustTab, merchantParam]);
 
