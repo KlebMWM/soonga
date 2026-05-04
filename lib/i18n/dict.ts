@@ -116,7 +116,7 @@ export const dict: Dict = {
     en: "soon-ga.agent",
   },
   "dashboard.exchange.subtitle": {
-    zh: "為交易所與 Web3「錢包」設計的 AI agent 規則控制台",
+    zh: "為交易所與 Web3 錢包設計的 AI agent 規則控制台",
     en: "Rule console for AI agents on crypto exchanges and Web3 wallets",
   },
   "intro.headline": {
