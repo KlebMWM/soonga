@@ -126,17 +126,17 @@ export default function DashboardPage() {
       {/* Greeting — tag + h1 (Noto Serif TC + Instrument Serif italic "Megan"
           with yellow highlighter) + sub copy on the left; mini-status 3 rows
           on the right (budget / auto / pending, colour-coded by semantics). */}
-      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 md:gap-10 pb-6 md:pb-8 border-b border-border">
-        <div className="flex-1 min-w-0 space-y-4">
+      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-5 md:gap-10 pb-5 md:pb-8 border-b border-border">
+        <div className="flex-1 min-w-0 space-y-3 md:space-y-4">
           <div className="max-w-3xl space-y-2">
             <h1
-              className="text-[34px] md:text-[48px] font-semibold tracking-tight leading-[1.05]"
+              className="text-[28px] md:text-[48px] font-semibold tracking-tight leading-[1.08]"
               style={{ color: "var(--headline)" }}
             >
               {t("dashboard.exchange.title")}
             </h1>
             <p
-              className="text-[16px] md:text-[18px] leading-relaxed"
+              className="text-[15px] md:text-[18px] leading-relaxed"
               style={{ color: "var(--paragraph)" }}
             >
               {t("dashboard.exchange.subtitle")}
@@ -145,7 +145,7 @@ export default function DashboardPage() {
 
           {/* Tag */}
           <div
-            className="inline-flex items-center gap-2.5 border px-4 py-2 text-[13px] font-semibold"
+            className="inline-flex items-center gap-2.5 border px-3 py-1.5 text-[12px] font-semibold md:px-4 md:py-2 md:text-[13px]"
             style={{
               color: "var(--ikea-blue-darker)",
               background: "var(--bg-accent)",
@@ -164,7 +164,7 @@ export default function DashboardPage() {
 
           {/* Headline */}
           <div
-            className="text-[40px] md:text-[52px] tracking-tight leading-[1.05]"
+            className="text-[32px] md:text-[52px] tracking-tight leading-[1.08]"
             style={{ color: "var(--headline)" }}
           >
             <span style={{ fontFamily: "var(--font-noto-serif-tc), serif" }}>
@@ -186,7 +186,7 @@ export default function DashboardPage() {
 
           {/* Sub copy with bold numbers */}
           <p
-            className="text-[16px] leading-relaxed max-w-xl"
+            className="max-w-xl text-[15px] leading-relaxed md:text-[16px]"
             style={{ color: "var(--paragraph)" }}
           >
             {t("dashboard.greeting.sub.prefix", { agents: stats.activeAgents })}
@@ -273,12 +273,12 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="mt-6">
+      <div className="mt-5 md:mt-6">
         <IntroCard />
       </div>
 
       {/* Bento grid: pending hero (2x2) + 4 metrics (2x2) */}
-      <div className="mt-6 grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-4 auto-rows-fr">
+      <div className="mt-5 grid grid-cols-1 items-start gap-3 md:mt-6 md:grid-cols-4 md:grid-rows-2 md:items-stretch md:gap-4 md:auto-rows-fr">
         <div className="md:col-span-2 md:row-span-2">
           <DashboardHero pendingCount={pendingCount} />
         </div>
@@ -357,7 +357,7 @@ export default function DashboardPage() {
         />
       </div>
 
-      <div className="mt-10">
+      <div className="mt-8 md:mt-10">
         <AgentFeed limit={5} viewAllHref="/audit" />
       </div>
 
@@ -365,8 +365,8 @@ export default function DashboardPage() {
           "明早 08:00 會有一份報表" promise. Date tracks `now`; the four stat
           tiles are deterministic from the date string (same date → same
           numbers, refresh-stable; rolls over at midnight). */}
-      <details className="group mt-6 rounded-lg border border-border bg-card overflow-hidden">
-        <summary className="list-none cursor-pointer px-5 py-4 flex items-center justify-between gap-4 select-none hover:bg-muted/30 transition-colors">
+      <details className="group mt-5 rounded-lg border border-border bg-card overflow-hidden md:mt-6">
+        <summary className="list-none cursor-pointer px-4 py-3.5 flex items-center justify-between gap-4 select-none hover:bg-muted/30 transition-colors md:px-5 md:py-4">
           <div>
             <div className="text-sm font-medium flex items-center gap-2">
               <Sparkles
@@ -382,7 +382,7 @@ export default function DashboardPage() {
           <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 transition-transform group-open:rotate-180" />
         </summary>
 
-        <div className="border-t border-border p-5 space-y-5">
+        <div className="space-y-4 border-t border-border p-4 md:space-y-5 md:p-5">
           {/* Stat row — 4 numbers, the "five-finger view" of yesterday */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <div
@@ -534,8 +534,8 @@ export default function DashboardPage() {
         </div>
       </details>
 
-      <details className="group mt-6 rounded-lg border border-border bg-card overflow-hidden">
-        <summary className="list-none cursor-pointer px-5 py-4 flex items-center justify-between gap-4 select-none hover:bg-muted/30 transition-colors">
+      <details className="group mt-5 rounded-lg border border-border bg-card overflow-hidden md:mt-6">
+        <summary className="list-none cursor-pointer px-4 py-3.5 flex items-center justify-between gap-4 select-none hover:bg-muted/30 transition-colors md:px-5 md:py-4">
           <div>
             <div className="text-sm font-medium">{t("dashboard.details.title")}</div>
             <div className="text-[12px] text-muted-foreground mt-0.5">{t("dashboard.details.sub")}</div>
@@ -543,7 +543,7 @@ export default function DashboardPage() {
           <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 transition-transform group-open:rotate-180" />
         </summary>
 
-        <div className="border-t border-border p-5 space-y-6">
+        <div className="space-y-5 border-t border-border p-4 md:space-y-6 md:p-5">
           <div>
             <div className="flex items-start justify-between gap-3 pb-3">
               <div>

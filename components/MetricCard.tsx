@@ -24,7 +24,7 @@ export function MetricCard({
   return (
     <HudCard
       variant="stat"
-      className={cn("flex flex-col gap-3 min-h-[150px] p-4", className)}
+      className={cn("flex flex-col gap-3 p-4 md:min-h-[150px]", className)}
     >
       {/* Label row: 4x4 yellow square with deep-blue border + label text */}
       <div className="flex items-center gap-2">
@@ -51,7 +51,7 @@ export function MetricCard({
       {/* Big serif value + mono unit */}
       <div className="flex items-baseline gap-2">
         <span
-          className="text-[44px] font-normal leading-none tabular-nums"
+          className="text-[38px] font-normal leading-none tabular-nums md:text-[44px]"
           style={{
             color: "var(--headline)",
             fontFamily: "var(--font-instrument-serif), Georgia, serif",
@@ -69,8 +69,9 @@ export function MetricCard({
         )}
       </div>
 
-      {/* Spacer pushes footer to bottom of the 163px min-height */}
-      <div className="flex-1" />
+      {/* Desktop keeps KPI footers aligned in the bento grid. Mobile keeps
+          the footer close to the value so tall cards do not read as empty. */}
+      <div className="hidden flex-1 md:block" />
 
       {footer && <div>{footer}</div>}
     </HudCard>

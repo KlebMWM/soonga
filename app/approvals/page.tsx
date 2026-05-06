@@ -133,7 +133,7 @@ export default function ApprovalsPage() {
   }, [current, goNext, goPrev, handleAdjustCurrent, resolveApproval]);
 
   return (
-    <div className="px-5 md:px-8 py-8 max-w-[1180px] mx-auto">
+    <div className="mx-auto w-full max-w-[1180px]">
       <PageHeader
         eyebrow={t("approvals.eyebrow")}
         title={t("approvals.title")}
@@ -148,8 +148,8 @@ export default function ApprovalsPage() {
 
       {total > 0 && current ? (
         <>
-          <div className="mt-8 grid gap-5 lg:grid-cols-[320px_minmax(0,720px)] lg:items-start lg:justify-center">
-            <aside className="rounded-lg border border-border/70 bg-card p-3">
+          <div className="mt-6 grid min-w-0 gap-4 md:mt-8 md:gap-5 lg:grid-cols-[320px_minmax(0,720px)] lg:items-start lg:justify-center">
+            <aside className="min-w-0 overflow-hidden rounded-lg border border-border/70 bg-card p-3">
               <div className="mb-3 flex items-center justify-between px-1">
                 <h2 className="text-[13px] font-semibold">
                   {t("approvals.list.title")}
@@ -176,20 +176,20 @@ export default function ApprovalsPage() {
                         e.currentTarget.blur();
                       }}
                       className={cn(
-                        "w-full rounded-lg border p-3 text-left transition-colors",
+                        "w-full min-w-0 rounded-lg border p-3 text-left transition-colors",
                         active
                           ? "border-primary/45 bg-primary/10"
                           : "border-border/60 bg-background hover:bg-muted/40",
                       )}
                     >
-                      <div className="flex items-start gap-3">
+                      <div className="flex min-w-0 items-start gap-3">
                         <AgentIcon agent={approval.agent} size="sm" />
                         <div className="min-w-0 flex-1">
-                          <div className="flex items-center justify-between gap-2">
-                            <span className="truncate text-[13px] font-medium">
+                          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
+                            <span className="min-w-0 truncate text-[13px] font-medium">
                               {approval.merchant[locale]}
                             </span>
-                            <span className="font-mono text-[12px] text-muted-foreground">
+                            <span className="max-w-[74px] shrink-0 break-words text-right font-mono text-[12px] leading-snug text-muted-foreground sm:max-w-none">
                               {approval.amount.toFixed(0)} {approval.currency}
                             </span>
                           </div>
@@ -213,7 +213,7 @@ export default function ApprovalsPage() {
               </div>
             </aside>
 
-            <div>
+            <div className="min-w-0">
               <ApprovalCard
                 key={current.id}
                 approval={current}
@@ -226,12 +226,12 @@ export default function ApprovalsPage() {
           {total >= 3 && (
             <div className="sticky bottom-3 z-20 mt-5 flex justify-center">
               <div className="flex w-full max-w-[720px] items-center justify-between gap-3 rounded-lg border border-border bg-popover px-4 py-3 shadow-lg">
-                <span className="text-[13px] text-muted-foreground">
+                <span className="min-w-0 text-[13px] text-muted-foreground">
                   {t("approvals.bulk.hint", { count: total })}
                 </span>
                 <Button
                   size="sm"
-                  className="gap-1.5"
+                  className="min-h-10 shrink-0 gap-1.5"
                   onClick={() => setBulkOpen(true)}
                 >
                   <Check className="h-3.5 w-3.5" />
@@ -291,7 +291,7 @@ export default function ApprovalsPage() {
       ) : (
         // Empty state — queue cleared. Brief, mirrors the dashboard's
         // "all clear" tone without the late-night editorial flourish.
-        <div className="mt-10 rounded-lg border border-dashed border-border bg-muted/30 p-8 text-center">
+        <div className="mt-8 rounded-lg border border-dashed border-border bg-muted/30 p-6 text-center md:mt-10 md:p-8">
           <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-lg border border-success/25 bg-success/10 text-success">
             <Check className="h-5 w-5" />
           </div>

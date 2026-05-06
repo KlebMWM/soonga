@@ -46,21 +46,23 @@ export function MobileNav() {
       <div className="flex items-center gap-2 px-4 py-3">
         <Link
           href="/dashboard"
-          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+          className="flex min-w-0 flex-1 items-center gap-2 hover:opacity-80 transition-opacity"
           aria-label={t("nav.dashboard.label")}
         >
           <div className="flex h-7 w-7 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
             <Sparkles className="h-4 w-4" />
           </div>
-          <div className="text-sm font-semibold tracking-wide">soon-ga.agent</div>
+          <div className="min-w-0 truncate whitespace-nowrap text-sm font-semibold tracking-wide">
+            soon-ga.agent
+          </div>
           <span
-            className="rounded-full border border-sidebar-border/70 bg-sidebar-accent/60 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-sidebar-foreground/70"
+            className="hidden rounded-full border border-sidebar-border/70 bg-sidebar-accent/60 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-sidebar-foreground/70 min-[380px]:inline-flex"
             title={t("brand.prototypeTitle")}
           >
             {t("brand.prototype")}
           </span>
         </Link>
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex shrink-0 items-center gap-2">
           <LocaleToggle variant="mobile" />
           <WalletPill variant="mobile" />
         </div>

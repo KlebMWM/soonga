@@ -261,7 +261,7 @@ export function ApprovalCard({
   };
 
   return (
-    <Card className="min-h-[320px] max-w-[720px] overflow-hidden rounded-lg p-0">
+    <Card className="min-h-[320px] w-full max-w-full overflow-hidden rounded-lg p-0 md:max-w-[720px]">
       <div className="space-y-6 p-5 md:p-6">
         <div className="flex items-start gap-4">
           <AgentIcon agent={approval.agent} size="lg" />
@@ -374,7 +374,7 @@ export function ApprovalCard({
           <div className="space-y-2">
             <Button
               size="lg"
-              className="w-full gap-1.5"
+              className="min-h-11 w-full gap-1.5 md:min-h-0"
               onClick={() => act("approved")}
             >
               <Check className="h-4 w-4" />
@@ -392,7 +392,7 @@ export function ApprovalCard({
               size="lg"
               variant="outline"
               className={cn(
-                "w-full gap-1.5",
+                "min-h-11 w-full gap-1.5 md:min-h-0",
                 OUTCOME_META.adjusted.buttonClass,
               )}
               onClick={() => act("adjusted")}
@@ -411,7 +411,7 @@ export function ApprovalCard({
               size="lg"
               variant="ghost"
               className={cn(
-                "w-full gap-1.5",
+                "min-h-11 w-full gap-1.5 md:min-h-0",
                 OUTCOME_META.rejected.buttonClass,
               )}
               onClick={() => act("rejected")}

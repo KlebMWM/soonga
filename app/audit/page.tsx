@@ -70,7 +70,7 @@ export default function AuditPage() {
   };
 
   return (
-    <div className="px-5 md:px-8 py-6 md:py-8 max-w-[1200px] mx-auto">
+    <div className="mx-auto w-full max-w-[1200px]">
       <PageHeader
         eyebrow={t("audit.eyebrow")}
         title={t("audit.title")}
@@ -83,7 +83,7 @@ export default function AuditPage() {
         }
       />
 
-      <div className="mt-8">
+      <div className="mt-6 md:mt-8">
         <AuditTable />
       </div>
     </div>

@@ -520,7 +520,7 @@ function FirstScreen({
               rows={2}
               maxLength={200}
               disabled={parsing}
-              className="w-full resize-none rounded-md border border-border bg-card px-3 py-2 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-ring"
+              className="w-full resize-none rounded-md border border-border bg-card px-3 py-2 text-base leading-relaxed focus:outline-none focus:ring-2 focus:ring-ring md:text-sm"
             />
             <Button
               onClick={handleParse}
@@ -1092,7 +1092,7 @@ function TrustForm({
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="h-9 w-full rounded-md border border-border bg-card px-3 text-sm"
+              className="h-10 w-full rounded-md border border-border bg-card px-3 text-base md:h-9 md:text-sm"
             >
               {categoryOptions.map((c) => (
                 <option key={c.id} value={c.id}>

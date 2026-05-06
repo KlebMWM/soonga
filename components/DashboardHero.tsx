@@ -45,7 +45,7 @@ export function DashboardHero({ pendingCount }: { pendingCount?: number } = {}) 
       <HudCard
         id="pending-hero"
         variant="hero"
-        className="is-empty h-full flex flex-col justify-between gap-6 p-6 md:p-8"
+        className="is-empty h-full flex flex-col justify-between gap-5 p-5 md:gap-6 md:p-8"
       >
         {/* Top — sage breathing dot + "夜已深 / LATE NIGHT" mono tag */}
         <div className="flex items-center gap-2">
@@ -75,7 +75,7 @@ export function DashboardHero({ pendingCount }: { pendingCount?: number } = {}) 
             yellow "Megan" inline. Two natural lines via flex-col. */}
         <div className="flex-1 flex flex-col justify-center">
           <p
-            className="text-[28px] md:text-[34px] leading-[1.25] text-white"
+            className="text-[24px] md:text-[34px] leading-[1.25] text-white"
             style={{ fontFamily: "var(--font-noto-serif-tc), serif" }}
           >
             {t("dashboard.hero.empty.quote.before")}
@@ -133,7 +133,7 @@ export function DashboardHero({ pendingCount }: { pendingCount?: number } = {}) 
     <HudCard
       id="pending-hero"
       variant="hero"
-      className="h-full flex flex-col gap-5 p-6 md:p-7"
+      className="h-full flex flex-col gap-4 p-5 md:gap-5 md:p-7"
     >
       {/* Top row: "需要你核准" yellow pill + total amount mono readout */}
       <div className="flex items-start justify-between gap-3">
@@ -158,7 +158,7 @@ export function DashboardHero({ pendingCount }: { pendingCount?: number } = {}) 
           <span className="relative inline-block leading-[0.85]">
             <span
               key={displayCount}
-              className="numeral-enter italic tabular-nums font-normal leading-[0.85] text-[88px] md:text-[120px] inline-block"
+              className="numeral-enter italic tabular-nums font-normal leading-[0.85] text-[72px] md:text-[120px] inline-block"
               style={{
                 color: "var(--yellow)",
                 fontFamily: "var(--font-instrument-serif), Georgia, serif",
@@ -170,7 +170,7 @@ export function DashboardHero({ pendingCount }: { pendingCount?: number } = {}) 
             {exitingCount !== null && (
               <span
                 key={`exit-${exitingCount}`}
-                className="numeral-exit italic tabular-nums font-normal leading-[0.85] text-[88px] md:text-[120px] absolute left-0 top-0 pointer-events-none"
+                className="numeral-exit italic tabular-nums font-normal leading-[0.85] text-[72px] md:text-[120px] absolute left-0 top-0 pointer-events-none"
                 style={{
                   color: "var(--yellow)",
                   fontFamily: "var(--font-instrument-serif), Georgia, serif",
@@ -183,7 +183,7 @@ export function DashboardHero({ pendingCount }: { pendingCount?: number } = {}) 
             )}
           </span>
           <span
-            className="text-[22px] md:text-[26px] font-medium text-white leading-none"
+            className="text-[20px] md:text-[26px] font-medium text-white leading-none"
             style={{ fontFamily: "var(--font-noto-serif-tc), serif" }}
           >
             {t("dashboard.hero.pending.line1")}

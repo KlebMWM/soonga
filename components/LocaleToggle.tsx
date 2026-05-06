@@ -15,7 +15,7 @@ export function LocaleToggle({ variant = "sidebar" }: { variant?: "sidebar" | "m
 
   const btn = (active: boolean) =>
     cn(
-      "px-2 py-0.5 text-[11px] font-semibold tracking-wide transition-colors",
+      "min-h-8 px-2 text-[11px] font-semibold tracking-wide transition-colors",
       active
         ? "bg-sidebar-primary text-sidebar-primary-foreground"
         : "text-sidebar-foreground/60 hover:text-sidebar-foreground",

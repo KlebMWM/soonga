@@ -78,13 +78,7 @@ export default function RootLayout({
               <MobileNav />
               <TopBar />
               <main className="flex-1 min-w-0">
-                <div
-                  className="mx-auto"
-                  style={{
-                    maxWidth: 1240,
-                    padding: "24px 32px",
-                  }}
-                >
+                <div className="mx-auto w-full max-w-[1240px] px-4 py-4 sm:px-5 md:px-8 md:py-6">
                   {children}
                 </div>
               </main>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import type { TooltipContentProps } from "recharts";
 import { burnRate7d, burnRate30d, burnRate1y, type BurnPoint } from "@/lib/mockData";
@@ -14,6 +14,10 @@ const RANGES: Record<Range, { series: BurnPoint[]; tickInterval: number }> = {
   "30d": { series: burnRate30d, tickInterval: 4 },
   "1y": { series: burnRate1y, tickInterval: 0 },
 };
+
+const subscribeClient = () => () => {};
+const getClientSnapshot = () => true;
+const getServerSnapshot = () => false;
 
 function makeTooltip(txLabel: string) {
   return function ChartTooltip({ active, payload, label }: TooltipContentProps) {
@@ -34,6 +38,11 @@ function makeTooltip(txLabel: string) {
 export function BurnRateChart() {
   const t = useT();
   const [range, setRange] = useState<Range>("7d");
+  const mounted = useSyncExternalStore(
+    subscribeClient,
+    getClientSnapshot,
+    getServerSnapshot,
+  );
   const meta = RANGES[range];
   const total = meta.series.reduce((sum, p) => sum + p.amount, 0);
   const txCount = meta.series.reduce((sum, p) => sum + p.transactions, 0);
@@ -56,41 +65,45 @@ export function BurnRateChart() {
         </div>
       </div>
 
-      <div className="h-[220px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={meta.series} margin={{ top: 12, right: 12, left: 0, bottom: 0 }}>
-            <defs>
-              <linearGradient id="burnFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="var(--color-primary)" stopOpacity={0.28} />
-                <stop offset="100%" stopColor="var(--color-primary)" stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <CartesianGrid stroke="var(--color-border)" strokeDasharray="3 6" vertical={false} />
-            <XAxis
-              dataKey="date"
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }}
-              dy={6}
-              interval={meta.tickInterval}
-            />
-            <YAxis
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }}
-              width={48}
-              tickFormatter={(v) => `$${v}`}
-            />
-            <Tooltip content={Tip} cursor={{ stroke: "var(--color-primary)", strokeWidth: 1, strokeDasharray: "3 3" }} />
-            <Area
-              type="monotone"
-              dataKey="amount"
-              stroke="var(--color-primary)"
-              strokeWidth={2}
-              fill="url(#burnFill)"
-            />
-          </AreaChart>
-        </ResponsiveContainer>
+      <div className="h-[220px] min-h-[220px] w-full">
+        {mounted ? (
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={meta.series} margin={{ top: 12, right: 12, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id="burnFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="var(--color-primary)" stopOpacity={0.28} />
+                  <stop offset="100%" stopColor="var(--color-primary)" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid stroke="var(--color-border)" strokeDasharray="3 6" vertical={false} />
+              <XAxis
+                dataKey="date"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }}
+                dy={6}
+                interval={meta.tickInterval}
+              />
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }}
+                width={48}
+                tickFormatter={(v) => `$${v}`}
+              />
+              <Tooltip content={Tip} cursor={{ stroke: "var(--color-primary)", strokeWidth: 1, strokeDasharray: "3 3" }} />
+              <Area
+                type="monotone"
+                dataKey="amount"
+                stroke="var(--color-primary)"
+                strokeWidth={2}
+                fill="url(#burnFill)"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="h-full rounded-md border border-border/60 bg-muted/20" aria-hidden />
+        )}
       </div>
 
       <div className="mt-1 text-[12px] text-muted-foreground">

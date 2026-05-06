@@ -243,7 +243,7 @@ export default function RulesPage({
   const categoryOptions = categories.map((c) => ({ id: c.id, label: c.name[locale] }));
 
   return (
-    <div className="px-5 md:px-8 py-6 md:py-8 max-w-[1400px] mx-auto">
+    <div className="mx-auto w-full max-w-[1400px]">
       <PageHeader
         eyebrow={t("rules.eyebrow")}
         title={t("rules.title")}
@@ -272,7 +272,7 @@ export default function RulesPage({
         </div>
       )}
 
-      <section className="mt-8">
+      <section className="mt-6 md:mt-8">
         <div className="flex items-center justify-between pb-4">
           <div>
             <div className="text-sm font-semibold">{t("rules.categories.title")}</div>
@@ -293,7 +293,7 @@ export default function RulesPage({
         </div>
       </section>
 
-      <section className="mt-10">
+      <section className="mt-8 md:mt-10">
         <div className="flex items-center justify-between pb-4">
           <div>
             <div className="text-sm font-semibold">{t("rules.trust.title")}</div>

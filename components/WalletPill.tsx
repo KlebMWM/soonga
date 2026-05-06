@@ -255,10 +255,10 @@ export function WalletPill({ variant = "sidebar" }: { variant?: "sidebar" | "mob
       ) : (
         <button
           onClick={() => setPickerOpen(true)}
-          className="flex items-center gap-1.5 rounded-full bg-sidebar-primary/15 text-sidebar-primary px-3 py-1 text-[12px] font-medium hover:bg-sidebar-primary/25 transition-colors"
+          className="flex min-h-8 max-w-[104px] items-center gap-1.5 rounded-full bg-sidebar-primary/15 px-3 text-[12px] font-medium text-sidebar-primary transition-colors hover:bg-sidebar-primary/25"
         >
           <Wallet className="h-3 w-3" />
-          {t("wallet.connect")}
+          <span className="truncate whitespace-nowrap">{t("wallet.connect")}</span>
         </button>
       );
 
@@ -276,7 +276,7 @@ export function WalletPill({ variant = "sidebar" }: { variant?: "sidebar" | "mob
       <>
         <button
           onClick={copyAddress}
-          className="flex items-center gap-1.5 rounded-full bg-success/15 text-success px-2.5 py-1 text-[12px] font-medium tabular-nums"
+          className="flex min-h-8 max-w-[112px] items-center gap-1.5 rounded-full bg-success/15 px-2.5 text-[12px] font-medium tabular-nums text-success"
           title={MOCK_ADDRESS}
         >
           {currentProvider && (
@@ -289,7 +289,9 @@ export function WalletPill({ variant = "sidebar" }: { variant?: "sidebar" | "mob
               {currentProvider.monogram}
             </span>
           )}
-          {MOCK_USDC_BALANCE.toFixed(0)} USDC
+          <span className="truncate whitespace-nowrap">
+            {MOCK_USDC_BALANCE.toFixed(0)} USDC
+          </span>
         </button>
         {picker}
       </>

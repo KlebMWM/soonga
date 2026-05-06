@@ -157,24 +157,26 @@ export function AuditTable() {
   };
 
   return (
-    <Card className="p-0 overflow-hidden">
+    <Card className="w-full max-w-full overflow-hidden p-0">
       <div className="flex flex-col gap-3 border-b border-border bg-muted/20 p-4 md:flex-row md:items-center md:justify-between">
-        <Tabs value={filter} onValueChange={(v) => setFilter(v as Filter)}>
-          <TabsList>
-            <TabsTrigger value="all">
-              {t("audit.filter.all")} · {auditLog.length}
-            </TabsTrigger>
-            <TabsTrigger value="approved">{t("audit.filter.approved")}</TabsTrigger>
-            <TabsTrigger value="rejected">{t("audit.filter.rejected")}</TabsTrigger>
-            <TabsTrigger value="auto-approved">{t("audit.filter.auto")}</TabsTrigger>
-          </TabsList>
-        </Tabs>
+        <div className="-mx-1 max-w-full overflow-x-auto px-1 pb-1">
+          <Tabs value={filter} onValueChange={(v) => setFilter(v as Filter)}>
+            <TabsList>
+              <TabsTrigger value="all">
+                {t("audit.filter.all")} · {auditLog.length}
+              </TabsTrigger>
+              <TabsTrigger value="approved">{t("audit.filter.approved")}</TabsTrigger>
+              <TabsTrigger value="rejected">{t("audit.filter.rejected")}</TabsTrigger>
+              <TabsTrigger value="auto-approved">{t("audit.filter.auto")}</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
           <select
             value={agentFilter}
             onChange={(e) => setAgentFilter(e.target.value)}
-            className="h-9 rounded-md border border-border bg-card px-3 text-sm"
+            className="h-10 w-full min-w-0 rounded-md border border-border bg-card px-3 text-base sm:w-auto md:h-9 md:text-sm"
           >
             <option value="all">{t("audit.filter.allAgents")}</option>
             {agents.map((a) => (
@@ -186,7 +188,7 @@ export function AuditTable() {
           <select
             value={platformFilter}
             onChange={(e) => setPlatformFilter(e.target.value)}
-            className="h-9 rounded-md border border-border bg-card px-3 text-sm"
+            className="h-10 w-full min-w-0 rounded-md border border-border bg-card px-3 text-base sm:w-auto md:h-9 md:text-sm"
           >
             <option value="all">{t("audit.filter.allPlatforms")}</option>
             {platforms.map((p) => (
@@ -195,7 +197,7 @@ export function AuditTable() {
               </option>
             ))}
           </select>
-          <Button size="sm" variant="outline" className="gap-1.5" onClick={handleCopy}>
+          <Button size="sm" variant="outline" className="min-h-11 w-full gap-1.5 sm:w-auto md:min-h-0" onClick={handleCopy}>
             <Copy className="h-3.5 w-3.5" />
             {t("audit.copyCsv")}
           </Button>
@@ -281,41 +283,45 @@ export function AuditTable() {
             <li key={entry.id} className="group relative">
               <button
                 onClick={() => setExpanded(isOpen ? null : entry.id)}
-                className="w-full flex items-start gap-4 px-4 py-3 text-left hover:bg-muted/30 transition-colors"
+                className="flex w-full flex-col gap-3 px-4 py-4 text-left transition-colors hover:bg-muted/30 sm:flex-row sm:items-start sm:gap-4 sm:py-3"
               >
-                <AgentIcon agent={entry.agent} size="md" className="mt-0.5" />
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-sans font-medium text-sm">{t(`agent.${entry.agent}.name`)}</span>
-                    <span className="rounded-md border border-border bg-muted/30 px-1.5 py-0.5 text-[11px] font-mono text-muted-foreground">
-                      {platform}
-                    </span>
-                    <span className="text-muted-foreground text-sm">→</span>
-                    <span className="font-sans text-sm">{merchant}</span>
-                    <span className="text-sm font-mono tabular-nums text-muted-foreground">
-                      ．{entry.amount.toFixed(2)} USDC
-                    </span>
-                  </div>
-                  <div className="text-[12px] text-muted-foreground mt-0.5 font-mono">{entry.timestamp}</div>
-                  <div className="pt-1.5 text-[12px] italic leading-relaxed text-muted-foreground">
-                    {narrative}
+                <div className="flex min-w-0 items-start gap-3 sm:flex-1">
+                  <AgentIcon agent={entry.agent} size="md" className="mt-0.5" />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-sans text-sm font-medium">{t(`agent.${entry.agent}.name`)}</span>
+                      <span className="rounded-md border border-border bg-muted/30 px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground">
+                        {platform}
+                      </span>
+                      <span className="text-sm text-muted-foreground">→</span>
+                      <span className="min-w-0 break-words font-sans text-sm">{merchant}</span>
+                      <span className="font-mono text-sm tabular-nums text-muted-foreground">
+                        ．{entry.amount.toFixed(2)} USDC
+                      </span>
+                    </div>
+                    <div className="mt-0.5 font-mono text-[12px] text-muted-foreground">{entry.timestamp}</div>
+                    <div className="pt-1.5 text-[12px] italic leading-relaxed text-muted-foreground">
+                      {narrative}
+                    </div>
                   </div>
                 </div>
-                <div
-                  className={cn(
-                    "mt-0.5 flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[12px] font-medium",
-                    meta.tone,
-                  )}
-                >
-                  <Icon className="h-3 w-3" />
-                  {t(meta.labelKey)}
+                <div className="flex items-center gap-3 self-start sm:mt-0.5">
+                  <div
+                    className={cn(
+                      "flex min-h-8 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[12px] font-medium",
+                      meta.tone,
+                    )}
+                  >
+                    <Icon className="h-3 w-3" />
+                    {t(meta.labelKey)}
+                  </div>
+                  <ChevronDown
+                    className={cn(
+                      "h-4 w-4 shrink-0 text-muted-foreground transition-transform",
+                      isOpen && "rotate-180",
+                    )}
+                  />
                 </div>
-                <ChevronDown
-                  className={cn(
-                    "h-4 w-4 shrink-0 text-muted-foreground transition-transform",
-                    isOpen && "rotate-180",
-                  )}
-                />
               </button>
 
               {viewRuleHref && (

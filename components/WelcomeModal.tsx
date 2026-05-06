@@ -131,7 +131,7 @@ export function WelcomeModal() {
             onChange={(e) => setNameDraft(e.target.value)}
             placeholder={t("welcome.name.placeholder")}
             maxLength={20}
-            className="h-9 text-sm"
+            className="h-10 text-base md:h-9 md:text-sm"
           />
           <p className="text-[11px] text-muted-foreground leading-relaxed">
             {t("welcome.name.privacy")}
